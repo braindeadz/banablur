@@ -7,7 +7,7 @@
     "test": "node test-logic.js",
     "test:chaturbate": "node test-chaturbate.mjs",
     "build": "powershell -ExecutionPolicy Bypass -File build.ps1",
-    "sign": "web-ext sign --source-dir . --artifacts-dir ../agego-deblur-signed --api-key \"$env:AMO_JWT_ISSUER\" --api-secret \"$env:AMO_JWT_SECRET\" --channel unpublished"
+    "sign": "web-ext sign --source-dir . --artifacts-dir ../banablur-signed --api-key \"$env:AMO_JWT_ISSUER\" --api-secret \"$env:AMO_JWT_SECRET\" --channel unpublished"
   },
   "devDependencies": {
     "playwright": "^1.51.0",

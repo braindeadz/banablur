@@ -57,10 +57,10 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 
 Banablur is distributed as an **unpacked extension** (developer mode). There is no Chrome Web Store package.
 
-1. Obtain a build: extract `agego-deblur-1.9.0.zip` from a release, or build from source (see below).
+1. Obtain a build: extract `banablur-1.9.0.zip` from a release, or build from source (see below).
 2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).
 3. Enable **Developer mode**.
-4. Click **Load unpacked** and select the extracted folder (e.g. `agego-deblur-1.9.0/`).
+4. Click **Load unpacked** and select the extracted folder (e.g. `banablur-1.9.0/`).
 5. Pin the extension from the puzzle icon in the toolbar.
 
 > Chromium does not install a `.zip` directly — use the extracted folder.
@@ -69,15 +69,15 @@ Banablur is distributed as an **unpacked extension** (developer mode). There is 
 
 ## Install — Firefox
 
-**Gecko extension ID:** `agego-deblur@local.dev` (unchanged for update continuity)
+**Firefox add-on ID (stable):** `agego-deblur@local.dev` — do not change; existing installs rely on it for updates.
 
 ### Permanent install (signed XPI — recommended for Firefox Release)
 
 Firefox Release requires a **Mozilla-signed** add-on. Banablur is distributed as an **unlisted** AMO-signed `.xpi` (not in the public AMO catalog).
 
-Use only a file that contains `META-INF/mozilla.rsa` (name ends with `FIREFOX-SIGNE.xpi` or comes from an AMO download). The zip produced by `build.ps1` is **unsigned** — Firefox Release will reject it with “not verified”.
+Use only a file that contains `META-INF/mozilla.rsa` (name ends with `FIREFOX-SIGNE.xpi`, `firefox-signed.xpi`, or comes from an AMO download). The unsigned build zip/xpi from `build.ps1` is **not** for Firefox Release — it will be rejected with “not verified”.
 
-1. Download `Banablur-1.9.0-FIREFOX-SIGNE.xpi` (or the latest signed release asset).
+1. Download `Banablur-1.9.0-FIREFOX-SIGNE.xpi` or `banablur-1.9.0-firefox-signed.xpi` (or the latest signed release asset).
 2. Open `about:addons`.
 3. Click the gear menu → **Install Add-on From File…**
 4. Select the **signed** `.xpi`.
@@ -123,7 +123,7 @@ On supported video pages, a **download** button may appear when stream URLs are 
 **Requirements:** Node.js (for tests), PowerShell (for packaging on Windows).
 
 ```powershell
-cd agego-deblur
+cd banablur
 npm install
 npm test
 powershell -File build.ps1
@@ -133,10 +133,10 @@ Outputs in the **parent** directory:
 
 | Artifact | Purpose |
 |----------|---------|
-| `agego-deblur-1.9.0.zip` | Unsigned archive (Chrome/Edge **Load unpacked** after extract) |
-| `agego-deblur-1.9.0.xpi` | Same unsigned bytes — **not** for Firefox Release |
-| `Banablur-1.9.0-FIREFOX-SIGNE.xpi` | AMO-signed XPI for Firefox Release |
-| `agego-deblur-1.9.0/` | Auto-extracted folder for Chromium **Load unpacked** |
+| `banablur-1.9.0.zip` | Unsigned build zip (Chrome/Edge **Load unpacked** after extract) |
+| `banablur-1.9.0.xpi` | Same unsigned bytes — **not** for Firefox Release |
+| `Banablur-1.9.0-FIREFOX-SIGNE.xpi` or `banablur-1.9.0-firefox-signed.xpi` | AMO-signed XPI for Firefox Release |
+| `banablur-1.9.0/` | Auto-extracted folder for Chromium **Load unpacked** |
 
 The build script reads the version from `manifest.json` and cleans previous build artifacts before generating new ones.
 

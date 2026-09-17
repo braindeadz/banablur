@@ -28,7 +28,7 @@ Thanks for helping improve Banablur. Keep changes focused, tested, and free of s
    powershell -File build.ps1
    ```
 
-   This produces versioned `agego-deblur-<version>.zip`, `.xpi`, and an extracted folder in the parent directory.
+   This produces versioned `banablur-<version>.zip`, `banablur-<version>.xpi`, and an extracted `banablur-<version>/` folder in the parent directory.
 
 ## Pull requests
 

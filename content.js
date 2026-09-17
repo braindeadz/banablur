@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const CSS_ID = 'agego-deblur-override';
+  const CSS_ID = 'banablur-override';
   const DEBOUNCE_MS = 50;
   const FALLBACK_INTERVAL_MS = 500;
 
@@ -688,10 +688,10 @@ img.video-img[data-type="sfw"] { display: none !important; }
     video.dataset.deblurCanvas = '1';
     video.style.setProperty('opacity', '0', 'important');
 
-    let canvas = parent.querySelector('#agego-deblur-canvas');
+    let canvas = parent.querySelector('#banablur-canvas');
     if (!canvas) {
       canvas = document.createElement('canvas');
-      canvas.id = 'agego-deblur-canvas';
+      canvas.id = 'banablur-canvas';
       canvas.style.cssText =
         'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;z-index:2;pointer-events:none;background:#000;';
       if (getComputedStyle(parent).position === 'static') {

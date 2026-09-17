@@ -6,20 +6,23 @@ $parent = Split-Path -Parent $root
 $manifest = Get-Content -Raw (Join-Path $root "manifest.json") | ConvertFrom-Json
 $version = $manifest.version
 
-$dist = Join-Path $parent "agego-deblur-dist"
-$zipPath = Join-Path $parent "agego-deblur-$version.zip"
-$xpiPath = Join-Path $parent "agego-deblur-$version.xpi"
-$unpacked = Join-Path $parent "agego-deblur-$version"
+$dist = Join-Path $parent "banablur-dist"
+$zipPath = Join-Path $parent "banablur-$version.zip"
+$xpiPath = Join-Path $parent "banablur-$version.xpi"
+$unpacked = Join-Path $parent "banablur-$version"
 
 # --- Proprete: nettoyer TOUS les artefacts de builds precedents ---
-# Supprime archives (.zip/.xpi) et dossiers extraits de toutes les versions,
-# ainsi que le staging. Ne touche jamais au dossier source "agego-deblur"
-# (sans tiret de version).
+# Dossier source = ce repo (sans suffixe de version). Ne jamais le supprimer.
+# Sorties = banablur-<version>.zip/.xpi et dossier extrait banablur-<version>/.
+# Ne touche jamais aux dossiers de signature *-signed/.
+Get-ChildItem -Path $parent -Filter "banablur*.zip" -File -ErrorAction SilentlyContinue | Remove-Item -Force
+Get-ChildItem -Path $parent -Filter "banablur*.xpi" -File -ErrorAction SilentlyContinue | Remove-Item -Force
 Get-ChildItem -Path $parent -Filter "agego-deblur*.zip" -File -ErrorAction SilentlyContinue | Remove-Item -Force
 Get-ChildItem -Path $parent -Filter "agego-deblur*.xpi" -File -ErrorAction SilentlyContinue | Remove-Item -Force
 Get-ChildItem -Path $parent -Directory -ErrorAction SilentlyContinue |
-  Where-Object { $_.Name -match '^agego-deblur-\d' } |
+  Where-Object { $_.Name -match '^banablur-\d' -or $_.Name -match '^agego-deblur-\d' } |
   Remove-Item -Recurse -Force
+if (Test-Path $dist) { Remove-Item $dist -Recurse -Force }
 
 New-Item -ItemType Directory -Path $dist -Force | Out-Null
 

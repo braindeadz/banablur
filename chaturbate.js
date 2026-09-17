@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const CSS_ID = 'agego-deblur-override';
+  const CSS_ID = 'banablur-override';
   const THUMB_INTERVAL_MS = 2500;
   const THUMB_DEBOUNCE_MS = 200;
   const APP_REFRESH_MS = 25000;

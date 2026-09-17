@@ -15,7 +15,7 @@ function checkPage() {
   const overlayVideo = document.querySelector('#agego-live-overlay video, #agego-live-video');
   return {
     url: location.href,
-    hasCss: !!document.getElementById('agego-deblur-override'),
+    hasCss: !!document.getElementById('banablur-override'),
     overlayOp: document.getElementById('age_gate_overlay')
       ? getComputedStyle(document.getElementById('age_gate_overlay')).opacity
       : null,
@@ -115,7 +115,7 @@ async function main() {
           .elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
           ?.closest('[data-agego-room], a.RoomCardThumbnail');
       return (
-        !!document.getElementById('agego-deblur-override') &&
+        !!document.getElementById('banablur-override') &&
         !!document.getElementById('agego-app') &&
         overlayPE === 'none' &&
         !gateTextVisible &&
