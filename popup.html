@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banablur</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="icons/icon-48.png" alt="" width="28" height="28">
+      <div>
+        <h1>Banablur</h1>
+        <p class="tagline">Peel the blur.</p>
+      </div>
+    </div>
+    <p id="hostname" class="hostname">—</p>
+  </header>
+
+  <section class="status">
+    <div class="status-row">
+      <span class="dot" id="dot-profiles"></span>
+      <span id="label-profiles">Profils : —</span>
+    </div>
+    <div class="status-row">
+      <span class="dot" id="dot-watchdog"></span>
+      <span id="label-watchdog">Watchdog : —</span>
+    </div>
+    <div class="status-row">
+      <span class="dot" id="dot-threat"></span>
+      <span id="label-threat">Menace : —</span>
+    </div>
+    <div class="status-row">
+      <span class="dot" id="dot-video"></span>
+      <span id="label-video">Video : —</span>
+    </div>
+  </section>
+
+  <section class="controls">
+    <label class="toggle-row">
+      <span>Suppression auto</span>
+      <input type="checkbox" id="toggle-auto" checked>
+      <span class="switch"></span>
+    </label>
+
+    <button type="button" id="btn-force" class="btn-primary">
+      Forcer detection + nettoyage
+    </button>
+
+    <label class="toggle-row">
+      <span>Proxy xHamster (deflou hors-FR)</span>
+      <input type="checkbox" id="toggle-proxy" checked>
+      <span class="switch"></span>
+    </label>
+
+    <button type="button" id="btn-proxy-refresh" class="btn-primary">
+      Rafraichir les proxys
+    </button>
+    <p id="proxy-info" class="hostname">Proxy : —</p>
+  </section>
+
+  <footer>
+    <p id="last-cleanup">Dernier nettoyage : —</p>
+    <p id="feedback" class="feedback" hidden></p>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

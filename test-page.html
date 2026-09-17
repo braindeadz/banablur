@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr" class="agego-lock">
+<head>
+  <meta charset="UTF-8">
+  <title>Test AgeGO Deblur</title>
+  <style>
+    body.agego-blur-content > :not(#agego-overlay-container) {
+      filter: blur(25px) brightness(100%) !important;
+    }
+    body.agego-blur-content { overflow: hidden !important; }
+    #agego-overlay-container {
+      position: fixed; inset: 0; z-index: 2147483647;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.9);
+    }
+    #agego-overlay-content-inner {
+      background: #fff; padding: 40px; border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2); text-align: center;
+    }
+    .content { padding: 40px; font-family: sans-serif; }
+    video { width: 100%; max-width: 640px; }
+  </style>
+</head>
+<body class="agego-blur-content">
+  <div class="content">
+    <h1>Contenu de test (doit etre net sans blur)</h1>
+    <p>Si l'extension fonctionne, ce texte et la video sont visibles sans overlay.</p>
+    <video controls autoplay muted loop>
+      <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm" type="video/webm">
+    </video>
+  </div>
+
+  <div id="agego-overlay-container">
+    <div id="agego-overlay-content-inner">
+      <h2>Website for adults viewing only!</h2>
+      <p>By continuing, you confirm you are of legal age.</p>
+      <button>VERIFY AGE</button>
+    </div>
+  </div>
+
+  <script>
+    // Simule AgeGO qui re-injecte l'overlay apres 3 secondes
+    setTimeout(() => {
+      if (!document.getElementById('agego-overlay-container')) {
+        document.body.classList.add('agego-blur-content');
+        document.documentElement.classList.add('agego-lock');
+        const ov = document.createElement('div');
+        ov.id = 'agego-overlay-container';
+        ov.innerHTML = '<div id="agego-overlay-content-inner"><h2>Overlay re-injecte!</h2></div>';
+        document.body.appendChild(ov);
+        console.log('[test] AgeGO re-injecte overlay + blur');
+      }
+    }, 3000);
+  </script>
+</body>
+</html>

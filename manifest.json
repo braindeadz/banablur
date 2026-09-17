@@ -1,0 +1,105 @@
+{
+  "manifest_version": 3,
+  "name": "Banablur",
+  "version": "1.9.0",
+  "description": "Peel the blur. Removes age-gate overlays and video blur on XVIDEOS, xHamster, xHamsterLive, Pornhub, Chaturbate, LebonPorn, FapHouse, AgeGO/Deviants and similar sites. Optional video download button and xHamster geo proxy.",
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"]
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    },
+    "default_title": "Banablur"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "exclude_matches": [
+        "*://chaturbate.com/*",
+        "*://*.chaturbate.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://lebon.porn/*",
+        "*://*.lebon.porn/*",
+        "*://videos.lebon.porn/*",
+        "*://*.videos.lebon.porn/*"
+      ],
+      "js": ["lebonporn-page.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "*://lebon.porn/*",
+        "*://*.lebon.porn/*",
+        "*://videos.lebon.porn/*",
+        "*://*.videos.lebon.porn/*"
+      ],
+      "js": ["lebonporn-inject.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://chaturbate.com/*",
+        "*://*.chaturbate.com/*"
+      ],
+      "css": ["chaturbate-gate.css"],
+      "js": ["chaturbate.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": ["storage", "activeTab", "downloads", "proxy"],
+  "host_permissions": ["https://api.proxyscrape.com/*"],
+  "web_accessible_resources": [
+    {
+      "resources": ["chaturbate-page.js", "hls.min.js"],
+      "matches": ["*://chaturbate.com/*", "*://*.chaturbate.com/*"]
+    },
+    {
+      "resources": ["xvideos-page.js"],
+      "matches": ["*://xvideos.com/*", "*://*.xvideos.com/*"]
+    },
+    {
+      "resources": ["xhamster-page.js"],
+      "matches": ["*://xhamster.com/*", "*://*.xhamster.com/*"]
+    },
+    {
+      "resources": ["pornhub-page.js"],
+      "matches": ["*://pornhub.com/*", "*://*.pornhub.com/*"]
+    },
+    {
+      "resources": ["lebonporn-page.js"],
+      "matches": [
+        "*://lebon.porn/*",
+        "*://*.lebon.porn/*",
+        "*://videos.lebon.porn/*",
+        "*://*.videos.lebon.porn/*"
+      ]
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "agego-deblur@local.dev",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  }
+}

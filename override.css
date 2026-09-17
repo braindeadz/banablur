@@ -1,0 +1,13 @@
+.agego-blur-content > :not(#agego-overlay-container) {
+  filter: none !important;
+}
+
+.agego-blur-content {
+  overflow: auto !important;
+}
+
+#agego-overlay-container {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}

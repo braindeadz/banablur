@@ -1,0 +1,56 @@
+/* Age gate : rester dans le DOM (pas display:none), masquer visuellement */
+#age_gate_overlay,
+#age_gate_home,
+#age_gate_overlay *,
+#age-gate-header,
+#age-gate-visitor-text,
+#age-gate-timing-sentence,
+#age-gate-verify,
+#age-gate-account,
+#age-gate-tool-tip-icon,
+#age-gate-tool-tip-text,
+#age-key-div,
+#age-key-option,
+#av-choices,
+#av-choice-submit,
+.age-gate-tooltip,
+.multi-av {
+  pointer-events: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  clip-path: inset(100%) !important;
+  overflow: hidden !important;
+  color: transparent !important;
+  text-shadow: none !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+#age_gate_overlay,
+#age_gate_home {
+  z-index: -1 !important;
+  max-height: 0 !important;
+  max-width: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+body.age-gate--shown {
+  overflow: auto !important;
+}
+#main,
+#base,
+.main-content-wrapper,
+#roomlist_root {
+  position: relative !important;
+  z-index: 1200 !important;
+  pointer-events: auto !important;
+}
+.videoPlayerDiv canvas {
+  filter: none !important;
+}
+.RoomCard,
+.RoomCardThumbnail,
+.RoomCardThumbnail__image {
+  filter: none !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
