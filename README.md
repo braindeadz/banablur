@@ -1,6 +1,6 @@
 # Banablur
 
-**v1.9.0** · *Peel the blur.*
+**v1.9.1** · *Peel the blur.*
 
 Banablur is a browser extension for **Chromium** (Chrome, Edge, Brave) and **Firefox** that removes age-verification overlays, neutralizes CSS and player blur, and unlocks safe-mode / SFW video players where the site allows it.
 
@@ -57,10 +57,10 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 
 Banablur is distributed as an **unpacked extension** (developer mode). There is no Chrome Web Store package.
 
-1. Obtain a build: extract `banablur-1.9.0.zip` from a release, or build from source (see below).
+1. Obtain a build: extract `banablur-1.9.1.zip` from a release, or build from source (see below).
 2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).
 3. Enable **Developer mode**.
-4. Click **Load unpacked** and select the extracted folder (e.g. `banablur-1.9.0/`).
+4. Click **Load unpacked** and select the extracted folder (e.g. `banablur-1.9.1/`).
 5. Pin the extension from the puzzle icon in the toolbar.
 
 > Chromium does not install a `.zip` directly — use the extracted folder.
@@ -77,7 +77,7 @@ Firefox Release requires a **Mozilla-signed** add-on. Banablur is distributed as
 
 Use only a file that contains `META-INF/mozilla.rsa` (name ends with `FIREFOX-SIGNE.xpi`, `firefox-signed.xpi`, or comes from an AMO download). The unsigned build zip/xpi from `build.ps1` is **not** for Firefox Release — it will be rejected with “not verified”.
 
-1. Download `Banablur-1.9.0-FIREFOX-SIGNE.xpi` or `banablur-1.9.0-firefox-signed.xpi` (or the latest signed release asset).
+1. Download `Banablur-1.9.1-FIREFOX-SIGNE.xpi` or `banablur-1.9.1-firefox-signed.xpi` (or the latest signed release asset).
 2. Open `about:addons`.
 3. Click the gear menu → **Install Add-on From File…**
 4. Select the **signed** `.xpi`.
@@ -133,10 +133,10 @@ Outputs in the **parent** directory:
 
 | Artifact | Purpose |
 |----------|---------|
-| `banablur-1.9.0.zip` | Unsigned build zip (Chrome/Edge **Load unpacked** after extract) |
-| `banablur-1.9.0.xpi` | Same unsigned bytes — **not** for Firefox Release |
-| `Banablur-1.9.0-FIREFOX-SIGNE.xpi` or `banablur-1.9.0-firefox-signed.xpi` | AMO-signed XPI for Firefox Release |
-| `banablur-1.9.0/` | Auto-extracted folder for Chromium **Load unpacked** |
+| `banablur-1.9.1.zip` | Unsigned build zip (Chrome/Edge **Load unpacked** after extract) |
+| `banablur-1.9.1.xpi` | Same unsigned bytes — **not** for Firefox Release |
+| `Banablur-1.9.1-FIREFOX-SIGNE.xpi` or `banablur-1.9.1-firefox-signed.xpi` | AMO-signed XPI for Firefox Release |
+| `banablur-1.9.1/` | Auto-extracted folder for Chromium **Load unpacked** |
 
 The build script reads the version from `manifest.json` and cleans previous build artifacts before generating new ones.
 

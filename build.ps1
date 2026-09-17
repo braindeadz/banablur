@@ -44,7 +44,9 @@ $files = @(
   "popup.css",
   "override.css",
   "icons\icon-16.png",
+  "icons\icon-32.png",
   "icons\icon-48.png",
+  "icons\icon-96.png",
   "icons\icon-128.png"
 )
 
