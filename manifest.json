@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Banablur",
-  "version": "1.9.1",
-  "description": "Peel the blur. Removes age-gate overlays and video blur on XVIDEOS, xHamster, xHamsterLive, Pornhub, Chaturbate, LebonPorn, FapHouse, AgeGO/Deviants and similar sites. Optional video download button and xHamster geo proxy.",
+  "version": "1.9.2",
+  "description": "Peel the blur. Removes age-gate overlays and video blur on XVIDEOS, XNXX, xHamster, xHamsterLive, Pornhub, Chaturbate, LebonPorn, FapHouse, AgeGO/Deviants and similar sites. Optional video download button and xHamster geo proxy.",
   "background": {
     "service_worker": "background.js",
     "scripts": ["background.js"]
@@ -69,7 +69,11 @@
     }
   ],
   "permissions": ["storage", "activeTab", "downloads", "proxy"],
-  "host_permissions": ["https://api.proxyscrape.com/*"],
+  "host_permissions": [
+    "https://api.proxyscrape.com/*",
+    "https://*.xvideos.com/*",
+    "https://*.xnxx.com/*"
+  ],
   "web_accessible_resources": [
     {
       "resources": ["chaturbate-page.js", "hls.min.js"],
@@ -77,7 +81,12 @@
     },
     {
       "resources": ["xvideos-page.js"],
-      "matches": ["*://xvideos.com/*", "*://*.xvideos.com/*"]
+      "matches": [
+        "*://xvideos.com/*",
+        "*://*.xvideos.com/*",
+        "*://xnxx.com/*",
+        "*://*.xnxx.com/*"
+      ]
     },
     {
       "resources": ["xhamster-page.js"],

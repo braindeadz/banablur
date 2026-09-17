@@ -29,7 +29,7 @@
     // priorite; certains IDs numeriques renvoient 404 alors que le token marche.
     const hp = window.html5player;
     if (hp && hp.encoded_id_video) return String(hp.encoded_id_video);
-    const m = location.pathname.match(/\/video\.(\w+)(\/|$)/);
+    const m = location.pathname.match(/\/video[.-](\w+)(\/|$)/);
     return m ? m[1] : null;
   }
 
@@ -49,9 +49,57 @@
     }
   }
 
+  function looksSfw(url) {
+    return !!url && /sfw|video_sfw/i.test(url);
+  }
+
+  function urlsNeedProxy(urls) {
+    if (!urls) return true;
+    if (!urls.hls) return true;
+    if (looksSfw(urls.high) || looksSfw(urls.low) || looksSfw(urls.hls)) return true;
+    return false;
+  }
+
+  var embedframeReqSeq = 0;
+
+  function fetchEmbedframeProxied(key, origin) {
+    return new Promise(function (resolve) {
+      if (!key) { resolve(null); return; }
+      var reqId = 'xv-ef-' + (++embedframeReqSeq) + '-' + Date.now();
+      var settled = false;
+      function finish(result) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        document.removeEventListener('agego-xv-embedframe-result', onResult);
+        resolve(result);
+      }
+      function onResult(ev) {
+        var d = ev.detail || {};
+        if (d.reqId !== reqId) return;
+        finish(d);
+      }
+      var timer = setTimeout(function () { finish(null); }, 8000);
+      document.addEventListener('agego-xv-embedframe-result', onResult);
+      document.dispatchEvent(new CustomEvent('agego-xv-embedframe', {
+        detail: { key: key, origin: origin, reqId: reqId }
+      }));
+    });
+  }
+
   async function fetchUrls(id) {
     // Token d'abord (fiable), puis ID numerique en secours.
     const urls = (await fetchEmbedframe(getToken())) || (await fetchEmbedframe(id));
+    if (!urlsNeedProxy(urls)) {
+      window.__agegoXvUrls = urls;
+      return urls;
+    }
+    const proxied = await fetchEmbedframeProxied(getToken() || id, location.origin);
+    if (proxied && (proxied.hls || proxied.high)) {
+      const resolved = { high: proxied.high || null, low: proxied.low || null, hls: proxied.hls || null };
+      window.__agegoXvUrls = resolved;
+      return resolved;
+    }
     if (urls) window.__agegoXvUrls = urls;
     return urls;
   }
@@ -62,7 +110,7 @@
 
   function sanitizeFilename(name) {
     return (name || 'xvideos')
-      .replace(/\s*-\s*XVIDEOS\.COM.*$/i, '')
+      .replace(/\s*-\s*(XVIDEOS|XNXX)\.COM.*$/i, '')
       .replace(/[\\/:*?"<>|]+/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
@@ -200,7 +248,7 @@
   }
 
   function ensureDownloadButton() {
-    if (location.pathname.indexOf('/video.') === -1) return;
+    if (!/\/video[.-][\w]+/i.test(location.pathname)) return;
     if (document.getElementById('agego-dl-btn')) return;
     if (!document.body) return;
     const btn = document.createElement('button');

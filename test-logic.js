@@ -15,6 +15,8 @@ const SITE_PROFILES = {
   'xvideos.com': ['xvideos', 'agego'],
 
   'www.xvideos.com': ['xvideos', 'agego'],
+  'xnxx.com': ['xvideos', 'agego'],
+  'www.xnxx.com': ['xvideos', 'agego'],
 
   'xhamster.com': ['xhamster'],
 
@@ -50,7 +52,7 @@ const SITE_PROFILES = {
 
 function detectXvideosHost(hostname) {
 
-  return /(^|\.)xvideos\.com$/i.test(hostname);
+  return /(^|\.)(xvideos|xnxx)\.com$/i.test(hostname);
 
 }
 
@@ -106,6 +108,10 @@ assert(detectXvideosHost('www.xvideos.com'), 'www.xvideos.com');
 
 assert(detectXvideosHost('xvideos.com'), 'xvideos.com');
 
+assert(detectXvideosHost('www.xnxx.com'), 'www.xnxx.com');
+
+assert(detectXvideosHost('xnxx.com'), 'xnxx.com');
+
 assert(!detectXvideosHost('google.com'), 'google.com false');
 
 
@@ -126,12 +132,15 @@ console.log('Test 4: manifest v1.5');
 
   const m = require('./manifest.json');
 
-  assert(m.version === '1.9.1', 'version 1.9.1');
+  assert(m.version === '1.9.2', 'version 1.9.2');
   assert(!!m.web_accessible_resources?.length, 'web_accessible_resources');
   const war = m.web_accessible_resources?.[0]?.resources || [];
   assert(war.includes('hls.min.js'), 'hls.min.js accessible');
   assert((m.permissions || []).includes('downloads'), 'permission downloads');
   assert((m.permissions || []).includes('proxy'), 'permission proxy (deflou xHamster)');
+  const hostPerms = (m.host_permissions || []).join(' ');
+  assert(/xvideos\.com/.test(hostPerms), 'manifest host_permissions: xvideos.com');
+  assert(/xnxx\.com/.test(hostPerms), 'manifest host_permissions: xnxx.com');
   assert(m.background?.service_worker === 'background.js', 'service worker background.js');
 
   assert(!!m.icons?.['16'], 'icons racine 16');
@@ -168,6 +177,8 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   assert(src.includes('injectXvideosPageScript'), 'injection script page xvideos');
   assert(src.includes('agego-xv-unlock'), 'evenement unlock xvideos');
   assert(src.includes('startXvideosWatchdog'), 'watchdog xvideos');
+  assert(src.includes('xnxx'), 'content: support xnxx (famille xvideos)');
+  assert(src.includes('video[.-]'), 'content: chemin video token xnxx/xvideos');
 
   assert(src.includes('cleanXhamster'), 'fonction cleanXhamster');
   assert(src.includes('cleanFaphouse'), 'fonction cleanFaphouse');
@@ -228,7 +239,9 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   assert(fs.readFileSync(path.join(__dirname, 'content.js'), 'utf8').includes('disclaimer-enter'), 'content clique le bouton Enter avant suppression');
   assert(xvPage.includes('close_pop'), 'xvideos page utilise l API disclaimer du site');
   assert(xvPage.includes('getToken'), 'xvideos page utilise le token URL pour embedframe');
+  assert(xvPage.includes('/video[.-]'), 'xvideos page getToken: chemin /video-TOKEN ou /video.TOKEN');
   assert(xvPage.includes('fetchEmbedframe(getToken())'), 'xvideos page token en priorite, id en secours');
+  assert(xvPage.includes('agego-xv-embedframe'), 'xvideos page: evenement proxy embedframe');
   assert(xvPage.includes('disableSfwLimit'), 'xvideos page desactive la limite SFW (boucle 44s)');
   assert(xvPage.includes('bIsSfwLimited = false'), 'xvideos page coupe bIsSfwLimited');
   assert(xvPage.includes('.buttons-bar'), 'xvideos page masque la barre de boutons du site');
@@ -246,6 +259,13 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   assert(fs.existsSync(path.join(__dirname, 'background.js')), 'fichier background.js present');
   const bg = fs.readFileSync(path.join(__dirname, 'background.js'), 'utf8');
   assert(bg.includes('downloads.download'), 'background utilise chrome.downloads');
+  assert(bg.includes('xv:embedframe'), 'background: handler proxy embedframe xv/xnxx');
+  assert(bg.includes('/embedframe/'), 'background: route PAC /embedframe/');
+  assert(
+    /buildPacData[\s\S]{0,800}(xnxx|xvideos|embedframe)/i.test(bg),
+    'background: buildPacData mentionne xnxx/xvideos embedframe'
+  );
+  assert(src.includes('agego-xv-embedframe'), 'content: evenement proxy embedframe xv/xnxx');
 
   assert(fs.existsSync(path.join(__dirname, 'xhamster-page.js')), 'fichier xhamster-page.js present');
   const xhPage = fs.readFileSync(path.join(__dirname, 'xhamster-page.js'), 'utf8');
@@ -294,6 +314,9 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   assert(src.includes('injectPornhubPageScript'), 'content: injecte pornhub-page.js');
   const warPh = (mf.web_accessible_resources || []).some((r) => (r.resources || []).includes('pornhub-page.js'));
   assert(warPh, 'manifest: pornhub-page.js accessible');
+  const warXv = (mf.web_accessible_resources || []).find((r) => (r.resources || []).includes('xvideos-page.js'));
+  const warXvMatches = (warXv?.matches || []).join(' ');
+  assert(/xnxx\.com/.test(warXvMatches), 'manifest: xvideos-page.js accessible sur xnxx.com');
   assert(SITE_PROFILES['fr.pornhub.com'].includes('pornhub'), 'profil fr.pornhub.com');
 
   const contentSrc = fs.readFileSync(path.join(__dirname, 'content.js'), 'utf8');

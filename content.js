@@ -10,6 +10,8 @@
     'www.deviants.com': ['agego'],
     'xvideos.com': ['xvideos', 'agego'],
     'www.xvideos.com': ['xvideos', 'agego'],
+    'xnxx.com': ['xvideos', 'agego'],
+    'www.xnxx.com': ['xvideos', 'agego'],
     'xhamster.com': ['xhamster'],
     'www.xhamster.com': ['xhamster'],
     'fra.xhamster.com': ['xhamster'],
@@ -120,7 +122,11 @@ img.video-img[data-type="sfw"] { display: none !important; }
   }
 
   function isXvideosHost() {
-    return /(^|\.)xvideos\.com$/i.test(getHostname());
+    return /(^|\.)(xvideos|xnxx)\.com$/i.test(getHostname());
+  }
+
+  function isXvideosVideoPath() {
+    return /\/video[.-][\w]+/i.test(location.pathname);
   }
 
   function isXhamsterHost() {
@@ -441,7 +447,7 @@ img.video-img[data-type="sfw"] { display: none !important; }
     xvideosTickTimer = setInterval(() => {
       if (!autoEnabled || !watchdogActive) return;
       fixXvideosThumbnails();
-      if (location.pathname.includes('/video.')) {
+      if (isXvideosVideoPath()) {
         injectXvideosPageScript();
         // Une fois l'unlock reussi (flag pose par xvideos-page.js), on cesse de
         // redemander l'unlock: cela evite la re-init en boucle du lecteur qui
@@ -540,6 +546,21 @@ img.video-img[data-type="sfw"] { display: none !important; }
     const detail = event.detail || {};
     if (!detail.url || !api?.runtime?.sendMessage) return;
     api.runtime.sendMessage({ action: 'download', url: detail.url, filename: detail.filename });
+  });
+
+  // Relais embedframe: le script page (monde isole) demande un fetch proxifie
+  // quand le fetch same-origin ne renvoie que du SFW ou pas de HLS.
+  document.addEventListener('agego-xv-embedframe', (event) => {
+    if (!isXvideosHost() || !api?.runtime?.sendMessage) return;
+    const detail = event.detail || {};
+    const { key, origin, reqId } = detail;
+    if (!key) return;
+    api.runtime.sendMessage({ action: 'xv:embedframe', key, origin }, (resp) => {
+      void api.runtime.lastError;
+      document.dispatchEvent(
+        new CustomEvent('agego-xv-embedframe-result', { detail: { reqId, ...(resp || {}) } })
+      );
+    });
   });
 
   // Cascade proxy xHamster: xhamster-page.js (monde page) signale l'etat SFW.

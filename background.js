@@ -1,7 +1,7 @@
 // Service worker MV3: (1) telechargements cross-origin via chrome.downloads,
 // (2) proxy xHamster hors-France pour deflouter (le flou est geo-FR: via une IP
-// hors-FR, xHamster sert le flux clair sans /sfw/). Le proxy est applique
-// UNIQUEMENT aux domaines xHamster (PAC), le reste du trafic reste en DIRECT.
+// hors-FR, xHamster sert le flux clair sans /sfw/),
+// (3) proxy cible XVIDEOS/XNXX embedframe uniquement (decouverte URL, pas le CDN).
 const api = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : null;
 
 // ---------------------------------------------------------------------------
@@ -21,7 +21,7 @@ if (api?.runtime?.onMessage) {
         return false;
       }
     }
-    if (message?.action && message.action.startsWith('proxy:')) {
+    if (message?.action && (message.action.startsWith('proxy:') || message.action === 'xv:embedframe')) {
       handleProxyMessage(message).then(sendResponse);
       return true;
     }
@@ -34,6 +34,7 @@ if (api?.runtime?.onMessage) {
 // ---------------------------------------------------------------------------
 const PROXY_DOMAINS = ['xhamster.com', 'xhpingcdn.com', 'xhcdn.com'];
 const PROXY_MATCH = ['*://*.xhamster.com/*', '*://*.xhpingcdn.com/*', '*://*.xhcdn.com/*'];
+const PROXY_XV_EMBED_MATCH = ['*://*.xvideos.com/embedframe/*', '*://*.xnxx.com/embedframe/*'];
 // Proxys hors-FR par defaut (publics gratuits, valides e2e). Peuvent mourir:
 // l'utilisateur peut rafraichir la liste (proxy:refresh) et le PAC bascule
 // automatiquement sur le suivant (failover), puis DIRECT en dernier recours.
@@ -63,10 +64,20 @@ async function getProxyConfig() {
 function buildPacData(list) {
   const proxyChain = list.map((p) => `PROXY ${p}`).join('; ');
   const ret = (proxyChain ? proxyChain + '; ' : '') + 'DIRECT';
-  const conds = PROXY_DOMAINS
+  const xhConds = PROXY_DOMAINS
     .map((d) => `dnsDomainIs(host, ".${d}") || host == "${d}"`)
     .join(' || ');
-  return `function FindProxyForURL(url, host) {\n  if (${conds}) {\n    return "${ret}";\n  }\n  return "DIRECT";\n}`;
+  const xvHostConds =
+    'dnsDomainIs(host, ".xvideos.com") || host == "xvideos.com" || dnsDomainIs(host, ".xnxx.com") || host == "xnxx.com"';
+  return `function FindProxyForURL(url, host) {
+  if (${xhConds}) {
+    return "${ret}";
+  }
+  if ((${xvHostConds}) && shExpMatch(url, "*/embedframe/*")) {
+    return "${ret}";
+  }
+  return "DIRECT";
+}`;
 }
 
 // --- Firefox: proxy.onRequest ---
@@ -80,8 +91,20 @@ function firefoxApply(list) {
     return { type: 'http', host, port: parseInt(port, 10), failoverTimeout: 2 };
   });
   infos.push({ type: 'direct' });
-  firefoxHandler = () => infos;
-  api.proxy.onRequest.addListener(firefoxHandler, { urls: PROXY_MATCH });
+  firefoxHandler = (details) => {
+    try {
+      const u = new URL(details.url);
+      const h = u.hostname.toLowerCase();
+      const isXv =
+        h === 'xvideos.com' || h.endsWith('.xvideos.com') ||
+        h === 'xnxx.com' || h.endsWith('.xnxx.com');
+      if (isXv && !u.pathname.includes('/embedframe/')) {
+        return [{ type: 'direct' }];
+      }
+    } catch (_e) { /* ignore */ }
+    return infos;
+  };
+  api.proxy.onRequest.addListener(firefoxHandler, { urls: [...PROXY_MATCH, ...PROXY_XV_EMBED_MATCH] });
 }
 function firefoxClear() {
   if (firefoxHandler && api.proxy.onRequest.hasListener(firefoxHandler)) {
@@ -182,6 +205,25 @@ async function handleProxyMessage(message) {
       }
       await applyProxy();
       return { ok: true, head: list[0] || null, count: list.length };
+    }
+    case 'xv:embedframe': {
+      const key = String(message.key || '').replace(/[^\w.-]/g, '');
+      const origin = message.origin;
+      if (!key || !/^https:\/\/(www\.)?(xvideos|xnxx)\.com$/i.test(origin || '')) {
+        return { ok: false };
+      }
+      try {
+        const r = await fetch(`${origin}/embedframe/${key}`, { credentials: 'omit', cache: 'no-store' });
+        if (!r.ok) return { ok: false };
+        const t = await r.text();
+        const high = (t.match(/setVideoUrlHigh\('([^']+)'\)/) || [])[1] || null;
+        const low = (t.match(/setVideoUrlLow\('([^']+)'\)/) || [])[1] || null;
+        const hls = (t.match(/setVideoHLS\('([^']+)'\)/) || [])[1] || null;
+        if (!high && !low && !hls) return { ok: false };
+        return { ok: true, high, low, hls };
+      } catch (_e) {
+        return { ok: false };
+      }
     }
     default:
       return { ok: false };
