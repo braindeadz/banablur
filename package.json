@@ -1,11 +1,12 @@
 {
   "name": "banablur",
-  "version": "1.10.2",
+  "version": "1.10.3",
   "private": true,
   "description": "Banablur — peel the blur. Browser extension that removes age-gate overlays and video blur.",
   "scripts": {
     "test": "node test-logic.js",
     "test:chaturbate": "node test-chaturbate.mjs",
+    "test:sites": "node bench-sites.mjs",
     "build": "powershell -ExecutionPolicy Bypass -File build.ps1",
     "sign": "web-ext sign --source-dir . --artifacts-dir ../banablur-signed --api-key \"$env:AMO_JWT_ISSUER\" --api-secret \"$env:AMO_JWT_SECRET\" --channel unpublished"
   },

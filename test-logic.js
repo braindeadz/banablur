@@ -34,15 +34,6 @@ const SITE_PROFILES = {
     'www.faphouse.com': ['faphouse'],
     'chaturbate.com': ['chaturbate'],
     'www.chaturbate.com': ['chaturbate'],
-    'pornhub.com': ['pornhub'],
-    'www.pornhub.com': ['pornhub'],
-    'fr.pornhub.com': ['pornhub'],
-    'rt.pornhub.com': ['pornhub'],
-    'pornhubpremium.com': ['pornhub'],
-    'www.pornhubpremium.com': ['pornhub'],
-    'fr.pornhubpremium.com': ['pornhub'],
-    'tube8.com': ['pornhub'],
-    'www.tube8.com': ['pornhub'],
     'tnaflix.com': ['agego'],
     'www.tnaflix.com': ['agego'],
     'moviefap.com': ['agego'],
@@ -195,7 +186,6 @@ assert(SITE_PROFILES['xvideos.es'].includes('xvideos'), 'xvideos.es -> xvideos')
 assert(SITE_PROFILES['xnxx.es'].includes('xvideos'), 'xnxx.es -> xvideos');
 assert(SITE_PROFILES['xhamster.desi'].includes('xhamster'), 'xhamster.desi -> xhamster');
 assert(SITE_PROFILES['tnaflix.com'].includes('agego'), 'tnaflix -> agego');
-assert(SITE_PROFILES['tube8.com'].includes('pornhub'), 'tube8 -> pornhub');
 assert(SITE_PROFILES['porndig.com'].includes('tkn'), 'porndig -> tkn');
 assert(SITE_PROFILES['txxx.com'].includes('txxx'), 'txxx -> txxx');
 assert(SITE_PROFILES['eporner.com'].includes('eporner'), 'eporner -> eporner');
@@ -245,7 +235,7 @@ console.log('Test 4: manifest v1.5');
 
   const m = require('./manifest.json');
 
-  assert(m.version === '1.10.2', 'version 1.10.2');
+  assert(m.version === '1.10.3', 'version 1.10.3');
   assert(!!m.web_accessible_resources?.length, 'web_accessible_resources');
   const war = m.web_accessible_resources?.[0]?.resources || [];
   assert(war.includes('hls.min.js'), 'hls.min.js accessible');
@@ -394,6 +384,12 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
       `content.js SITE_PROFILES: ${removedHost} absent`
     );
   }
+  for (const removedPh of ['pornhub.com', 'fr.pornhub.com', 'pornhubpremium.com', 'tube8.com']) {
+    assert(
+      !contentHostHasProfile(contentProfiles, src, removedPh, 'pornhub'),
+      `content.js SITE_PROFILES: ${removedPh} absent (pornhub retire)`
+    );
+  }
 
   assert(fs.existsSync(path.join(__dirname, 'xhamster-page.js')), 'fichier xhamster-page.js present');
   const xhPage = fs.readFileSync(path.join(__dirname, 'xhamster-page.js'), 'utf8');
@@ -417,14 +413,6 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   const warXh = (mf.web_accessible_resources || []).some((r) => (r.resources || []).includes('xhamster-page.js'));
   assert(warXh, 'manifest: xhamster-page.js accessible');
 
-  assert(fs.existsSync(path.join(__dirname, 'pornhub-page.js')), 'fichier pornhub-page.js present');
-  const phPage = fs.readFileSync(path.join(__dirname, 'pornhub-page.js'), 'utf8');
-  assert(phPage.includes('flashvars_'), 'pornhub page: lit window.flashvars_{id}');
-  assert(phPage.includes('mediaDefinitions'), 'pornhub page: mediaDefinitions');
-  assert(phPage.includes('downloadHls'), 'pornhub page: telechargement HLS');
-  assert(phPage.includes('agego-dl-btn'), 'pornhub page: bouton flottant');
-  assert(phPage.includes('dismissAgeGate'), 'pornhub page: leve la gate d age');
-
   // fra.xhamster / SFW complet / deblur renforce / bouton SVG
   assert(SITE_PROFILES['fra.xhamster.com'].includes('xhamster'), 'profil fra.xhamster.com');
   assert(xhPage.includes('SFW_NO_LIMIT') && xhPage.includes('999999999'), 'xhamster page: SFW no-limit (grande valeur, pas 0)');
@@ -434,18 +422,14 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   assert(xhPage.includes('backdrop-filter'), 'xhamster page: neutralise backdrop-filter');
   assert(xhPage.includes('<svg') && xhPage.includes('Telecharger'), 'xhamster page: bouton avec icone SVG');
   assert(xvPage.includes('<svg'), 'xvideos page: bouton avec icone SVG');
-  assert(phPage.includes('<svg'), 'pornhub page: bouton avec icone SVG');
   assert(src.includes('mn-thumb__hls-wrapper') || src.includes('xh-helper-blurred-overlay'), 'content CSS: deblur renforce xhamster');
-  assert(src.includes('cleanPornhub'), 'content: fonction cleanPornhub');
-  assert(src.includes('accessAgeDisclaimerPH=2'), 'content: cookie age gate pornhub');
-  assert(src.includes('buttonOver18'), 'content: clic bouton 18+ pornhub');
-  assert(src.includes('injectPornhubPageScript'), 'content: injecte pornhub-page.js');
+  assert(!src.includes('cleanPornhub'), 'content: pas de fonction cleanPornhub');
+  assert(!src.includes('injectPornhubPageScript'), 'content: n injecte plus pornhub-page.js');
   const warPh = (mf.web_accessible_resources || []).some((r) => (r.resources || []).includes('pornhub-page.js'));
-  assert(warPh, 'manifest: pornhub-page.js accessible');
+  assert(!warPh, 'manifest: pornhub-page.js WAR retire');
   const warXv = (mf.web_accessible_resources || []).find((r) => (r.resources || []).includes('xvideos-page.js'));
   const warXvMatches = (warXv?.matches || []).join(' ');
   assert(/xnxx\.com/.test(warXvMatches), 'manifest: xvideos-page.js accessible sur xnxx.com');
-  assert(SITE_PROFILES['fr.pornhub.com'].includes('pornhub'), 'profil fr.pornhub.com');
 
   const contentSrc = fs.readFileSync(path.join(__dirname, 'content.js'), 'utf8');
   assert(contentSrc.includes("dataset.agegoXvDone"), 'content stoppe le dispatch une fois unlock reussi');
@@ -598,15 +582,18 @@ console.log('Test 7: popup sites list');
   assert(popupJs.includes('xvideos.com'), 'popup.js: xvideos.com');
   assert(popupJs.includes('tnaflix.com'), 'popup.js: tnaflix.com');
   assert(!popupJs.includes('youporn.com'), 'popup.js: pas youporn.com');
+  assert(!popupJs.includes('pornhub.com'), 'popup.js: pas pornhub.com');
+  assert(!popupJs.includes('tube8.com'), 'popup.js: pas tube8.com');
   assert(!popupJs.includes('ixxx.com'), 'popup.js: pas ixxx.com');
   assert(!popupJs.includes('toggle-proxy'), 'popup.js: pas toggle-proxy');
   assert(popupJs.includes('txxx.com'), 'popup.js: txxx.com');
   assert(popupJs.includes('stripchat.com'), 'popup.js: stripchat.com');
-  assert(popupJs.includes('spankbang.com'), 'popup.js: spankbang.com');
-  assert(popupJs.includes('cam4.com'), 'popup.js: cam4.com');
-  assert(popupJs.includes('xxxbunker.com'), 'popup.js: xxxbunker.com');
   assert(popupJs.includes('xtube.com'), 'popup.js: xtube.com');
-  assert(popupJs.includes('youjizz.com'), 'popup.js: youjizz.com');
+  assert(popupJs.includes('jacquieetmichel.net'), 'popup.js: jacquieetmichel.net');
+  assert(!popupJs.includes('spankbang.com'), 'popup.js: pas spankbang.com (hors banc KEEP)');
+  assert(!popupJs.includes('cam4.com'), 'popup.js: pas cam4.com (hors banc KEEP)');
+  assert(!popupJs.includes('xxxbunker.com'), 'popup.js: pas xxxbunker.com (hors banc KEEP)');
+  assert(!popupJs.includes('youjizz.com'), 'popup.js: pas youjizz.com (hors banc KEEP)');
   assert(popupJs.includes('tabs.create'), 'popup.js: tabs.create');
   assert(popupJs.includes('renderSites'), 'popup.js: renderSites');
   assert(popupHtml.includes('sites-list'), 'popup.html: sites-list');
@@ -637,17 +624,15 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
     ['xnxx.es', 'xvideos'],
     ['xhamster.desi', 'xhamster'],
     ['tnaflix.com', 'agego'],
-    ['tube8.com', 'pornhub'],
     ['porndig.com', 'tkn'],
     ['txxx.com', 'txxx'],
-    ['eporner.com', 'eporner'],
-    ['jacquieetmicheltv.net', 'jacquie'],
+    ['jacquieetmichel.net', 'jacquie'],
     ['stripchat.com', 'stripchat'],
-    ['bongacams.com', 'bongacams'],
     ['livejasmin.com', 'livejasmin'],
     ['sxyprn.com', 'tkn'],
     ['sunporno.com', 'sunporno'],
-    ['pornone.com', 'agego'],
+    ['thisvid.com', 'gate18'],
+    ['analdin.com', 'gate18'],
   ];
   for (const [host, profile] of hostMap) {
     assert(
@@ -663,11 +648,6 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
   );
   const xhHostFn = extractFnBody(src, 'isXhamsterHost');
   assert(/desi/.test(xhHostFn), 'content: isXhamsterHost inclut .desi');
-  const phHostFn = extractFnBody(src, 'isPornhubHost');
-  assert(
-    /pornhubpremium|pornhub\(premium\)/.test(phHostFn),
-    'content: isPornhubHost inclut pornhubpremium'
-  );
 
   const detectTukifBody = extractFnBody(src, 'detectTukif');
   const isTukifHostBody = extractFnBody(src, 'isTukifHost');
@@ -680,11 +660,11 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
   assert(!cleanTknBody.includes('injectLebonpornPageScript'), 'content: cleanTkn n appelle pas injectLebonpornPageScript');
 
   const cssBlock = (src.match(/const OVERRIDE_CSS = `([\s\S]*?)`;/) || ['', ''])[1];
-  assert(cssBlock.includes('#ageDisclaimerMainBG'), 'OVERRIDE_CSS: #ageDisclaimerMainBG');
+  assert(!cssBlock.includes('#ageDisclaimerMainBG'), 'OVERRIDE_CSS: pas #ageDisclaimerMainBG (pornhub retire)');
   assert(cssBlock.includes('.modal-age-verification'), 'OVERRIDE_CSS: .modal-age-verification');
   assert(cssBlock.includes('#agreement-root'), 'OVERRIDE_CSS: #agreement-root');
   assert(cssBlock.includes('#consent_modal'), 'OVERRIDE_CSS: #consent_modal');
-  assert(cssBlock.includes('#ageverifybox'), 'OVERRIDE_CSS: #ageverifybox');
+  assert(!cssBlock.includes('#ageverifybox'), 'OVERRIDE_CSS: pas #ageverifybox (pornhub retire)');
   assert(cssBlock.includes('custom-disclaimer'), 'OVERRIDE_CSS: custom-disclaimer');
 
   const ljCss = (src.match(/\/\*\s*LIVEJASMIN[\s\S]*?(?=\n\s*\/\*\s*[A-Z]|\n\s*`;)/i) || [''])[0];
@@ -698,7 +678,7 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
   );
 }
 
-console.log('Test 9: content.js v1.10.2 (xtube/cam4/xxxbunker/gate18)');
+console.log('Test 9: content.js v1.10.3 (xtube/gate18)');
 {
   const fs = require('fs');
   const path = require('path');
@@ -706,29 +686,27 @@ console.log('Test 9: content.js v1.10.2 (xtube/cam4/xxxbunker/gate18)');
   const contentProfiles = extractContentSiteProfiles(src);
   const mf = require('./manifest.json');
 
-  const v1101HostMap = [
+  const v1103HostMap = [
     ['xtube.com', 'stripchat'],
-    ['xxxbunker.com', 'xxxbunker'],
-    ['cam4.com', 'cam4'],
-    ['spankbang.com', 'gate18'],
     ['empflix.com', 'agego'],
-    ['youjizz.com', 'gate18'],
+    ['thisvid.com', 'gate18'],
+    ['pornhat.com', 'gate18'],
   ];
-  for (const [host, profile] of v1101HostMap) {
+  for (const [host, profile] of v1103HostMap) {
     assert(
       contentHostHasProfile(contentProfiles, src, host, profile),
       `content.js SITE_PROFILES: ${host} -> ${profile}`
     );
   }
 
-  assert(/function cleanXxxbunker\(/.test(src), 'content: cleanXxxbunker existe');
-  assert(/function cleanCam4\(/.test(src), 'content: cleanCam4 existe');
   assert(/function cleanGate18\(/.test(src), 'content: cleanGate18 existe');
+  assert(!/function cleanXxxbunker\(/.test(src), 'content: pas cleanXxxbunker (hors banc KEEP)');
+  assert(!/function cleanCam4\(/.test(src), 'content: pas cleanCam4 (hors banc KEEP)');
 
   const cssBlock = (src.match(/const OVERRIDE_CSS = `([\s\S]*?)`;/) || ['', ''])[1];
   assert(
-    cssBlock.includes('body[data-ageconfirmed="false"] #overlay'),
-    'OVERRIDE_CSS: body[data-ageconfirmed="false"] #overlay (XxxBunker)'
+    !cssBlock.includes('body[data-ageconfirmed="false"] #overlay'),
+    'OVERRIDE_CSS: pas body[data-ageconfirmed] #overlay (xxxbunker retire)'
   );
   assert(
     !/(?:^|\n)\s*#overlay\s*\{/.test(cssBlock),
@@ -738,8 +716,22 @@ console.log('Test 9: content.js v1.10.2 (xtube/cam4/xxxbunker/gate18)');
   const stripchatHostFn = extractFnBody(src, 'isStripchatHost');
   assert(/xtube/.test(stripchatHostFn), 'content: isStripchatHost inclut xtube');
 
-  assert(!(mf.permissions || []).includes('tabs'), 'manifest v1.10.2: pas de permission tabs');
-  assert(!(mf.permissions || []).includes('proxy'), 'manifest v1.10.2: pas de permission proxy');
+  assert(!(mf.permissions || []).includes('tabs'), 'manifest v1.10.3: pas de permission tabs');
+  assert(!(mf.permissions || []).includes('proxy'), 'manifest v1.10.3: pas de permission proxy');
+}
+
+console.log('Test 10: bench-sites.mjs (banc popup + catalogue SFW/geo)');
+{
+  const fs = require('fs');
+  const path = require('path');
+  const benchPath = path.join(__dirname, 'bench-sites.mjs');
+  assert(fs.existsSync(benchPath), 'bench-sites.mjs present');
+  const benchSrc = fs.readFileSync(benchPath, 'utf8');
+  assert(benchSrc.includes('sfw_geo_catalog'), 'bench-sites.mjs: critere sfw_geo_catalog');
+  assert(benchSrc.includes('sfw-page'), 'bench-sites.mjs: detection sfw-page');
+  assert(benchSrc.includes('parseSites'), 'bench-sites.mjs: parse popup.js');
+  const pkg = require('./package.json');
+  assert(pkg.scripts && pkg.scripts['test:sites'] === 'node bench-sites.mjs', 'package.json: script test:sites');
 }
 
 console.log('\n--- Resultat:', passed, 'OK,', failed, 'echecs ---');

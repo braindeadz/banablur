@@ -33,21 +33,10 @@
     'www.faphouse.com': ['faphouse'],
     'chaturbate.com': ['chaturbate'],
     'www.chaturbate.com': ['chaturbate'],
-    'pornhub.com': ['pornhub'],
-    'www.pornhub.com': ['pornhub'],
-    'fr.pornhub.com': ['pornhub'],
-    'rt.pornhub.com': ['pornhub'],
-    'pornhubpremium.com': ['pornhub'],
-    'www.pornhubpremium.com': ['pornhub'],
-    'fr.pornhubpremium.com': ['pornhub'],
-    'tube8.com': ['pornhub'],
-    'www.tube8.com': ['pornhub'],
     'tnaflix.com': ['agego'],
     'www.tnaflix.com': ['agego'],
     'moviefap.com': ['agego'],
     'www.moviefap.com': ['agego'],
-    'pornone.com': ['agego'],
-    'www.pornone.com': ['agego'],
     'perfectgirls.xxx': ['agego'],
     'www.perfectgirls.xxx': ['agego'],
     'porndig.com': ['tkn'],
@@ -84,24 +73,13 @@
     'www.thegay.com': ['txxx'],
     'shemalez.com': ['txxx'],
     'www.shemalez.com': ['txxx'],
-    'eporner.com': ['eporner'],
-    'www.eporner.com': ['eporner'],
     'sunporno.com': ['sunporno'],
     'www.sunporno.com': ['sunporno'],
-    'jacquieetmicheltv.net': ['jacquie'],
-    'www.jacquieetmicheltv.net': ['jacquie'],
     'jacquieetmichel.net': ['jacquie'],
     'www.jacquieetmichel.net': ['jacquie'],
-    'porntube.com': ['porntube'],
-    'www.porntube.com': ['porntube'],
-    'porn.com': ['porncom'],
-    'www.porn.com': ['porncom'],
     'stripchat.com': ['stripchat'],
     'www.stripchat.com': ['stripchat'],
     'fr.stripchat.com': ['stripchat'],
-    'bongacams.com': ['bongacams'],
-    'www.bongacams.com': ['bongacams'],
-    'fr.bongacams.com': ['bongacams'],
     'livejasmin.com': ['livejasmin'],
     'www.livejasmin.com': ['livejasmin'],
     'lebon.porn': ['lebonporn'],
@@ -117,40 +95,12 @@
     'www.empflix.com': ['agego'],
     'perfectgirls.net': ['agego'],
     'www.perfectgirls.net': ['agego'],
-    'xxxbunker.com': ['xxxbunker'],
-    'www.xxxbunker.com': ['xxxbunker'],
-    'cam4.com': ['cam4'],
-    'www.cam4.com': ['cam4'],
-    'fr.cam4.com': ['cam4'],
-    'spankbang.com': ['gate18'],
-    'www.spankbang.com': ['gate18'],
-    'fr.spankbang.com': ['gate18'],
-    'youjizz.com': ['gate18'],
-    'www.youjizz.com': ['gate18'],
-    'hqporner.com': ['gate18'],
-    'www.hqporner.com': ['gate18'],
-    'motherless.com': ['gate18'],
-    'www.motherless.com': ['gate18'],
-    'rule34.xxx': ['gate18'],
-    'www.rule34.xxx': ['gate18'],
-    'beeg.com': ['gate18'],
-    'www.beeg.com': ['gate18'],
     'thisvid.com': ['gate18'],
     'www.thisvid.com': ['gate18'],
     'hdtube.porn': ['gate18'],
     'www.hdtube.porn': ['gate18'],
-    'alohatube.com': ['gate18'],
-    'www.alohatube.com': ['gate18'],
-    'hellporno.com': ['gate18'],
-    'www.hellporno.com': ['gate18'],
-    'drtuber.com': ['gate18'],
-    'www.drtuber.com': ['gate18'],
-    'nuvid.com': ['gate18'],
-    'www.nuvid.com': ['gate18'],
     'analdin.com': ['gate18'],
     'www.analdin.com': ['gate18'],
-    'streamate.com': ['gate18'],
-    'www.streamate.com': ['gate18'],
     'pornhat.com': ['gate18'],
     'www.pornhat.com': ['gate18'],
   };
@@ -207,11 +157,6 @@ body.age-gate--shown > *:not(#age_gate_overlay):not(#age_gate_home):not(script):
 .videoPlayerDiv canvas { filter: none !important; brightness: 1 !important; }
 #chatroom_video, #TheaterModePlayer, .videoContainer, .RoomCardThumbnail, .RoomCardThumbnail__image { filter: none !important; }
 
-/* PORNHUB (gate d'age FR) - le mode SFW hardcore reste bloque cote serveur (geo) */
-.ageDisclaimer, .modalMTubes.ageDisclaimer, .containerMTubes.ageDisclaimer,
-.containerMTubes.ageDisclaimer.isVisibleMTubes, .fadeInMTubes.ageDisclaimer { display: none !important; pointer-events: none !important; visibility: hidden !important; }
-body.isOpenMTubes { overflow: auto !important; }
-
 /* LEBON.PORN (AgeVerif / mrx) */
 #adult-popup, #adult-popup-backdrop { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 .mrx-blur, .mrx-blur-20, #ewok-iframe, iframe[src*="videos.lebon.porn"] { filter: none !important; }
@@ -228,10 +173,6 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
 #video-player-container, #preroll-container, .plyr, .plyr__video-wrapper, .plyr__control, video, object { filter: none !important; backdrop-filter: none !important; }
 #agego-verify-frame { display: none !important; }
 
-/* TUBE8 */
-#ageDisclaimerMainBG, #ageDisclaimerWrapper, #ageDisclaimerTitle, #underAgeWrapper, .age-disclaimer-modal, html.showAgeDisclaimer .disclaimer { display: none !important; pointer-events: none !important; visibility: hidden !important; }
-html.showAgeDisclaimer, html.showAgeDisclaimer body { overflow: auto !important; }
-
 /* JACQUIE */
 custom-disclaimer.disclaimer, .disclaimer__container, .disclaimer__btns, #disclaimer, .disclaimer-wrapper { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 html.my18pass-blur, html.my18pass-blur body, html.my18pass-blur img, html.my18pass-blur video { filter: none !important; }
@@ -239,34 +180,14 @@ html.my18pass-blur, html.my18pass-blur body, html.my18pass-blur img, html.my18pa
 /* TXXX family */
 age-verification, age-verification-uk, age-verification-face, .modal-age-verification, .modal.modal-ageverification, .overlay-modal, .cookie-notify { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 
-/* EPORNER */
-#ageverifybox, #ageverifybox-inner, #simplemodal-overlay, .simplemodal-overlay, .simplemodal-container { display: none !important; pointer-events: none !important; visibility: hidden !important; }
-
 /* SUNPORNO */
 #age-verification-overlay { display: none !important; pointer-events: none !important; visibility: hidden !important; }
-
-/* PORNTUBE */
-[data-controller="click-verify"], [data-modal-target="modal"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
-
-/* PORN.COM */
-.nc { filter: none !important; }
-.modal.age, .age-modal { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 
 /* STRIPCHAT */
 #agreement-root, .visitors-agreement-modal, .full-cover.modal-wrapper.visitors-agreement-modal, [data-testid="CookiesReminder"], #CookiesReminder, .cookies-banner { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 
-/* BONGACAMS */
-.verification_wrapper, .verification_wrapper.__yoti, .yoti_warning_popup, .warning_popup[data-type="18_plus"], .popup_18_plus, .cookies_bar { display: none !important; pointer-events: none !important; visibility: hidden !important; }
-body.bd_18plus { overflow: auto !important; height: auto !important; }
-
 /* LIVEJASMIN — NE PAS cacher #overlay ni #fi-18-22 */
 #consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal { display: none !important; pointer-events: none !important; visibility: hidden !important; }
-
-/* XXXBUNKER — ne pas viser #overlay tout seul (LiveJasmin) */
-body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-events: none !important; visibility: hidden !important; }
-
-/* CAM4 */
-#AgeConsentGenderDisclaimer, dialog[data-id="AgeConsentGenderDisclaimer"], [data-id="AgeConsentGenderDisclaimer"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 
 /* GATE18 générique (hosts listés seulement via profil, CSS chargé si page activée) */
 #age_verification, #age-verification, #ageVerification, #age_gate, #age-gate, #ageGate,
@@ -324,14 +245,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     return /(^|\.)chaturbate\.com$/i.test(getHostname());
   }
 
-  function isPornhubHost() {
-    return /(^|\.)pornhub(premium)?\.com$/i.test(getHostname());
-  }
-
-  function isTube8Host() {
-    return /(^|\.)tube8\.com$/i.test(getHostname());
-  }
-
   function isLebonpornHost() {
     return /(^|\.)lebon\.porn$/i.test(getHostname());
   }
@@ -354,54 +267,27 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     );
   }
 
-  function isEpornerHost() {
-    return /(^|\.)eporner\.com$/i.test(getHostname());
-  }
-
   function isSunpornoHost() {
     return /(^|\.)sunporno\.com$/i.test(getHostname());
   }
 
   function isJacquieHost() {
-    return /(^|\.)jacquieetmichel(tv)?\.net$/i.test(getHostname());
-  }
-
-  function isPorntubeHost() {
-    return /(^|\.)porntube\.com$/i.test(getHostname());
-  }
-
-  function isPorncomHost() {
-    return /(^|\.)porn\.com$/i.test(getHostname());
+    return /(^|\.)jacquieetmichel\.net$/i.test(getHostname());
   }
 
   function isStripchatHost() {
     return /(^|\.)(stripchat|xtube)\.com$/i.test(getHostname());
   }
 
-  function isXxxbunkerHost() {
-    return /(^|\.)xxxbunker\.com$/i.test(getHostname());
-  }
-
-  function isCam4Host() {
-    return /(^|\.)cam4\.com$/i.test(getHostname());
-  }
-
   function isGate18Host() {
     return (
-      /(^|\.)(spankbang|youjizz|hqporner|motherless|beeg|thisvid|alohatube|hellporno|drtuber|nuvid|analdin|streamate|pornhat)\.com$/i.test(
-        getHostname()
-      ) ||
-      /(^|\.)(rule34)\.xxx$/i.test(getHostname()) ||
+      /(^|\.)(thisvid|analdin|pornhat)\.com$/i.test(getHostname()) ||
       /(^|\.)hdtube\.porn$/i.test(getHostname())
     );
   }
 
   const GATE18_SELECTORS =
     '#age_verification, #age-verification, #ageVerification, #age_gate, #age-gate, #ageGate, #age-check, #age_check, #ageDisclaimer, #age-disclaimer, #age_disclaimer, #age-verification-container, .age-verification-overlay, .age-verification, .age_verification, .age-gate, .age_gate, .js-age-gate, #cookie-policy, .cc-window, .cc-banner, #full-page-loader';
-
-  function isBongacamsHost() {
-    return /(^|\.)bongacams\.com$/i.test(getHostname());
-  }
 
   function isLivejasminHost() {
     return /(^|\.)livejasmin\.com$/i.test(getHostname());
@@ -479,17 +365,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     );
   }
 
-  function detectPornhub() {
-    if (isPornhubHost() || isTube8Host()) return true;
-    return !!(
-      document.querySelector('.ageDisclaimer') ||
-      document.body?.classList.contains('sfw-page') ||
-      document.querySelector('.buttonOver18') ||
-      document.getElementById('ageDisclaimerMainBG') ||
-      document.getElementById('accessButton')
-    );
-  }
-
   function detectLebonporn() {
     if (isLebonpornHost()) return true;
     return !!(
@@ -523,11 +398,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     );
   }
 
-  function detectEporner() {
-    if (isEpornerHost()) return true;
-    return !!document.getElementById('ageverifybox');
-  }
-
   function detectSunporno() {
     if (isSunpornoHost()) return true;
     return !!document.getElementById('age-verification-overlay');
@@ -542,48 +412,14 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     );
   }
 
-  function detectPorntube() {
-    if (isPorntubeHost()) return true;
-    return !!document.querySelector('[data-controller="click-verify"]');
-  }
-
-  function detectPorncom() {
-    return isPorncomHost();
-  }
-
   function detectStripchat() {
     if (isStripchatHost()) return true;
     return !!document.getElementById('agreement-root');
   }
 
-  function detectBongacams() {
-    if (isBongacamsHost()) return true;
-    return !!(
-      document.querySelector('.popup_18_plus') ||
-      document.querySelector('.verification_wrapper.__yoti')
-    );
-  }
-
   function detectLivejasmin() {
     if (isLivejasminHost()) return true;
     return !!document.querySelector('#consent_modal.over-18');
-  }
-
-  function detectXxxbunker() {
-    if (isXxxbunkerHost()) return true;
-    return !!(
-      document.body?.getAttribute('data-ageconfirmed') === 'false' ||
-      document.querySelector('body[data-ageconfirmed="false"] #overlay')
-    );
-  }
-
-  function detectCam4() {
-    if (isCam4Host()) return true;
-    return !!(
-      document.getElementById('AgeConsentGenderDisclaimer') ||
-      document.querySelector('dialog[data-id="AgeConsentGenderDisclaimer"]') ||
-      document.querySelector('[data-id="AgeConsentGenderDisclaimer"]')
-    );
   }
 
   function detectGate18() {
@@ -599,21 +435,14 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     if (detectXhamsterLive()) profiles.add('xhamsterlive');
     if (detectFaphouse()) profiles.add('faphouse');
     if (detectChaturbate()) profiles.add('chaturbate');
-    if (detectPornhub()) profiles.add('pornhub');
     if (detectLebonporn()) profiles.add('lebonporn');
     if (detectTukif()) profiles.add('tukif');
     if (detectTkn()) profiles.add('tkn');
     if (detectTxxx()) profiles.add('txxx');
-    if (detectEporner()) profiles.add('eporner');
     if (detectSunporno()) profiles.add('sunporno');
     if (detectJacquie()) profiles.add('jacquie');
-    if (detectPorntube()) profiles.add('porntube');
-    if (detectPorncom()) profiles.add('porncom');
     if (detectStripchat()) profiles.add('stripchat');
-    if (detectBongacams()) profiles.add('bongacams');
     if (detectLivejasmin()) profiles.add('livejasmin');
-    if (detectXxxbunker()) profiles.add('xxxbunker');
-    if (detectCam4()) profiles.add('cam4');
     if (detectGate18()) profiles.add('gate18');
     return [...profiles];
   }
@@ -808,10 +637,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     );
   }
 
-  function hasEpornerThreat() {
-    return !!(isOverlayVisible('#ageverifybox') || isOverlayVisible('.simplemodal-overlay'));
-  }
-
   function hasSunpornoThreat() {
     return isOverlayVisible('#age-verification-overlay');
   }
@@ -824,26 +649,10 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     );
   }
 
-  function hasPorntubeThreat() {
-    return isOverlayVisible('[data-controller="click-verify"]');
-  }
-
-  function hasPorncomThreat() {
-    return !!(isOverlayVisible('.modal.age') || isOverlayVisible('.age-modal'));
-  }
-
   function hasStripchatThreat() {
     return !!(
       isOverlayVisible('#agreement-root') ||
       isOverlayVisible('.visitors-agreement-modal')
-    );
-  }
-
-  function hasBongacamsThreat() {
-    return !!(
-      isOverlayVisible('.popup_18_plus') ||
-      isOverlayVisible('.verification_wrapper.__yoti') ||
-      isOverlayVisible('.verification_wrapper')
     );
   }
 
@@ -855,31 +664,9 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     );
   }
 
-  function hasXxxbunkerThreat() {
-    if (document.body?.getAttribute('data-ageconfirmed') === 'false') return true;
-    if (!isXxxbunkerHost()) return false;
-    return isOverlayVisible('body[data-ageconfirmed="false"] #overlay') || isOverlayVisible('#overlay');
-  }
-
-  function hasCam4Threat() {
-    return !!(
-      isOverlayVisible('#AgeConsentGenderDisclaimer') ||
-      isOverlayVisible('dialog[data-id="AgeConsentGenderDisclaimer"]') ||
-      isOverlayVisible('[data-id="AgeConsentGenderDisclaimer"]')
-    );
-  }
-
   function hasGate18Threat() {
     return GATE18_SELECTORS.split(', ')
       .some((sel) => isOverlayVisible(sel.trim()));
-  }
-
-  function hasPornhubThreat() {
-    return !!(
-      isOverlayVisible('.ageDisclaimer') ||
-      isOverlayVisible('#ageDisclaimerMainBG') ||
-      isOverlayVisible('#ageDisclaimerWrapper')
-    );
   }
 
   function hasThreat() {
@@ -894,17 +681,10 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
       hasTukifThreat() ||
       hasTknThreat() ||
       hasTxxxThreat() ||
-      hasEpornerThreat() ||
       hasSunpornoThreat() ||
       hasJacquieThreat() ||
-      hasPorntubeThreat() ||
-      hasPorncomThreat() ||
       hasStripchatThreat() ||
-      hasBongacamsThreat() ||
       hasLivejasminThreat() ||
-      hasPornhubThreat() ||
-      hasXxxbunkerThreat() ||
-      hasCam4Threat() ||
       hasGate18Threat()
     );
   }
@@ -1433,16 +1213,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     startChaturbateWatchdog();
   }
 
-  function injectPornhubPageScript() {
-    if (document.documentElement.dataset.agegoPhInjected === '1') return;
-    if (!api?.runtime?.getURL) return;
-    document.documentElement.dataset.agegoPhInjected = '1';
-    const script = document.createElement('script');
-    script.src = api.runtime.getURL('pornhub-page.js');
-    script.onload = () => script.remove();
-    (document.head || document.documentElement).appendChild(script);
-  }
-
   function injectLebonpornPageScript() {
     if (document.documentElement.dataset.agegoLbpInjected === '1') return;
     if (!api?.runtime?.getURL) return;
@@ -1721,31 +1491,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     startTukifWatchdog();
   }
 
-  function cleanPornhub() {
-    // Gate d'age FR: pose des cookies + clique le bouton 18+, puis masque le
-    // modal. NB: le catalogue hardcore reste bloque cote serveur (mode SFW geo
-    // France, isSfw=1) -> non contournable par une extension (VPN requis).
-    try {
-      const maxAge = 60 * 60 * 24 * 30;
-      document.cookie = `accessAgeDisclaimerPH=2; path=/; max-age=${maxAge}`;
-      document.cookie = `accessPH=1; path=/; max-age=${maxAge}`;
-      document.cookie = `cookieConsent=3; path=/; max-age=${maxAge}`;
-      document.cookie = `showAgeDisclaimer=1; path=/; max-age=${maxAge}`;
-    } catch (_e) {}
-    const over18 = document.querySelector('.buttonOver18, .js-closeAgeModal, .js-av-cta, #accessButton');
-    if (over18 && over18.offsetParent !== null) { try { over18.click(); } catch (_e) {} }
-    document.querySelectorAll('.ageDisclaimer, .modalMTubes.ageDisclaimer').forEach((el) => {
-      el.style.setProperty('display', 'none', 'important');
-    });
-    hideMatches('#ageDisclaimerMainBG, #ageDisclaimerWrapper, html.showAgeDisclaimer .disclaimer');
-    document.documentElement.classList.remove('showAgeDisclaimer');
-    document.body?.classList.remove('isOpenMTubes');
-    if (isPornhubHost()) {
-      injectPornhubPageScript();
-      document.dispatchEvent(new CustomEvent('agego-ph-unlock'));
-    }
-  }
-
   function cleanTkn() {
     injectCSS();
     dismissTukifDisclaimer();
@@ -1759,12 +1504,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     try {
       localStorage.removeItem('_agvface');
     } catch (_e) {}
-    document.documentElement.style.setProperty('overflow', 'auto', 'important');
-    document.body?.style.setProperty('overflow', 'auto', 'important');
-  }
-
-  function cleanEporner() {
-    hideMatches('#ageverifybox, #ageverifybox-inner, #simplemodal-overlay, .simplemodal-overlay, .simplemodal-container');
     document.documentElement.style.setProperty('overflow', 'auto', 'important');
     document.body?.style.setProperty('overflow', 'auto', 'important');
   }
@@ -1783,17 +1522,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     document.documentElement.classList.remove('my18pass-blur');
   }
 
-  function cleanPorntube() {
-    hideMatches('[data-controller="click-verify"], [data-modal-target="modal"]');
-  }
-
-  function cleanPorncom() {
-    hideMatches('.modal.age, .age-modal');
-    document.querySelectorAll('.nc').forEach((el) => {
-      el.style.setProperty('filter', 'none', 'important');
-    });
-  }
-
   function cleanStripchat() {
     try {
       const maxAge = 31536000;
@@ -1807,38 +1535,8 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     );
   }
 
-  function cleanBongacams() {
-    hideMatches(
-      '.verification_wrapper, .verification_wrapper.__yoti, .yoti_warning_popup, .warning_popup[data-type="18_plus"], .popup_18_plus, .cookies_bar'
-    );
-    document.body?.classList.remove('bd_18plus');
-    document.body?.style.setProperty('overflow', 'auto', 'important');
-    document.body?.style.setProperty('height', 'auto', 'important');
-  }
-
   function cleanLivejasmin() {
     hideMatches('#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal');
-  }
-
-  function cleanXxxbunker() {
-    if (document.body) {
-      document.body.setAttribute('data-ageconfirmed', 'true');
-    }
-    hideMatches('body[data-ageconfirmed] #overlay');
-    if (isXxxbunkerHost()) {
-      hideMatches('#overlay');
-    }
-  }
-
-  function cleanCam4() {
-    try {
-      const maxAge = 31536000;
-      document.cookie = `ageVerification=1; path=/; max-age=${maxAge}`;
-      document.cookie = `requireCookieConsent=0; path=/; max-age=${maxAge}`;
-    } catch (_e) {}
-    hideMatches(
-      '#AgeConsentGenderDisclaimer, dialog[data-id="AgeConsentGenderDisclaimer"], [data-id="AgeConsentGenderDisclaimer"]'
-    );
   }
 
   function cleanGate18() {
@@ -1867,21 +1565,14 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     if (activeProfiles.includes('xhamsterlive')) cleanXhamsterLive();
     if (activeProfiles.includes('faphouse')) cleanFaphouse();
     if (activeProfiles.includes('chaturbate')) cleanChaturbate();
-    if (activeProfiles.includes('pornhub')) cleanPornhub();
     if (activeProfiles.includes('lebonporn')) cleanLebonporn();
     if (activeProfiles.includes('tukif')) cleanTukif();
     if (activeProfiles.includes('tkn')) cleanTkn();
     if (activeProfiles.includes('txxx')) cleanTxxx();
-    if (activeProfiles.includes('eporner')) cleanEporner();
     if (activeProfiles.includes('sunporno')) cleanSunporno();
     if (activeProfiles.includes('jacquie')) cleanJacquie();
-    if (activeProfiles.includes('porntube')) cleanPorntube();
-    if (activeProfiles.includes('porncom')) cleanPorncom();
     if (activeProfiles.includes('stripchat')) cleanStripchat();
-    if (activeProfiles.includes('bongacams')) cleanBongacams();
     if (activeProfiles.includes('livejasmin')) cleanLivejasmin();
-    if (activeProfiles.includes('xxxbunker')) cleanXxxbunker();
-    if (activeProfiles.includes('cam4')) cleanCam4();
     if (activeProfiles.includes('gate18')) cleanGate18();
 
     lastCleanup = Date.now();
@@ -1994,17 +1685,10 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
 
     if (isTknHost() && autoEnabled) cleanTkn();
     if (isTxxxHost() && autoEnabled) cleanTxxx();
-    if (isEpornerHost() && autoEnabled) cleanEporner();
     if (isSunpornoHost() && autoEnabled) cleanSunporno();
     if (isJacquieHost() && autoEnabled) cleanJacquie();
-    if (isPorntubeHost() && autoEnabled) cleanPorntube();
-    if (isPorncomHost() && autoEnabled) cleanPorncom();
     if (isStripchatHost() && autoEnabled) cleanStripchat();
-    if (isBongacamsHost() && autoEnabled) cleanBongacams();
     if (isLivejasminHost() && autoEnabled) cleanLivejasmin();
-    if (isTube8Host() && autoEnabled) cleanPornhub();
-    if (isXxxbunkerHost() && autoEnabled) cleanXxxbunker();
-    if (isCam4Host() && autoEnabled) cleanCam4();
     if (isGate18Host() && autoEnabled) cleanGate18();
 
     return true;
@@ -2033,16 +1717,10 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
       tukifDetected: detectTukif(),
       tknDetected: detectTkn(),
       txxxDetected: detectTxxx(),
-      epornerDetected: detectEporner(),
       sunpornoDetected: detectSunporno(),
       jacquieDetected: detectJacquie(),
-      porntubeDetected: detectPorntube(),
-      porncomDetected: detectPorncom(),
       stripchatDetected: detectStripchat(),
-      bongacamsDetected: detectBongacams(),
       livejasminDetected: detectLivejasmin(),
-      xxxbunkerDetected: detectXxxbunker(),
-      cam4Detected: detectCam4(),
       gate18Detected: detectGate18(),
       threatPresent: isChaturbateHost() ? hasChaturbateThreatForStatus() : hasThreat(),
       watchdogActive,
@@ -2067,16 +1745,10 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
       tukifDetected: detectTukif(),
       tknDetected: detectTkn(),
       txxxDetected: detectTxxx(),
-      epornerDetected: detectEporner(),
       sunpornoDetected: detectSunporno(),
       jacquieDetected: detectJacquie(),
-      porntubeDetected: detectPorntube(),
-      porncomDetected: detectPorncom(),
       stripchatDetected: detectStripchat(),
-      bongacamsDetected: detectBongacams(),
       livejasminDetected: detectLivejasmin(),
-      xxxbunkerDetected: detectXxxbunker(),
-      cam4Detected: detectCam4(),
       gate18Detected: detectGate18(),
       threatPresent: isChaturbateHost() ? hasChaturbateThreatForStatus() : hasThreat(),
       lastCleanup,
@@ -2151,9 +1823,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
           document.dispatchEvent(new CustomEvent('agego-xh-unlock'));
           hideXhamsterCookieModal();
         }
-        if (isPornhubHost() && autoEnabled) {
-          cleanPornhub();
-        }
         if (isLebonpornHost() && autoEnabled) {
           cleanLebonporn();
         }
@@ -2162,17 +1831,10 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
         }
         if (isTknHost() && autoEnabled) cleanTkn();
         if (isTxxxHost() && autoEnabled) cleanTxxx();
-        if (isEpornerHost() && autoEnabled) cleanEporner();
         if (isSunpornoHost() && autoEnabled) cleanSunporno();
         if (isJacquieHost() && autoEnabled) cleanJacquie();
-        if (isPorntubeHost() && autoEnabled) cleanPorntube();
-        if (isPorncomHost() && autoEnabled) cleanPorncom();
         if (isStripchatHost() && autoEnabled) cleanStripchat();
-        if (isBongacamsHost() && autoEnabled) cleanBongacams();
         if (isLivejasminHost() && autoEnabled) cleanLivejasmin();
-        if (isTube8Host() && autoEnabled) cleanPornhub();
-        if (isXxxbunkerHost() && autoEnabled) cleanXxxbunker();
-        if (isCam4Host() && autoEnabled) cleanCam4();
         if (isGate18Host() && autoEnabled) cleanGate18();
       }
     });

@@ -35,7 +35,6 @@ $files = @(
   "chaturbate-page.js",
   "xvideos-page.js",
   "xhamster-page.js",
-  "pornhub-page.js",
   "lebonporn-page.js",
   "lebonporn-inject.js",
   "hls.min.js",

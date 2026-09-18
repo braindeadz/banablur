@@ -1,6 +1,6 @@
 # Banablur
 
-**v1.10.2** · *Peel the blur.*
+**v1.10.3** · *Peel the blur.*
 
 Banablur is a browser extension for **Chromium** (Chrome, Edge, Brave) and **Firefox** that removes age-verification overlays, neutralizes CSS and player blur, and unlocks safe-mode / SFW video players where the site allows it.
 
@@ -32,7 +32,7 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 | Safe-mode unlock | Switches SFW streams to full video where possible (e.g. XVIDEOS, LebonPorn / Tukif Shaka safe mode) |
 | Auto-detection | Built-in profiles per domain; learns similar domains over time |
 | Watchdog | Re-applies fixes when sites mutate the DOM |
-| Video download | Optional floating button on XVIDEOS, xHamster, Pornhub (MP4 / HLS) |
+| Video download | Optional floating button on XVIDEOS and xHamster (MP4 / HLS) |
 | Local IP | All requests go through your browser with your real IP — no proxy |
 | Privacy | No telemetry; Firefox 140+ `data_collection_permissions`: **none** |
 
@@ -49,11 +49,9 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 | [xhamsterlive.com](https://xhamsterlive.com) | xHamster Live | Non-nude shutter / AVP blur |
 | [faphouse.com](https://faphouse.com) | FapHouse | Cookie wall + age modal |
 | [chaturbate.com](https://chaturbate.com) | Chaturbate | Age gate + canvas blur (dedicated script) |
-| [pornhub.com](https://pornhub.com) | Pornhub | FR age disclaimer (server SFW may remain geo-blocked) |
 | [lebon.porn](https://lebon.porn) / videos.lebon.porn | LebonPorn | AgeVerif popup, mrx blur, Shaka safe mode |
 | [tukif.porn](https://tukif.porn) / videos.tukif.porn | Tukif | TKN AgeVerif / disclaimer, CSS deblur, Shaka safe-mode unlock (same stack as LebonPorn) |
 | [tnaflix.com](https://www.tnaflix.com), [moviefap.com](https://www.moviefap.com), [pornone.com](https://www.pornone.com), [perfectgirls.xxx](https://www.perfectgirls.xxx) | AgeGO | Overlay + extra player deblur |
-| [tube8.com](https://www.tube8.com) | Pornhub-like | `#ageDisclaimerMainBG` / `#accessButton` |
 | [txxx.com](https://txxx.com) family (HClips, Upornia, HDZog, …) | TXXX | Vue `.modal-age-verification` |
 | [porndig.com](https://www.porndig.com), [sxyprn.com](https://sxyprn.com) | TKN | AgeVerif disclaimer without Tukif player inject |
 | [jacquieetmicheltv.net](https://www.jacquieetmicheltv.net), [jacquieetmichel.net](https://www.jacquieetmichel.net) | Jacquie | Custom 18+ disclaimer / my18pass blur |
@@ -64,7 +62,7 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 | [cam4.com](https://cam4.com) | CAM4 | Age consent gender disclaimer |
 | [xxxbunker.com](https://xxxbunker.com) | XxxBunker | `#overlay` only when `data-ageconfirmed="false"` (avoids LiveJasmin clash) |
 | [spankbang.com](https://spankbang.com), [youjizz.com](https://www.youjizz.com), [hqporner.com](https://hqporner.com), [motherless.com](https://www.motherless.com), [beeg.com](https://beeg.com), [thisvid.com](https://thisvid.com), [alohatube.com](https://www.alohatube.com), [hellporno.com](https://www.hellporno.com), [drtuber.com](https://www.drtuber.com), [nuvid.com](https://www.nuvid.com), [analdin.com](https://www.analdin.com), [streamate.com](https://www.streamate.com), [pornhat.com](https://www.pornhat.com), [rule34.xxx](https://rule34.xxx), [hdtube.porn](https://www.hdtube.porn) | Gate18 | Generic 18+ / cookie overlays |
-| xvideos.es, xnxx.es, xvideos.red, xhamster.desi, pornhubpremium.com | Same engines | TLD / premium clones of existing profiles |
+| xvideos.es, xnxx.es, xvideos.red, xhamster.desi | Same engines | TLD clones of existing profiles |
 | Similar domains | Auto-detected | Remembered after first visit |
 
 ---
@@ -73,10 +71,10 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 
 Banablur is distributed as an **unpacked extension** (developer mode). There is no Chrome Web Store package.
 
-1. Obtain a build: extract `banablur-1.10.2.zip` from a release, or build from source (see below).
+1. Obtain a build: extract `banablur-1.10.3.zip` from a release, or build from source (see below).
 2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).
 3. Enable **Developer mode**.
-4. Click **Load unpacked** and select the extracted folder (e.g. `banablur-1.10.2/`).
+4. Click **Load unpacked** and select the extracted folder (e.g. `banablur-1.10.3/`).
 5. Pin the extension from the puzzle icon in the toolbar.
 
 > Chromium does not install a `.zip` directly — use the extracted folder.
@@ -97,7 +95,7 @@ Firefox Release requires a **Mozilla-signed** add-on. Banablur is distributed as
 
 Use only a file that contains `META-INF/mozilla.rsa` (name ends with `FIREFOX-SIGNE.xpi`, `firefox-signed.xpi`, or comes from an AMO download). The unsigned build zip/xpi from `build.ps1` is **not** for Firefox Release — it will be rejected with “not verified”.
 
-1. Download `Banablur-1.10.2-FIREFOX-SIGNE.xpi` or `banablur-1.10.2-firefox-signed.xpi` (or the latest signed release asset).
+1. Download `Banablur-1.10.3-FIREFOX-SIGNE.xpi` or `banablur-1.10.3-firefox-signed.xpi` (or the latest signed release asset).
 2. Open `about:addons`.
 3. Click the gear menu → **Install Add-on From File…**
 4. Select the **signed** `.xpi`.
@@ -151,10 +149,10 @@ Outputs in the **parent** directory:
 
 | Artifact | Purpose |
 |----------|---------|
-| `banablur-1.10.2.zip` | Unsigned build zip (Chrome/Edge **Load unpacked** after extract) |
-| `banablur-1.10.2.xpi` | Same unsigned bytes — **not** for Firefox Release |
-| `Banablur-1.10.2-FIREFOX-SIGNE.xpi` or `banablur-1.10.2-firefox-signed.xpi` | AMO-signed XPI for Firefox Release |
-| `banablur-1.10.2/` | Auto-extracted folder for Chromium **Load unpacked** |
+| `banablur-1.10.3.zip` | Unsigned build zip (Chrome/Edge **Load unpacked** after extract) |
+| `banablur-1.10.3.xpi` | Same unsigned bytes — **not** for Firefox Release |
+| `Banablur-1.10.3-FIREFOX-SIGNE.xpi` or `banablur-1.10.3-firefox-signed.xpi` | AMO-signed XPI for Firefox Release |
+| `banablur-1.10.3/` | Auto-extracted folder for Chromium **Load unpacked** |
 
 The build script reads the version from `manifest.json` and cleans previous build artifacts before generating new ones.
 
@@ -162,6 +160,13 @@ Optional Chaturbate integration test:
 
 ```powershell
 npm run test:chaturbate
+```
+
+Sequential site bench (popup list, Chrome CDP on port 9222). A site is **kept** only if there is no legal/ARCOM wall, no age-only page, no SFW/geo catalogue (`sfw-page` / `sfw_geo_catalog`), no popup, clean thumbs, real playback, seek OK (except live), and still clean after video change:
+
+```powershell
+npm run test:sites
+# or: node bench-sites.mjs --port=9222
 ```
 
 ---
@@ -177,12 +182,12 @@ npm run test:chaturbate
 | `override.css` | Shared override styles |
 | `xvideos-page.js` | XVIDEOS page-world script (player, download) |
 | `xhamster-page.js` | xHamster page-world script |
-| `pornhub-page.js` | Pornhub page-world script |
 | `lebonporn-page.js` / `lebonporn-inject.js` | LebonPorn + Tukif Shaka / safe-mode hooks |
 | `chaturbate.js` / `chaturbate-page.js` / `chaturbate-gate.css` | Chaturbate age gate (isolated from `content.js`) |
 | `hls.min.js` | HLS helper for Chaturbate streams |
 | `icons/` | Extension icons (16 / 48 / 128) |
 | `test-logic.js` | Unit tests (`npm test`) |
+| `bench-sites.mjs` | Sequential site bench (`npm run test:sites`) |
 | `build.ps1` | Clean, pack zip/xpi, extract unpacked folder |
 
 ---
