@@ -27,6 +27,9 @@
     'lebon.porn': ['lebonporn'],
     'www.lebon.porn': ['lebonporn'],
     'videos.lebon.porn': ['lebonporn'],
+    'tukif.porn': ['tukif'],
+    'www.tukif.porn': ['tukif'],
+    'videos.tukif.porn': ['tukif'],
   };
 
   const OVERRIDE_CSS = `
@@ -92,6 +95,11 @@ body.isOpenMTubes { overflow: auto !important; }
 .mrx-overlay, .mrx-click-overlay, .mrx-player-blur-overlay, .mrx-blur-overlay { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 img.video-img[data-type="nsfw"] { display: block !important; filter: none !important; visibility: visible !important; }
 img.video-img[data-type="sfw"] { display: none !important; }
+
+/* TUKIF.PORN (AgeVerif / TKN) */
+.disclaimer_parent_wrapper, .sfw_disclaimer_wrapper, .disclaimer_overlay, #preview_disclaimer_parent_wrapper, .agechecker, .sfw_video_poster, .img_18plus_wrapper, .blursfw_poster, iframe[src*="ageverif"], #ageverif, .ageverif { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured, .img-blured-small, .main_wrapper.img-blured, .video_iframe_container, iframe[src*="videos.tukif.porn"] { filter: none !important; }
+.blurmyass, .img_18plus, .video_action_buttons .main_video_page_buttons { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 `.trim();
 
   const api = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : null;
@@ -109,6 +117,7 @@ img.video-img[data-type="sfw"] { display: none !important; }
   let xvideosTickTimer = null;
   let xhamsterTickTimer = null;
   let lebonpornTickTimer = null;
+  let tukifTickTimer = null;
   let xhProxyEnsured = false;
 
   function ensureXhamsterProxy() {
@@ -151,6 +160,10 @@ img.video-img[data-type="sfw"] { display: none !important; }
 
   function isLebonpornHost() {
     return /(^|\.)lebon\.porn$/i.test(getHostname());
+  }
+
+  function isTukifHost() {
+    return /(^|\.)tukif\.porn$/i.test(getHostname());
   }
 
   function getConfiguredProfiles() {
@@ -245,6 +258,17 @@ img.video-img[data-type="sfw"] { display: none !important; }
     );
   }
 
+  function detectTukif() {
+    if (isTukifHost()) return true;
+    return !!(
+      document.querySelector('iframe[src*="videos.tukif.porn"]') ||
+      document.querySelector('.sfw_disclaimer_wrapper') ||
+      document.querySelector('.disclaimer_parent_wrapper') ||
+      document.querySelector('.blurmyass') ||
+      document.querySelector('script[src*="tkn_disclaimer"]')
+    );
+  }
+
   function detectProfiles() {
     const profiles = new Set(getConfiguredProfiles());
     if (detectAgeGO()) profiles.add('agego');
@@ -255,6 +279,7 @@ img.video-img[data-type="sfw"] { display: none !important; }
     if (detectChaturbate()) profiles.add('chaturbate');
     if (detectPornhub()) profiles.add('pornhub');
     if (detectLebonporn()) profiles.add('lebonporn');
+    if (detectTukif()) profiles.add('tukif');
     return [...profiles];
   }
 
@@ -387,6 +412,30 @@ img.video-img[data-type="sfw"] { display: none !important; }
     );
   }
 
+  function hasTukifThreat() {
+    const overlayVisible = (sel) => {
+      const el = document.querySelector(sel);
+      return el && getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden';
+    };
+    const agechecker = document.querySelector('.agechecker');
+    const agecheckerVisible =
+      agechecker &&
+      getComputedStyle(agechecker).display !== 'none' &&
+      getComputedStyle(agechecker).visibility !== 'hidden';
+    const blurmyass = document.querySelector('.blurmyass');
+    const blurmyassVisible =
+      blurmyass &&
+      getComputedStyle(blurmyass).display !== 'none' &&
+      getComputedStyle(blurmyass).visibility !== 'hidden';
+    return !!(
+      overlayVisible('.disclaimer_parent_wrapper') ||
+      overlayVisible('.sfw_disclaimer_wrapper') ||
+      agecheckerVisible ||
+      document.querySelector('.main_wrapper.img-blured') ||
+      blurmyassVisible
+    );
+  }
+
   function hasThreat() {
     return (
       hasAgeGOThreat() ||
@@ -395,7 +444,8 @@ img.video-img[data-type="sfw"] { display: none !important; }
       hasXhamsterLiveThreat() ||
       hasFaphouseThreat() ||
       hasChaturbateThreat() ||
-      hasLebonpornThreat()
+      hasLebonpornThreat() ||
+      hasTukifThreat()
     );
   }
 
@@ -1028,7 +1078,7 @@ img.video-img[data-type="sfw"] { display: none !important; }
   }
 
   function releaseLebonpornPlayers() {
-    document.querySelectorAll('iframe[id*="ewok-iframe"], iframe[src*="videos.lebon.porn"]').forEach((iframe) => {
+    document.querySelectorAll('iframe[id*="ewok-iframe"], iframe[src*="videos.lebon.porn"], iframe[src*="videos.tukif.porn"]').forEach((iframe) => {
       iframe.classList.remove('mrx-blur-20');
       iframe.style.setProperty('filter', 'none', 'important');
       try {
@@ -1060,6 +1110,81 @@ img.video-img[data-type="sfw"] { display: none !important; }
     injectLebonpornPageScript();
     document.dispatchEvent(new CustomEvent('agego-lbp-unlock'));
     startLebonpornWatchdog();
+  }
+
+  function dismissTukifDisclaimer() {
+    try {
+      document.cookie = 'dsclcnst=2; path=/; max-age=31536000';
+      document.cookie = 'discl_s_t=1; path=/';
+    } catch (_e) {}
+    document
+      .querySelectorAll(
+        '.disclaimer_parent_wrapper, .sfw_disclaimer_wrapper, .disclaimer_overlay, #preview_disclaimer_parent_wrapper, .agechecker, .sfw_video_poster, .img_18plus_wrapper, .blursfw_poster, iframe[src*="ageverif"], #ageverif, .ageverif'
+      )
+      .forEach((el) => {
+        el.style.setProperty('display', 'none', 'important');
+        el.style.setProperty('pointer-events', 'none', 'important');
+        el.style.setProperty('visibility', 'hidden', 'important');
+      });
+  }
+
+  function fixTukifBlur() {
+    document.documentElement.classList.remove('img-blured', 'img-blured-small');
+    document.body?.classList.remove('img-blured', 'img-blured-small');
+    document.querySelectorAll('.main_wrapper, .stories_main_wrapper').forEach((el) => {
+      el.classList.remove('img-blured', 'img-blured-small');
+    });
+    document
+      .querySelectorAll('.blurmyass, .agechecker, .sfw_video_poster, .img_18plus_wrapper, .blursfw_poster')
+      .forEach((el) => {
+        el.style.setProperty('display', 'none', 'important');
+        el.style.setProperty('pointer-events', 'none', 'important');
+        el.style.setProperty('visibility', 'hidden', 'important');
+      });
+    document
+      .querySelectorAll('.video_iframe_container iframe, .video_iframe_container video, .video_iframe_container img, iframe[src*="videos.tukif.porn"]')
+      .forEach((el) => {
+        el.style.setProperty('filter', 'none', 'important');
+      });
+  }
+
+  function releaseTukifPlayers() {
+    document.querySelectorAll('iframe[src*="videos.tukif.porn"]').forEach((iframe) => {
+      iframe.style.setProperty('filter', 'none', 'important');
+      try {
+        const win = iframe.contentWindow;
+        if (!win) return;
+        const payloads = [
+          { player_mode: 'default', msg_origin: 'ewkplrpmr' },
+          { msg_origin: 'ewkplrpmr', msg_text: 'play' },
+        ];
+        payloads.forEach((payload) => {
+          const msg = typeof cloneInto === 'function' ? cloneInto(payload, win) : payload;
+          win.postMessage(msg, '*');
+        });
+      } catch (_e) {}
+    });
+  }
+
+  function startTukifWatchdog() {
+    if (tukifTickTimer || !isTukifHost()) return;
+
+    tukifTickTimer = setInterval(() => {
+      if (!autoEnabled || !watchdogActive) return;
+      fixTukifBlur();
+      releaseTukifPlayers();
+      document.dispatchEvent(new CustomEvent('agego-lbp-unlock'));
+      injectLebonpornPageScript();
+    }, 500);
+  }
+
+  function cleanTukif() {
+    dismissTukifDisclaimer();
+    fixTukifBlur();
+    releaseTukifPlayers();
+    injectLebonpornPageScript();
+    document.dispatchEvent(new CustomEvent('agego-lbp-unlock'));
+    startTukifWatchdog();
   }
 
   function cleanPornhub() {
@@ -1096,6 +1221,7 @@ img.video-img[data-type="sfw"] { display: none !important; }
     if (activeProfiles.includes('chaturbate')) cleanChaturbate();
     if (activeProfiles.includes('pornhub')) cleanPornhub();
     if (activeProfiles.includes('lebonporn')) cleanLebonporn();
+    if (activeProfiles.includes('tukif')) cleanTukif();
 
     lastCleanup = Date.now();
     return true;
@@ -1201,6 +1327,11 @@ img.video-img[data-type="sfw"] { display: none !important; }
       if (autoEnabled) cleanLebonporn();
     }
 
+    if (isTukifHost()) {
+      startTukifWatchdog();
+      if (autoEnabled) cleanTukif();
+    }
+
     return true;
   }
 
@@ -1224,6 +1355,7 @@ img.video-img[data-type="sfw"] { display: none !important; }
       faphouseDetected: detectFaphouse(),
       chaturbateDetected: detectChaturbate(),
       lebonpornDetected: detectLebonporn(),
+      tukifDetected: detectTukif(),
       threatPresent: isChaturbateHost() ? hasChaturbateThreatForStatus() : hasThreat(),
       watchdogActive,
     };
@@ -1244,6 +1376,7 @@ img.video-img[data-type="sfw"] { display: none !important; }
       faphouseDetected: detectFaphouse(),
       chaturbateDetected: detectChaturbate(),
       lebonpornDetected: detectLebonporn(),
+      tukifDetected: detectTukif(),
       threatPresent: isChaturbateHost() ? hasChaturbateThreatForStatus() : hasThreat(),
       lastCleanup,
       videoSfw:
@@ -1322,6 +1455,9 @@ img.video-img[data-type="sfw"] { display: none !important; }
         }
         if (isLebonpornHost() && autoEnabled) {
           cleanLebonporn();
+        }
+        if (isTukifHost() && autoEnabled) {
+          cleanTukif();
         }
       }
     });

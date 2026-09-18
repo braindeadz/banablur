@@ -45,6 +45,9 @@ const SITE_PROFILES = {
   'lebon.porn': ['lebonporn'],
   'www.lebon.porn': ['lebonporn'],
   'videos.lebon.porn': ['lebonporn'],
+  'tukif.porn': ['tukif'],
+  'www.tukif.porn': ['tukif'],
+  'videos.tukif.porn': ['tukif'],
 
 };
 
@@ -132,7 +135,7 @@ console.log('Test 4: manifest v1.5');
 
   const m = require('./manifest.json');
 
-  assert(m.version === '1.9.2', 'version 1.9.2');
+  assert(m.version === '1.9.3', 'version 1.9.3');
   assert(!!m.web_accessible_resources?.length, 'web_accessible_resources');
   const war = m.web_accessible_resources?.[0]?.resources || [];
   assert(war.includes('hls.min.js'), 'hls.min.js accessible');
@@ -370,6 +373,34 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   assert(Array.isArray(mf.background?.scripts) && mf.background.scripts.includes('background.js'), 'manifest: background.scripts Firefox');
   const csLbp = (mf.content_scripts || []).some((s) => (s.js || []).includes('lebonporn-inject.js') && s.all_frames === true);
   assert(csLbp, 'manifest: lebonporn-inject.js all_frames');
+
+  assert(SITE_PROFILES['tukif.porn'].includes('tukif'), 'profil tukif.porn');
+  assert(SITE_PROFILES['www.tukif.porn'].includes('tukif'), 'profil www.tukif.porn');
+  assert(SITE_PROFILES['videos.tukif.porn'].includes('tukif'), 'profil videos.tukif.porn');
+  assert(src.includes('isTukifHost'), 'content: isTukifHost');
+  assert(src.includes('cleanTukif'), 'content: fonction cleanTukif');
+  assert(src.includes('detectTukif'), 'content: detectTukif');
+  assert(src.includes('hasTukifThreat'), 'content: hasTukifThreat');
+  assert(src.includes('videos.tukif.porn'), 'content: videos.tukif.porn');
+  assert(src.includes('dsclcnst'), 'content: cible dsclcnst');
+  assert(src.includes('img-blured'), 'content: cible img-blured');
+  assert(src.includes('sfw_disclaimer_wrapper'), 'content: cible sfw_disclaimer_wrapper');
+  assert(src.includes('agechecker'), 'content: cible agechecker');
+  assert(src.includes('blurmyass'), 'content: cible blurmyass');
+  assert(!/click_remove_disclaimer[\s\S]{0,80}\.click\(/.test(src), 'content: ne clique pas click_remove_disclaimer');
+  assert(
+    /videos\.\(lebon\|tukif\)\.porn/.test(lbpPage) ||
+      (lbpPage.includes('tukif') && lbpPage.includes('videos.lebon.porn') && lbpPage.includes('ewkplrpmr') && lbpPage.includes('player_mode')),
+    'lebonporn page: isPlayer couvre tukif'
+  );
+  const csLbpPageEntry = (mf.content_scripts || []).find((s) => (s.js || []).includes('lebonporn-page.js'));
+  const csLbpPageMatches = (csLbpPageEntry?.matches || []).join(' ');
+  assert(/tukif\.porn/.test(csLbpPageMatches) && /videos\.tukif\.porn/.test(csLbpPageMatches), 'manifest: lebonporn-page.js matches tukif.porn + videos.tukif.porn');
+  assert(/tukif\.porn/.test(lbpInjectMatches) && /videos\.tukif\.porn/.test(lbpInjectMatches), 'manifest: lebonporn-inject matches tukif.porn + videos.tukif.porn');
+  const warLbpEntry = (mf.web_accessible_resources || []).find((r) => (r.resources || []).includes('lebonporn-page.js'));
+  const warLbpMatches = (warLbpEntry?.matches || []).join(' ');
+  assert(/tukif\.porn/.test(warLbpMatches), 'manifest: WAR lebonporn-page.js matches tukif.porn');
+  assert(mf.browser_specific_settings?.gecko?.id === 'agego-deblur@local.dev', 'manifest: gecko id agego-deblur@local.dev');
 }
 
 

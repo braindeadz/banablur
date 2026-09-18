@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Banablur",
-  "version": "1.9.2",
-  "description": "Peel the blur. Removes age-gate overlays and video blur on XVIDEOS, XNXX, xHamster, xHamsterLive, Pornhub, Chaturbate, LebonPorn, FapHouse, AgeGO/Deviants and similar sites. Optional video download button and xHamster geo proxy.",
+  "version": "1.9.3",
+  "description": "Peel the blur. Removes age-gate overlays and video blur on XVIDEOS, XNXX, xHamster, xHamsterLive, Pornhub, Chaturbate, LebonPorn, Tukif, FapHouse, AgeGO/Deviants and similar sites. Optional video download button and xHamster geo proxy.",
   "background": {
     "service_worker": "background.js",
     "scripts": ["background.js"]
@@ -40,7 +40,11 @@
         "*://lebon.porn/*",
         "*://*.lebon.porn/*",
         "*://videos.lebon.porn/*",
-        "*://*.videos.lebon.porn/*"
+        "*://*.videos.lebon.porn/*",
+        "*://tukif.porn/*",
+        "*://*.tukif.porn/*",
+        "*://videos.tukif.porn/*",
+        "*://*.videos.tukif.porn/*"
       ],
       "js": ["lebonporn-page.js"],
       "run_at": "document_start",
@@ -52,7 +56,11 @@
         "*://lebon.porn/*",
         "*://*.lebon.porn/*",
         "*://videos.lebon.porn/*",
-        "*://*.videos.lebon.porn/*"
+        "*://*.videos.lebon.porn/*",
+        "*://tukif.porn/*",
+        "*://*.tukif.porn/*",
+        "*://videos.tukif.porn/*",
+        "*://*.videos.tukif.porn/*"
       ],
       "js": ["lebonporn-inject.js"],
       "run_at": "document_start",
@@ -102,7 +110,11 @@
         "*://lebon.porn/*",
         "*://*.lebon.porn/*",
         "*://videos.lebon.porn/*",
-        "*://*.videos.lebon.porn/*"
+        "*://*.videos.lebon.porn/*",
+        "*://tukif.porn/*",
+        "*://*.tukif.porn/*",
+        "*://videos.tukif.porn/*",
+        "*://*.videos.tukif.porn/*"
       ]
     }
   ],

@@ -66,7 +66,7 @@ function updateUI(status) {
   if (profiles.length) {
     setDot(els.dotProfiles, 'ok');
     els.labelProfiles.textContent = 'Profils : ' + profiles.join(', ');
-  } else if (status.agegoDetected || status.xvideosDetected || status.xhamsterDetected || status.xhamsterLiveDetected || status.faphouseDetected || status.chaturbateDetected || status.lebonpornDetected) {
+  } else if (status.agegoDetected || status.xvideosDetected || status.xhamsterDetected || status.xhamsterLiveDetected || status.faphouseDetected || status.chaturbateDetected || status.lebonpornDetected || status.tukifDetected) {
     setDot(els.dotProfiles, 'warn');
     els.labelProfiles.textContent = 'Profils : detecte (non actif)';
   } else {
@@ -104,12 +104,14 @@ function updateUI(status) {
     status.faphouseDetected ||
     status.chaturbateDetected ||
     status.lebonpornDetected ||
+    status.tukifDetected ||
     profiles.includes('xvideos') ||
     profiles.includes('xhamster') ||
     profiles.includes('xhamsterlive') ||
     profiles.includes('faphouse') ||
     profiles.includes('chaturbate') ||
-    profiles.includes('lebonporn')
+    profiles.includes('lebonporn') ||
+    profiles.includes('tukif')
   ) {
     setDot(els.dotVideo, 'ok');
     els.labelVideo.textContent = 'Video : nette';

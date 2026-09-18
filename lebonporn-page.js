@@ -4,7 +4,7 @@
   window.__agegoLbpReady = true;
 
   var host = location.hostname.replace(/^www\./i, '');
-  var isPlayer = /(^|\.)videos\.lebon\.porn$/i.test(host);
+  var isPlayer = /(^|\.)videos\.(lebon|tukif)\.porn$/i.test(host);
 
   // --- Player iframe (videos.lebon.porn) ---
 
@@ -114,7 +114,7 @@
 
   function unlockIframes() {
     var msg = { player_mode: 'default', msg_origin: 'ewkplrpmr' };
-    document.querySelectorAll('iframe[id*="ewok-iframe"], iframe[src*="videos.lebon.porn"]').forEach(function (frame) {
+    document.querySelectorAll('iframe[id*="ewok-iframe"], iframe[src*="videos.lebon.porn"], iframe[src*="videos.tukif.porn"]').forEach(function (frame) {
       frame.classList.remove('mrx-blur-20');
       frame.style.filter = 'none';
       try {
@@ -131,7 +131,7 @@
     });
     if (document.body) document.body.classList.add('mrx-unblur');
     unlockThumbs();
-    document.querySelectorAll('.mrx-overlay, .mrx-click-overlay, .mrx-player-blur-overlay, .mrx-blur-overlay').forEach(function (el) {
+    document.querySelectorAll('.mrx-overlay, .mrx-click-overlay, .mrx-player-blur-overlay, .mrx-blur-overlay, .disclaimer_parent_wrapper, .sfw_disclaimer_wrapper, .disclaimer_overlay, .agechecker, .blurmyass').forEach(function (el) {
       el.style.display = 'none';
     });
     spoofAgeVerif();
