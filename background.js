@@ -32,9 +32,12 @@ if (api?.runtime?.onMessage) {
 // ---------------------------------------------------------------------------
 // Proxy xHamster
 // ---------------------------------------------------------------------------
-const PROXY_DOMAINS = ['xhamster.com', 'xhpingcdn.com', 'xhcdn.com'];
-const PROXY_MATCH = ['*://*.xhamster.com/*', '*://*.xhpingcdn.com/*', '*://*.xhcdn.com/*'];
-const PROXY_XV_EMBED_MATCH = ['*://*.xvideos.com/embedframe/*', '*://*.xnxx.com/embedframe/*'];
+const PROXY_DOMAINS = ['xhamster.com', 'xhamster.desi', 'xhpingcdn.com', 'xhcdn.com'];
+const PROXY_MATCH = ['*://*.xhamster.com/*', '*://*.xhamster.desi/*', '*://*.xhpingcdn.com/*', '*://*.xhcdn.com/*'];
+const PROXY_XV_EMBED_MATCH = [
+  '*://*.xvideos.com/embedframe/*', '*://*.xvideos.es/embedframe/*', '*://*.xvideos.red/embedframe/*',
+  '*://*.xnxx.com/embedframe/*', '*://*.xnxx.es/embedframe/*', '*://*.xnxx.red/embedframe/*',
+];
 // Proxys hors-FR par defaut (publics gratuits, valides e2e). Peuvent mourir:
 // l'utilisateur peut rafraichir la liste (proxy:refresh) et le PAC bascule
 // automatiquement sur le suivant (failover), puis DIRECT en dernier recours.
@@ -68,7 +71,7 @@ function buildPacData(list) {
     .map((d) => `dnsDomainIs(host, ".${d}") || host == "${d}"`)
     .join(' || ');
   const xvHostConds =
-    'dnsDomainIs(host, ".xvideos.com") || host == "xvideos.com" || dnsDomainIs(host, ".xnxx.com") || host == "xnxx.com"';
+    'dnsDomainIs(host, ".xvideos.com") || host == "xvideos.com" || dnsDomainIs(host, ".xvideos.es") || host == "xvideos.es" || dnsDomainIs(host, ".xvideos.red") || host == "xvideos.red" || dnsDomainIs(host, ".xnxx.com") || host == "xnxx.com" || dnsDomainIs(host, ".xnxx.es") || host == "xnxx.es" || dnsDomainIs(host, ".xnxx.red") || host == "xnxx.red"';
   return `function FindProxyForURL(url, host) {
   if (${xhConds}) {
     return "${ret}";
@@ -97,7 +100,11 @@ function firefoxApply(list) {
       const h = u.hostname.toLowerCase();
       const isXv =
         h === 'xvideos.com' || h.endsWith('.xvideos.com') ||
-        h === 'xnxx.com' || h.endsWith('.xnxx.com');
+        h === 'xvideos.es' || h.endsWith('.xvideos.es') ||
+        h === 'xvideos.red' || h.endsWith('.xvideos.red') ||
+        h === 'xnxx.com' || h.endsWith('.xnxx.com') ||
+        h === 'xnxx.es' || h.endsWith('.xnxx.es') ||
+        h === 'xnxx.red' || h.endsWith('.xnxx.red');
       if (isXv && !u.pathname.includes('/embedframe/')) {
         return [{ type: 'direct' }];
       }
@@ -209,7 +216,7 @@ async function handleProxyMessage(message) {
     case 'xv:embedframe': {
       const key = String(message.key || '').replace(/[^\w.-]/g, '');
       const origin = message.origin;
-      if (!key || !/^https:\/\/(www\.)?(xvideos|xnxx)\.com$/i.test(origin || '')) {
+      if (!key || !/^https:\/\/(www\.)?(xvideos|xnxx)\.(com|es|red)$/i.test(origin || '')) {
         return { ok: false };
       }
       try {

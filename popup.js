@@ -1,5 +1,43 @@
 const api = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : null;
 
+const SUPPORTED_SITES = [
+  { name: 'XVIDEOS', url: 'https://www.xvideos.com' },
+  { name: 'XNXX', url: 'https://www.xnxx.com' },
+  { name: 'xHamster', url: 'https://www.xhamster.com' },
+  { name: 'xHamster Live', url: 'https://fr.xhamsterlive.com' },
+  { name: 'Pornhub', url: 'https://www.pornhub.com' },
+  { name: 'Chaturbate', url: 'https://chaturbate.com' },
+  { name: 'LebonPorn', url: 'https://lebon.porn' },
+  { name: 'Tukif', url: 'https://tukif.porn' },
+  { name: 'FapHouse', url: 'https://www.faphouse.com' },
+  { name: 'Deviants', url: 'https://deviants.com' },
+  { name: 'BongaCams', url: 'https://bongacams.com' },
+  { name: 'Eporner', url: 'https://www.eporner.com' },
+  { name: 'HClips', url: 'https://hclips.com' },
+  { name: 'HDZog', url: 'https://hdzog.com' },
+  { name: 'Jacquie et Michel', url: 'https://www.jacquieetmichel.net' },
+  { name: 'Jacquie et Michel TV', url: 'https://www.jacquieetmicheltv.net' },
+  { name: 'LiveJasmin', url: 'https://www.livejasmin.com' },
+  { name: 'MovieFap', url: 'https://www.moviefap.com' },
+  { name: 'PerfectGirls', url: 'https://www.perfectgirls.xxx' },
+  { name: 'Porn.com', url: 'https://www.porn.com' },
+  { name: 'PornDig', url: 'https://www.porndig.com' },
+  { name: 'PornOne', url: 'https://www.pornone.com' },
+  { name: 'PornTube', url: 'https://www.porntube.com' },
+  { name: 'RedTube', url: 'https://www.redtube.com' },
+  { name: 'Stripchat', url: 'https://stripchat.com' },
+  { name: 'SunPorno', url: 'https://www.sunporno.com' },
+  { name: 'sxyprn', url: 'https://sxyprn.com' },
+  { name: 'TNAFlix', url: 'https://www.tnaflix.com' },
+  { name: 'Tube8', url: 'https://www.tube8.com' },
+  { name: 'TXXX', url: 'https://txxx.com' },
+  { name: 'Upornia', url: 'https://upornia.com' },
+  { name: 'xHamster.desi', url: 'https://xhamster.desi' },
+  { name: 'XNXX.es', url: 'https://www.xnxx.es' },
+  { name: 'XVIDEOS.es', url: 'https://www.xvideos.es' },
+  { name: 'YouPorn', url: 'https://www.youporn.com' },
+];
+
 const els = {
   hostname: document.getElementById('hostname'),
   dotProfiles: document.getElementById('dot-profiles'),
@@ -17,6 +55,7 @@ const els = {
   proxyInfo: document.getElementById('proxy-info'),
   lastCleanup: document.getElementById('last-cleanup'),
   feedback: document.getElementById('feedback'),
+  sitesList: document.getElementById('sites-list'),
 };
 
 function sendToRuntime(message) {
@@ -57,6 +96,44 @@ function showFeedback(text, isError) {
   els.feedback.hidden = false;
   els.feedback.textContent = text;
   els.feedback.classList.toggle('error', !!isError);
+}
+
+function hostnameMatchesSite(currentHostname, siteUrl) {
+  if (!currentHostname) return false;
+  try {
+    const siteHost = new URL(siteUrl).hostname.toLowerCase();
+    const current = currentHostname.toLowerCase();
+    if (current === siteHost) return true;
+    const suffix = siteHost.includes('.') ? siteHost.slice(siteHost.indexOf('.') + 1) : siteHost;
+    return current === suffix || current.endsWith('.' + suffix);
+  } catch (_e) {
+    return false;
+  }
+}
+
+function renderSites(currentHostname) {
+  if (!els.sitesList) return;
+  els.sitesList.innerHTML = '';
+  for (const site of SUPPORTED_SITES) {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.className = 'site-link';
+    a.href = site.url;
+    a.textContent = site.name;
+    if (hostnameMatchesSite(currentHostname, site.url)) {
+      a.classList.add('is-current');
+    }
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (api?.tabs?.create) {
+        api.tabs.create({ url: site.url, active: true });
+      } else {
+        window.open(site.url, '_blank');
+      }
+    });
+    li.appendChild(a);
+    els.sitesList.appendChild(li);
+  }
 }
 
 function updateUI(status) {
@@ -146,7 +223,9 @@ async function refreshStatus() {
     const tab = await getActiveTab();
     if (!tab?.id) return;
 
-    els.hostname.textContent = tab.url ? new URL(tab.url).hostname : '—';
+    const hostname = tab.url ? new URL(tab.url).hostname : '';
+    els.hostname.textContent = hostname || '—';
+    renderSites(hostname);
 
     if (
       tab.url?.startsWith('chrome:') ||

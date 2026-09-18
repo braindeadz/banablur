@@ -7,55 +7,122 @@
 
 
 const SITE_PROFILES = {
-
-  'deviants.com': ['agego'],
-
-  'www.deviants.com': ['agego'],
-
-  'xvideos.com': ['xvideos', 'agego'],
-
-  'www.xvideos.com': ['xvideos', 'agego'],
-  'xnxx.com': ['xvideos', 'agego'],
-  'www.xnxx.com': ['xvideos', 'agego'],
-
-  'xhamster.com': ['xhamster'],
-
-  'www.xhamster.com': ['xhamster'],
-
-  'fra.xhamster.com': ['xhamster'],
-
-  'xhamsterlive.com': ['xhamsterlive'],
-
-  'www.xhamsterlive.com': ['xhamsterlive'],
-
-  'faphouse.com': ['faphouse'],
-
-  'www.faphouse.com': ['faphouse'],
-
-  'chaturbate.com': ['chaturbate'],
-
-  'www.chaturbate.com': ['chaturbate'],
-
-  'pornhub.com': ['pornhub'],
-
-  'www.pornhub.com': ['pornhub'],
-
-  'fr.pornhub.com': ['pornhub'],
-
-  'lebon.porn': ['lebonporn'],
-  'www.lebon.porn': ['lebonporn'],
-  'videos.lebon.porn': ['lebonporn'],
-  'tukif.porn': ['tukif'],
-  'www.tukif.porn': ['tukif'],
-  'videos.tukif.porn': ['tukif'],
-
+    'deviants.com': ['agego'],
+    'www.deviants.com': ['agego'],
+    'xvideos.com': ['xvideos', 'agego'],
+    'www.xvideos.com': ['xvideos', 'agego'],
+    'fr.xvideos.com': ['xvideos', 'agego'],
+    'xvideos.es': ['xvideos', 'agego'],
+    'www.xvideos.es': ['xvideos', 'agego'],
+    'xnxx.com': ['xvideos', 'agego'],
+    'www.xnxx.com': ['xvideos', 'agego'],
+    'xnxx.es': ['xvideos', 'agego'],
+    'www.xnxx.es': ['xvideos', 'agego'],
+    'xvideos.red': ['xvideos'],
+    'www.xvideos.red': ['xvideos'],
+    'xhamster.com': ['xhamster'],
+    'www.xhamster.com': ['xhamster'],
+    'fra.xhamster.com': ['xhamster'],
+    'ge.xhamster.com': ['xhamster'],
+    'ita.xhamster.com': ['xhamster'],
+    'nl.xhamster.com': ['xhamster'],
+    'xhamster.desi': ['xhamster'],
+    'www.xhamster.desi': ['xhamster'],
+    'xhamsterlive.com': ['xhamsterlive'],
+    'www.xhamsterlive.com': ['xhamsterlive'],
+    'faphouse.com': ['faphouse'],
+    'www.faphouse.com': ['faphouse'],
+    'chaturbate.com': ['chaturbate'],
+    'www.chaturbate.com': ['chaturbate'],
+    'pornhub.com': ['pornhub'],
+    'www.pornhub.com': ['pornhub'],
+    'fr.pornhub.com': ['pornhub'],
+    'rt.pornhub.com': ['pornhub'],
+    'pornhubpremium.com': ['pornhub'],
+    'www.pornhubpremium.com': ['pornhub'],
+    'fr.pornhubpremium.com': ['pornhub'],
+    'tube8.com': ['pornhub'],
+    'www.tube8.com': ['pornhub'],
+    'tnaflix.com': ['agego'],
+    'www.tnaflix.com': ['agego'],
+    'moviefap.com': ['agego'],
+    'www.moviefap.com': ['agego'],
+    'pornone.com': ['agego'],
+    'www.pornone.com': ['agego'],
+    'perfectgirls.xxx': ['agego'],
+    'www.perfectgirls.xxx': ['agego'],
+    'porndig.com': ['tkn'],
+    'www.porndig.com': ['tkn'],
+    'sxyprn.com': ['tkn'],
+    'www.sxyprn.com': ['tkn'],
+    'txxx.com': ['txxx'],
+    'www.txxx.com': ['txxx'],
+    'hclips.com': ['txxx'],
+    'www.hclips.com': ['txxx'],
+    'upornia.com': ['txxx'],
+    'www.upornia.com': ['txxx'],
+    'hdzog.com': ['txxx'],
+    'www.hdzog.com': ['txxx'],
+    'voyeurhit.com': ['txxx'],
+    'www.voyeurhit.com': ['txxx'],
+    'hotmovs.com': ['txxx'],
+    'www.hotmovs.com': ['txxx'],
+    'ooxxx.com': ['txxx'],
+    'www.ooxxx.com': ['txxx'],
+    'manysex.com': ['txxx'],
+    'www.manysex.com': ['txxx'],
+    'tubepornclassic.com': ['txxx'],
+    'www.tubepornclassic.com': ['txxx'],
+    'pornzog.com': ['txxx'],
+    'www.pornzog.com': ['txxx'],
+    'tporn.xxx': ['txxx'],
+    'www.tporn.xxx': ['txxx'],
+    'tporn.tube': ['txxx'],
+    'www.tporn.tube': ['txxx'],
+    'desi-porn.tube': ['txxx'],
+    'www.desi-porn.tube': ['txxx'],
+    'thegay.com': ['txxx'],
+    'www.thegay.com': ['txxx'],
+    'shemalez.com': ['txxx'],
+    'www.shemalez.com': ['txxx'],
+    'eporner.com': ['eporner'],
+    'www.eporner.com': ['eporner'],
+    'sunporno.com': ['sunporno'],
+    'www.sunporno.com': ['sunporno'],
+    'jacquieetmicheltv.net': ['jacquie'],
+    'www.jacquieetmicheltv.net': ['jacquie'],
+    'jacquieetmichel.net': ['jacquie'],
+    'www.jacquieetmichel.net': ['jacquie'],
+    'youporn.com': ['aylo'],
+    'www.youporn.com': ['aylo'],
+    'fr.youporn.com': ['aylo'],
+    'redtube.com': ['aylo'],
+    'www.redtube.com': ['aylo'],
+    'porntube.com': ['porntube'],
+    'www.porntube.com': ['porntube'],
+    'porn.com': ['porncom'],
+    'www.porn.com': ['porncom'],
+    'stripchat.com': ['stripchat'],
+    'www.stripchat.com': ['stripchat'],
+    'fr.stripchat.com': ['stripchat'],
+    'bongacams.com': ['bongacams'],
+    'www.bongacams.com': ['bongacams'],
+    'fr.bongacams.com': ['bongacams'],
+    'livejasmin.com': ['livejasmin'],
+    'www.livejasmin.com': ['livejasmin'],
+    'lebon.porn': ['lebonporn'],
+    'www.lebon.porn': ['lebonporn'],
+    'videos.lebon.porn': ['lebonporn'],
+    'tukif.porn': ['tukif'],
+    'www.tukif.porn': ['tukif'],
+    'videos.tukif.porn': ['tukif'],
 };
 
 
 
 function detectXvideosHost(hostname) {
 
-  return /(^|\.)(xvideos|xnxx)\.com$/i.test(hostname);
+  return /(^|\.)(xvideos|xnxx)\.(com|es|red)$/i.test(hostname);
 
 }
 
@@ -63,8 +130,33 @@ function detectXvideosHost(hostname) {
 
 function detectXhamsterHost(hostname) {
 
-  return /(^|\.)xhamster\.com$/i.test(hostname);
+  return /(^|\.)xhamster\.(com|desi)$/i.test(hostname);
 
+}
+
+function extractContentSiteProfiles(src) {
+  const m = src.match(/const SITE_PROFILES = \{([\s\S]*?)\n  \};/);
+  if (!m) return {};
+  try {
+    return Function('"use strict"; return ({' + m[1] + '});')();
+  } catch (_e) {
+    return {};
+  }
+}
+
+function contentHostHasProfile(contentProfiles, contentSrc, host, profile) {
+  const candidates = [host];
+  if (!host.startsWith('www.')) candidates.push('www.' + host);
+  for (const key of candidates) {
+    if (Array.isArray(contentProfiles[key]) && contentProfiles[key].includes(profile)) return true;
+  }
+  const block = (contentSrc.match(/const SITE_PROFILES = \{[\s\S]*?\n  \};/) || [''])[0];
+  const hostRe = host.replace(/\./g, '\\.');
+  return new RegExp(`['"]((www\\.)?${hostRe})['"]\\s*:\\s*\\[[^\\]]*['"]${profile}['"]`).test(block);
+}
+
+function extractFnBody(src, name) {
+  return (src.match(new RegExp('function ' + name + '\\(\\)[\\s\\S]*?\\n  \\}')) || [''])[0];
 }
 
 
@@ -102,6 +194,22 @@ assert(SITE_PROFILES['deviants.com'].includes('agego'), 'deviants -> agego');
 assert(SITE_PROFILES['www.xvideos.com'].includes('xvideos'), 'xvideos -> xvideos');
 
 assert(SITE_PROFILES['www.xhamster.com'].includes('xhamster'), 'xhamster -> xhamster');
+assert(SITE_PROFILES['xvideos.es'].includes('xvideos'), 'xvideos.es -> xvideos');
+assert(SITE_PROFILES['xnxx.es'].includes('xvideos'), 'xnxx.es -> xvideos');
+assert(SITE_PROFILES['xhamster.desi'].includes('xhamster'), 'xhamster.desi -> xhamster');
+assert(SITE_PROFILES['tnaflix.com'].includes('agego'), 'tnaflix -> agego');
+assert(SITE_PROFILES['tube8.com'].includes('pornhub'), 'tube8 -> pornhub');
+assert(SITE_PROFILES['porndig.com'].includes('tkn'), 'porndig -> tkn');
+assert(SITE_PROFILES['txxx.com'].includes('txxx'), 'txxx -> txxx');
+assert(SITE_PROFILES['eporner.com'].includes('eporner'), 'eporner -> eporner');
+assert(SITE_PROFILES['jacquieetmicheltv.net'].includes('jacquie'), 'jacquieetmicheltv -> jacquie');
+assert(SITE_PROFILES['youporn.com'].includes('aylo'), 'youporn -> aylo');
+assert(SITE_PROFILES['stripchat.com'].includes('stripchat'), 'stripchat -> stripchat');
+assert(SITE_PROFILES['bongacams.com'].includes('bongacams'), 'bongacams -> bongacams');
+assert(SITE_PROFILES['livejasmin.com'].includes('livejasmin'), 'livejasmin -> livejasmin');
+assert(SITE_PROFILES['sxyprn.com'].includes('tkn'), 'sxyprn -> tkn');
+assert(SITE_PROFILES['sunporno.com'].includes('sunporno'), 'sunporno -> sunporno');
+assert(SITE_PROFILES['pornone.com'].includes('agego'), 'pornone -> agego');
 
 
 
@@ -114,6 +222,10 @@ assert(detectXvideosHost('xvideos.com'), 'xvideos.com');
 assert(detectXvideosHost('www.xnxx.com'), 'www.xnxx.com');
 
 assert(detectXvideosHost('xnxx.com'), 'xnxx.com');
+assert(detectXvideosHost('xvideos.es'), 'xvideos.es');
+assert(detectXvideosHost('www.xvideos.es'), 'www.xvideos.es');
+assert(detectXvideosHost('xnxx.es'), 'xnxx.es');
+assert(detectXvideosHost('xvideos.red'), 'xvideos.red');
 
 assert(!detectXvideosHost('google.com'), 'google.com false');
 
@@ -124,6 +236,8 @@ console.log('Test 3: detectXhamsterHost');
 assert(detectXhamsterHost('www.xhamster.com'), 'www.xhamster.com');
 
 assert(detectXhamsterHost('xhamster.com'), 'xhamster.com');
+assert(detectXhamsterHost('xhamster.desi'), 'xhamster.desi');
+assert(detectXhamsterHost('www.xhamster.desi'), 'www.xhamster.desi');
 
 assert(!detectXhamsterHost('xvideos.com'), 'xvideos.com false');
 
@@ -135,15 +249,21 @@ console.log('Test 4: manifest v1.5');
 
   const m = require('./manifest.json');
 
-  assert(m.version === '1.9.3', 'version 1.9.3');
+  assert(m.version === '1.10.0', 'version 1.10.0');
   assert(!!m.web_accessible_resources?.length, 'web_accessible_resources');
   const war = m.web_accessible_resources?.[0]?.resources || [];
   assert(war.includes('hls.min.js'), 'hls.min.js accessible');
   assert((m.permissions || []).includes('downloads'), 'permission downloads');
   assert((m.permissions || []).includes('proxy'), 'permission proxy (deflou xHamster)');
+  assert(!(m.permissions || []).includes('tabs'), 'manifest: pas de permission tabs');
   const hostPerms = (m.host_permissions || []).join(' ');
   assert(/xvideos\.com/.test(hostPerms), 'manifest host_permissions: xvideos.com');
   assert(/xnxx\.com/.test(hostPerms), 'manifest host_permissions: xnxx.com');
+  assert(/xvideos\.es/.test(hostPerms), 'manifest host_permissions: xvideos.es');
+  assert(/xnxx\.es/.test(hostPerms), 'manifest host_permissions: xnxx.es');
+  assert(/xvideos\.red/.test(hostPerms), 'manifest host_permissions: xvideos.red');
+  const warXvMatchesV110 = ((m.web_accessible_resources || []).find((r) => (r.resources || []).includes('xvideos-page.js'))?.matches || []).join(' ');
+  assert(/xvideos\.es/.test(warXvMatchesV110), 'manifest WAR: xvideos.es');
   assert(m.background?.service_worker === 'background.js', 'service worker background.js');
 
   assert(!!m.icons?.['16'], 'icons racine 16');
@@ -365,7 +485,14 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   const csLbpInjectEntry = (mf.content_scripts || []).find((s) => (s.js || []).includes('lebonporn-inject.js'));
   const lbpInjectMatches = (csLbpInjectEntry?.matches || []).join(' ');
   assert(/lebon\.porn/.test(lbpInjectMatches) && /videos\.lebon\.porn/.test(lbpInjectMatches), 'manifest: lebonporn-inject matches lebon.porn + videos');
-  assert(!!mf.browser_specific_settings?.gecko?.strict_min_version, 'manifest: gecko.strict_min_version');
+  assert(
+    mf.browser_specific_settings?.gecko?.strict_min_version === '140.0',
+    'manifest: gecko.strict_min_version 140.0'
+  );
+  assert(
+    mf.browser_specific_settings?.gecko_android?.strict_min_version === '142.0',
+    'manifest: gecko_android.strict_min_version 142.0'
+  );
   assert(
     !!mf.browser_specific_settings?.gecko?.data_collection_permissions,
     'manifest: gecko.data_collection_permissions (Firefox 140+)'
@@ -400,10 +527,165 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   const warLbpEntry = (mf.web_accessible_resources || []).find((r) => (r.resources || []).includes('lebonporn-page.js'));
   const warLbpMatches = (warLbpEntry?.matches || []).join(' ');
   assert(/tukif\.porn/.test(warLbpMatches), 'manifest: WAR lebonporn-page.js matches tukif.porn');
+  assert(lbpPage.includes('999999999'), 'lebonporn page: SFW no-limit timestamp (999999999)');
+  assert(!/video_timestamp\s*=\s*0\b/.test(lbpPage), 'lebonporn page: ne remet plus video_timestamp a 0');
+  assert(lbpPage.includes("'seeking'") || lbpPage.includes('"seeking"'), 'lebonporn page: ecoute seeking');
+  assert(lbpPage.includes("'seeked'") || lbpPage.includes('"seeked"'), 'lebonporn page: ecoute seeked');
+  assert(/player_mode\s*:\s*['"]default['"]/.test(lbpPage), 'lebonporn page: player_mode default (TKN seek fix)');
+  assert(lbpPage.includes('ewkplrpmr'), 'lebonporn page: ewkplrpmr (TKN seek fix)');
+  assert(src.includes('#disclaimer_parent_wrapper'), 'content: selecteur #disclaimer_parent_wrapper');
+  assert(src.includes('disclaimer_wrapper'), 'content: cible disclaimer_wrapper');
+  assert(src.includes('dsclcnst=1'), 'content: cookie dsclcnst=1 (AgeVerif skip)');
+  assert(src.includes('dismissTukifDisclaimer'), 'content: dismissTukifDisclaimer');
+  const startTukifWatchdogBody = (src.match(/function startTukifWatchdog\(\)[\s\S]*?\n  \}/) || [''])[0];
+  assert(startTukifWatchdogBody.includes('dismissTukifDisclaimer'), 'content: startTukifWatchdog appelle dismissTukifDisclaimer');
+  const dismissTukifBody = (src.match(/function dismissTukifDisclaimer\(\)[\s\S]*?\n  \}/) || [''])[0];
+  assert(
+    dismissTukifBody.includes('#disclaimer_parent_wrapper') || startTukifWatchdogBody.includes('dismissTukifDisclaimer'),
+    'content: dismiss/watchdog mentionne #disclaimer_parent_wrapper'
+  );
+  assert(lbpPage.includes('#disclaimer_parent_wrapper'), 'lebonporn page: selecteur #disclaimer_parent_wrapper');
+  assert(lbpPage.includes('ageverif'), 'lebonporn page: ageverif');
+  assert(
+    /ageverif[\s\S]{0,400}(\.start\s*=|start\s*=\s*function)/.test(lbpPage) ||
+      /obj\.start\s*=\s*function/.test(lbpPage),
+    'lebonporn page: stub ageverif.start'
+  );
+  assert(startTukifWatchdogBody.includes('injectCSS'), 'content: startTukifWatchdog appelle injectCSS');
+  assert(
+    src.includes('pushState') || src.includes('onTukifNavigate') || src.includes('lastTukifPath'),
+    'content: pushState ou navigation tukif (onTukifNavigate/lastTukifPath)'
+  );
+  assert(src.includes('/videos/'), 'content: clic guard lien /videos/');
+  assert(lbpPage.includes('pushState'), 'lebonporn page: wrap history.pushState');
+  assert(
+    lbpPage.includes('MutationObserver') ||
+      /Observer[\s\S]{0,500}videos\.tukif\.porn/.test(lbpPage),
+    'lebonporn page: MutationObserver iframes tukif/lebon'
+  );
   assert(mf.browser_specific_settings?.gecko?.id === 'agego-deblur@local.dev', 'manifest: gecko id agego-deblur@local.dev');
 }
 
+console.log('Test 6: build.ps1 (XPI Firefox sans service_worker)');
+{
+  const fs = require('fs');
+  const path = require('path');
+  const buildSrc = fs.readFileSync(path.join(__dirname, 'build.ps1'), 'utf8');
+  assert(buildSrc.includes('service_worker'), 'build.ps1: reference service_worker');
+  assert(/\.xpi|\$xpiPath/.test(buildSrc), 'build.ps1: reference xpi');
+  assert(
+    /Replace[\s\S]{0,200}service_worker|service_worker[\s\S]{0,400}xpi|xpi[\s\S]{0,400}service_worker/i.test(buildSrc),
+    'build.ps1: retire service_worker du XPI Firefox'
+  );
+}
 
+console.log('Test 7: popup sites list');
+{
+  const fs = require('fs');
+  const path = require('path');
+  const popupJs = fs.readFileSync(path.join(__dirname, 'popup.js'), 'utf8');
+  const popupHtml = fs.readFileSync(path.join(__dirname, 'popup.html'), 'utf8');
+  const popupCss = fs.readFileSync(path.join(__dirname, 'popup.css'), 'utf8');
+  const mf = require('./manifest.json');
+
+  assert(popupJs.includes('SUPPORTED_SITES'), 'popup.js: SUPPORTED_SITES');
+  assert(popupJs.includes('tukif.porn'), 'popup.js: tukif.porn');
+  assert(popupJs.includes('xvideos.com'), 'popup.js: xvideos.com');
+  assert(popupJs.includes('tnaflix.com'), 'popup.js: tnaflix.com');
+  assert(popupJs.includes('youporn.com'), 'popup.js: youporn.com');
+  assert(popupJs.includes('txxx.com'), 'popup.js: txxx.com');
+  assert(popupJs.includes('stripchat.com'), 'popup.js: stripchat.com');
+  assert(popupJs.includes('tabs.create'), 'popup.js: tabs.create');
+  assert(popupJs.includes('renderSites'), 'popup.js: renderSites');
+  assert(popupHtml.includes('sites-list'), 'popup.html: sites-list');
+  assert(popupHtml.includes('Sites pris en charge'), 'popup.html: Sites pris en charge');
+  assert(popupCss.includes('site-link'), 'popup.css: site-link');
+
+  const perms = mf.permissions || [];
+  assert(!perms.includes('tabs'), 'manifest: pas de permission tabs ajoutee');
+
+  const hostPerms = (mf.host_permissions || []).join(' ');
+  assert(!/chaturbate\.com/.test(hostPerms), 'manifest: pas host_permission chaturbate pour popup');
+  assert(!/faphouse\.com/.test(hostPerms), 'manifest: pas host_permission faphouse pour popup');
+  assert(!/pornhub\.com/.test(hostPerms), 'manifest: pas host_permission pornhub pour popup');
+  assert(!/xhamster\.com/.test(hostPerms), 'manifest: pas host_permission xhamster pour popup');
+  assert(!/lebon\.porn/.test(hostPerms), 'manifest: pas host_permission lebon.porn pour popup');
+  assert(!/tukif\.porn/.test(hostPerms), 'manifest: pas host_permission tukif.porn pour popup');
+  assert(!/deviants\.com/.test(hostPerms), 'manifest: pas host_permission deviants pour popup');
+}
+
+console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
+{
+  const fs = require('fs');
+  const path = require('path');
+  const src = fs.readFileSync(path.join(__dirname, 'content.js'), 'utf8');
+  const contentProfiles = extractContentSiteProfiles(src);
+  const hostMap = [
+    ['xvideos.es', 'xvideos'],
+    ['xnxx.es', 'xvideos'],
+    ['xhamster.desi', 'xhamster'],
+    ['tnaflix.com', 'agego'],
+    ['tube8.com', 'pornhub'],
+    ['porndig.com', 'tkn'],
+    ['txxx.com', 'txxx'],
+    ['eporner.com', 'eporner'],
+    ['jacquieetmicheltv.net', 'jacquie'],
+    ['youporn.com', 'aylo'],
+    ['stripchat.com', 'stripchat'],
+    ['bongacams.com', 'bongacams'],
+    ['livejasmin.com', 'livejasmin'],
+    ['sxyprn.com', 'tkn'],
+    ['sunporno.com', 'sunporno'],
+    ['pornone.com', 'agego'],
+  ];
+  for (const [host, profile] of hostMap) {
+    assert(
+      contentHostHasProfile(contentProfiles, src, host, profile),
+      `content.js SITE_PROFILES: ${host} -> ${profile}`
+    );
+  }
+
+  const xvHostFn = extractFnBody(src, 'isXvideosHost');
+  assert(
+    (/es/.test(xvHostFn) && /red/.test(xvHostFn)),
+    'content: isXvideosHost regex inclut .es et .red'
+  );
+  const xhHostFn = extractFnBody(src, 'isXhamsterHost');
+  assert(/desi/.test(xhHostFn), 'content: isXhamsterHost inclut .desi');
+  const phHostFn = extractFnBody(src, 'isPornhubHost');
+  assert(
+    /pornhubpremium|pornhub\(premium\)/.test(phHostFn),
+    'content: isPornhubHost inclut pornhubpremium'
+  );
+
+  const detectTukifBody = extractFnBody(src, 'detectTukif');
+  const isTukifHostBody = extractFnBody(src, 'isTukifHost');
+  assert(isTukifHostBody.includes('tukif'), 'content: isTukifHost serre (tukif)');
+  assert(detectTukifBody.includes('isTukifHost'), 'content: detectTukif utilise isTukifHost');
+  assert(!detectTukifBody.includes('tkn_disclaimer'), 'content: detectTukif ne matche plus tkn_disclaimer generique');
+
+  assert(/function cleanTkn\(/.test(src), 'content: cleanTkn existe');
+  const cleanTknBody = extractFnBody(src, 'cleanTkn');
+  assert(!cleanTknBody.includes('injectLebonpornPageScript'), 'content: cleanTkn n appelle pas injectLebonpornPageScript');
+
+  const cssBlock = (src.match(/const OVERRIDE_CSS = `([\s\S]*?)`;/) || ['', ''])[1];
+  assert(cssBlock.includes('#ageDisclaimerMainBG'), 'OVERRIDE_CSS: #ageDisclaimerMainBG');
+  assert(cssBlock.includes('.modal-age-verification'), 'OVERRIDE_CSS: .modal-age-verification');
+  assert(cssBlock.includes('#agreement-root'), 'OVERRIDE_CSS: #agreement-root');
+  assert(cssBlock.includes('#consent_modal'), 'OVERRIDE_CSS: #consent_modal');
+  assert(cssBlock.includes('#ageverifybox'), 'OVERRIDE_CSS: #ageverifybox');
+  assert(cssBlock.includes('custom-disclaimer'), 'OVERRIDE_CSS: custom-disclaimer');
+
+  const ljCss = (src.match(/\/\*\s*LIVEJASMIN[\s\S]*?(?=\n\s*\/\*\s*[A-Z]|\n\s*`;)/i) || [''])[0];
+  assert(/#consent_modal/.test(ljCss), 'content CSS livejasmin: #consent_modal');
+  const ljOverlayIsolated = /#overlay(?:\s|,|\{)/.test(ljCss);
+  const ljOverlayComment = /#overlay/.test(src) && /livejasmin/i.test(src) &&
+    /ne (pas |plus )?cacher #overlay|#overlay[^\n]{0,80}livejasmin|livejasmin[^\n]{0,120}#overlay/i.test(src);
+  assert(
+    !ljOverlayIsolated || ljOverlayComment,
+    'content: pas de #overlay isole pour LiveJasmin (ou commentaire)'
+  );
+}
 
 console.log('\n--- Resultat:', passed, 'OK,', failed, 'echecs ---');
 

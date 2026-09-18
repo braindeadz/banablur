@@ -1,6 +1,6 @@
 # Banablur
 
-**v1.9.3** · *Peel the blur.*
+**v1.10.0** · *Peel the blur.*
 
 Banablur is a browser extension for **Chromium** (Chrome, Edge, Brave) and **Firefox** that removes age-verification overlays, neutralizes CSS and player blur, and unlocks safe-mode / SFW video players where the site allows it.
 
@@ -33,7 +33,7 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 | Watchdog | Re-applies fixes when sites mutate the DOM |
 | Video download | Optional floating button on XVIDEOS, xHamster, Pornhub (MP4 / HLS) |
 | xHamster geo-proxy | Optional PAC proxy for xHamster domains only (helps defog FR geo-blur) |
-| Privacy | No telemetry; Firefox `data_collection_permissions`: **none** |
+| Privacy | No telemetry; Firefox 140+ `data_collection_permissions`: **none** |
 
 ---
 
@@ -51,6 +51,15 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 | [pornhub.com](https://pornhub.com) | Pornhub | FR age disclaimer (server SFW may remain geo-blocked) |
 | [lebon.porn](https://lebon.porn) / videos.lebon.porn | LebonPorn | AgeVerif popup, mrx blur, Shaka safe mode |
 | [tukif.porn](https://tukif.porn) / videos.tukif.porn | Tukif | TKN AgeVerif / disclaimer, CSS deblur, Shaka safe-mode unlock (same stack as LebonPorn) |
+| [tnaflix.com](https://www.tnaflix.com), [moviefap.com](https://www.moviefap.com), [pornone.com](https://www.pornone.com), [perfectgirls.xxx](https://www.perfectgirls.xxx) | AgeGO | Overlay + extra player deblur |
+| [tube8.com](https://www.tube8.com) | Pornhub-like | `#ageDisclaimerMainBG` / `#accessButton` |
+| [txxx.com](https://txxx.com) family (HClips, Upornia, HDZog, …) | TXXX | Vue `.modal-age-verification` |
+| [porndig.com](https://www.porndig.com), [sxyprn.com](https://sxyprn.com) | TKN | AgeVerif disclaimer without Tukif player inject |
+| [jacquieetmicheltv.net](https://www.jacquieetmicheltv.net), [jacquieetmichel.net](https://www.jacquieetmichel.net) | Jacquie | Custom 18+ disclaimer / my18pass blur |
+| [youporn.com](https://www.youporn.com), [redtube.com](https://www.redtube.com) | Aylo | Overlay only — FR legal wall may stay server-side |
+| [eporner.com](https://www.eporner.com), [sunporno.com](https://www.sunporno.com), [porntube.com](https://www.porntube.com), [porn.com](https://www.porn.com) | Custom | Site-specific age overlays |
+| [stripchat.com](https://stripchat.com), [bongacams.com](https://bongacams.com), [livejasmin.com](https://www.livejasmin.com) | Cam gates | 18+ modal / Yoti / consent modal |
+| xvideos.es, xnxx.es, xvideos.red, xhamster.desi, pornhubpremium.com | Same engines | TLD / premium clones of existing profiles |
 | Similar domains | Auto-detected | Remembered after first visit |
 
 ---
@@ -59,10 +68,10 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 
 Banablur is distributed as an **unpacked extension** (developer mode). There is no Chrome Web Store package.
 
-1. Obtain a build: extract `banablur-1.9.3.zip` from a release, or build from source (see below).
+1. Obtain a build: extract `banablur-1.10.0.zip` from a release, or build from source (see below).
 2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).
 3. Enable **Developer mode**.
-4. Click **Load unpacked** and select the extracted folder (e.g. `banablur-1.9.3/`).
+4. Click **Load unpacked** and select the extracted folder (e.g. `banablur-1.10.0/`).
 5. Pin the extension from the puzzle icon in the toolbar.
 
 > Chromium does not install a `.zip` directly — use the extracted folder.
@@ -73,13 +82,17 @@ Banablur is distributed as an **unpacked extension** (developer mode). There is 
 
 **Firefox add-on ID (stable):** `agego-deblur@local.dev` — do not change; existing installs rely on it for updates.
 
+**Minimum versions:** Firefox desktop **140+**, Firefox for Android **142+** (`strict_min_version` / `gecko_android` in `manifest.json`).
+
+The AMO / Firefox **XPI** omits `background.service_worker` (Firefox uses `background.scripts` only); the Chromium **zip** keeps both.
+
 ### Permanent install (signed XPI — recommended for Firefox Release)
 
 Firefox Release requires a **Mozilla-signed** add-on. Banablur is distributed as an **unlisted** AMO-signed `.xpi` (not in the public AMO catalog).
 
 Use only a file that contains `META-INF/mozilla.rsa` (name ends with `FIREFOX-SIGNE.xpi`, `firefox-signed.xpi`, or comes from an AMO download). The unsigned build zip/xpi from `build.ps1` is **not** for Firefox Release — it will be rejected with “not verified”.
 
-1. Download `Banablur-1.9.3-FIREFOX-SIGNE.xpi` or `banablur-1.9.3-firefox-signed.xpi` (or the latest signed release asset).
+1. Download `Banablur-1.10.0-FIREFOX-SIGNE.xpi` or `banablur-1.10.0-firefox-signed.xpi` (or the latest signed release asset).
 2. Open `about:addons`.
 3. Click the gear menu → **Install Add-on From File…**
 4. Select the **signed** `.xpi`.
@@ -135,10 +148,10 @@ Outputs in the **parent** directory:
 
 | Artifact | Purpose |
 |----------|---------|
-| `banablur-1.9.3.zip` | Unsigned build zip (Chrome/Edge **Load unpacked** after extract) |
-| `banablur-1.9.3.xpi` | Same unsigned bytes — **not** for Firefox Release |
-| `Banablur-1.9.3-FIREFOX-SIGNE.xpi` or `banablur-1.9.3-firefox-signed.xpi` | AMO-signed XPI for Firefox Release |
-| `banablur-1.9.3/` | Auto-extracted folder for Chromium **Load unpacked** |
+| `banablur-1.10.0.zip` | Unsigned build zip (Chrome/Edge **Load unpacked** after extract) |
+| `banablur-1.10.0.xpi` | Same unsigned bytes — **not** for Firefox Release |
+| `Banablur-1.10.0-FIREFOX-SIGNE.xpi` or `banablur-1.10.0-firefox-signed.xpi` | AMO-signed XPI for Firefox Release |
+| `banablur-1.10.0/` | Auto-extracted folder for Chromium **Load unpacked** |
 
 The build script reads the version from `manifest.json` and cleans previous build artifacts before generating new ones.
 
@@ -177,7 +190,7 @@ npm run test:chaturbate
 - **No account** or sign-in.
 - Settings (`autoEnabled`, proxy list, known sites) are stored locally via `storage`.
 - The xHamster proxy feature fetches a **public free proxy list** from `api.proxyscrape.com` when you refresh proxies. The xHamster proxy still routes xHamster CDN traffic through those proxies; for XVIDEOS/XNXX, only `/embedframe/` requests are proxied to discover stream URLs — playback stays **DIRECT** from your IP.
-- Firefox manifest declares `data_collection_permissions.required: ["none"]`.
+- Firefox 140+ manifest declares `data_collection_permissions.required: ["none"]` (Android 142+).
 
 ### Permissions
 

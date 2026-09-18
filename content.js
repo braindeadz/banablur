@@ -10,11 +10,23 @@
     'www.deviants.com': ['agego'],
     'xvideos.com': ['xvideos', 'agego'],
     'www.xvideos.com': ['xvideos', 'agego'],
+    'fr.xvideos.com': ['xvideos', 'agego'],
+    'xvideos.es': ['xvideos', 'agego'],
+    'www.xvideos.es': ['xvideos', 'agego'],
     'xnxx.com': ['xvideos', 'agego'],
     'www.xnxx.com': ['xvideos', 'agego'],
+    'xnxx.es': ['xvideos', 'agego'],
+    'www.xnxx.es': ['xvideos', 'agego'],
+    'xvideos.red': ['xvideos'],
+    'www.xvideos.red': ['xvideos'],
     'xhamster.com': ['xhamster'],
     'www.xhamster.com': ['xhamster'],
     'fra.xhamster.com': ['xhamster'],
+    'ge.xhamster.com': ['xhamster'],
+    'ita.xhamster.com': ['xhamster'],
+    'nl.xhamster.com': ['xhamster'],
+    'xhamster.desi': ['xhamster'],
+    'www.xhamster.desi': ['xhamster'],
     'xhamsterlive.com': ['xhamsterlive'],
     'www.xhamsterlive.com': ['xhamsterlive'],
     'faphouse.com': ['faphouse'],
@@ -24,6 +36,79 @@
     'pornhub.com': ['pornhub'],
     'www.pornhub.com': ['pornhub'],
     'fr.pornhub.com': ['pornhub'],
+    'rt.pornhub.com': ['pornhub'],
+    'pornhubpremium.com': ['pornhub'],
+    'www.pornhubpremium.com': ['pornhub'],
+    'fr.pornhubpremium.com': ['pornhub'],
+    'tube8.com': ['pornhub'],
+    'www.tube8.com': ['pornhub'],
+    'tnaflix.com': ['agego'],
+    'www.tnaflix.com': ['agego'],
+    'moviefap.com': ['agego'],
+    'www.moviefap.com': ['agego'],
+    'pornone.com': ['agego'],
+    'www.pornone.com': ['agego'],
+    'perfectgirls.xxx': ['agego'],
+    'www.perfectgirls.xxx': ['agego'],
+    'porndig.com': ['tkn'],
+    'www.porndig.com': ['tkn'],
+    'sxyprn.com': ['tkn'],
+    'www.sxyprn.com': ['tkn'],
+    'txxx.com': ['txxx'],
+    'www.txxx.com': ['txxx'],
+    'hclips.com': ['txxx'],
+    'www.hclips.com': ['txxx'],
+    'upornia.com': ['txxx'],
+    'www.upornia.com': ['txxx'],
+    'hdzog.com': ['txxx'],
+    'www.hdzog.com': ['txxx'],
+    'voyeurhit.com': ['txxx'],
+    'www.voyeurhit.com': ['txxx'],
+    'hotmovs.com': ['txxx'],
+    'www.hotmovs.com': ['txxx'],
+    'ooxxx.com': ['txxx'],
+    'www.ooxxx.com': ['txxx'],
+    'manysex.com': ['txxx'],
+    'www.manysex.com': ['txxx'],
+    'tubepornclassic.com': ['txxx'],
+    'www.tubepornclassic.com': ['txxx'],
+    'pornzog.com': ['txxx'],
+    'www.pornzog.com': ['txxx'],
+    'tporn.xxx': ['txxx'],
+    'www.tporn.xxx': ['txxx'],
+    'tporn.tube': ['txxx'],
+    'www.tporn.tube': ['txxx'],
+    'desi-porn.tube': ['txxx'],
+    'www.desi-porn.tube': ['txxx'],
+    'thegay.com': ['txxx'],
+    'www.thegay.com': ['txxx'],
+    'shemalez.com': ['txxx'],
+    'www.shemalez.com': ['txxx'],
+    'eporner.com': ['eporner'],
+    'www.eporner.com': ['eporner'],
+    'sunporno.com': ['sunporno'],
+    'www.sunporno.com': ['sunporno'],
+    'jacquieetmicheltv.net': ['jacquie'],
+    'www.jacquieetmicheltv.net': ['jacquie'],
+    'jacquieetmichel.net': ['jacquie'],
+    'www.jacquieetmichel.net': ['jacquie'],
+    'youporn.com': ['aylo'],
+    'www.youporn.com': ['aylo'],
+    'fr.youporn.com': ['aylo'],
+    'redtube.com': ['aylo'],
+    'www.redtube.com': ['aylo'],
+    'porntube.com': ['porntube'],
+    'www.porntube.com': ['porntube'],
+    'porn.com': ['porncom'],
+    'www.porn.com': ['porncom'],
+    'stripchat.com': ['stripchat'],
+    'www.stripchat.com': ['stripchat'],
+    'fr.stripchat.com': ['stripchat'],
+    'bongacams.com': ['bongacams'],
+    'www.bongacams.com': ['bongacams'],
+    'fr.bongacams.com': ['bongacams'],
+    'livejasmin.com': ['livejasmin'],
+    'www.livejasmin.com': ['livejasmin'],
     'lebon.porn': ['lebonporn'],
     'www.lebon.porn': ['lebonporn'],
     'videos.lebon.porn': ['lebonporn'],
@@ -97,9 +182,50 @@ img.video-img[data-type="nsfw"] { display: block !important; filter: none !impor
 img.video-img[data-type="sfw"] { display: none !important; }
 
 /* TUKIF.PORN (AgeVerif / TKN) */
-.disclaimer_parent_wrapper, .sfw_disclaimer_wrapper, .disclaimer_overlay, #preview_disclaimer_parent_wrapper, .agechecker, .sfw_video_poster, .img_18plus_wrapper, .blursfw_poster, iframe[src*="ageverif"], #ageverif, .ageverif { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+#disclaimer_parent_wrapper, #disclaimer_parent_wrapper .disclaimer_container, #disclaimer_parent_wrapper .disclaimer_wrapper, .disclaimer_parent_wrapper, .sfw_disclaimer_wrapper, .disclaimer_overlay, #preview_disclaimer_parent_wrapper, #birth_month, #birth_day, #birth_year, .agepass_check, .agechecker, .sfw_video_poster, .img_18plus_wrapper, .blursfw_poster, iframe[src*="ageverif"], [id*="ageverif"], [class*="ageverif"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured, .img-blured-small, .main_wrapper.img-blured, .video_iframe_container, iframe[src*="videos.tukif.porn"] { filter: none !important; }
 .blurmyass, .img_18plus, .video_action_buttons .main_video_page_buttons { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* AGEGO extra TNAFlix/MovieFap */
+#video-player-container, #preroll-container, .plyr, .plyr__video-wrapper, .plyr__control, video, object { filter: none !important; backdrop-filter: none !important; }
+#agego-verify-frame { display: none !important; }
+
+/* TUBE8 */
+#ageDisclaimerMainBG, #ageDisclaimerWrapper, #ageDisclaimerTitle, #underAgeWrapper, .age-disclaimer-modal { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+html.showAgeDisclaimer, html.showAgeDisclaimer body { overflow: auto !important; }
+
+/* AYLO YouPorn/RedTube — overlay seulement, pas le catalogue serveur */
+link[href*="age-wall"] + *, [class*="AgeWall"], .age-wall, [class*="age-wall"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* JACQUIE */
+custom-disclaimer.disclaimer, .disclaimer__container, .disclaimer__btns, #disclaimer, .disclaimer-wrapper { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+html.my18pass-blur, html.my18pass-blur body, html.my18pass-blur img, html.my18pass-blur video { filter: none !important; }
+
+/* TXXX family */
+age-verification, age-verification-uk, age-verification-face, .modal-age-verification, .modal.modal-ageverification, .overlay-modal, .cookie-notify { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* EPORNER */
+#ageverifybox, #ageverifybox-inner, #simplemodal-overlay, .simplemodal-overlay, .simplemodal-container { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* SUNPORNO */
+#age-verification-overlay { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* PORNTUBE */
+[data-controller="click-verify"], [data-modal-target="modal"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* PORN.COM */
+.nc { filter: none !important; }
+.modal.age, .age-modal { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* STRIPCHAT */
+#agreement-root, .visitors-agreement-modal, .full-cover.modal-wrapper.visitors-agreement-modal, [data-testid="CookiesReminder"], #CookiesReminder, .cookies-banner { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* BONGACAMS */
+.verification_wrapper, .verification_wrapper.__yoti, .yoti_warning_popup, .warning_popup[data-type="18_plus"], .popup_18_plus, .cookies_bar { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+body.bd_18plus { overflow: auto !important; height: auto !important; }
+
+/* LIVEJASMIN — NE PAS cacher #overlay ni #fi-18-22 */
+#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 `.trim();
 
   const api = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : null;
@@ -118,6 +244,10 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
   let xhamsterTickTimer = null;
   let lebonpornTickTimer = null;
   let tukifTickTimer = null;
+  let tukifClickGuardBound = false;
+  let tukifNavGuardBound = false;
+  let tukifHistoryHooked = false;
+  let lastTukifPath = '';
   let xhProxyEnsured = false;
 
   function ensureXhamsterProxy() {
@@ -131,7 +261,7 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
   }
 
   function isXvideosHost() {
-    return /(^|\.)(xvideos|xnxx)\.com$/i.test(getHostname());
+    return /(^|\.)(xvideos|xnxx)\.(com|es|red)$/i.test(getHostname());
   }
 
   function isXvideosVideoPath() {
@@ -139,7 +269,7 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
   }
 
   function isXhamsterHost() {
-    return /(^|\.)xhamster\.com$/i.test(getHostname());
+    return /(^|\.)xhamster\.(com|desi)$/i.test(getHostname());
   }
 
   function isXhamsterLiveHost() {
@@ -155,7 +285,11 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
   }
 
   function isPornhubHost() {
-    return /(^|\.)pornhub\.com$/i.test(getHostname());
+    return /(^|\.)pornhub(premium)?\.com$/i.test(getHostname());
+  }
+
+  function isTube8Host() {
+    return /(^|\.)tube8\.com$/i.test(getHostname());
   }
 
   function isLebonpornHost() {
@@ -164,6 +298,56 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
 
   function isTukifHost() {
     return /(^|\.)tukif\.porn$/i.test(getHostname());
+  }
+
+  function isTknHost() {
+    return /(^|\.)(porndig|sxyprn)\.com$/i.test(getHostname());
+  }
+
+  function isTxxxHost() {
+    return (
+      /(^|\.)(txxx|hclips|upornia|hdzog|voyeurhit|hotmovs|ooxxx|manysex|tubepornclassic|pornzog|thegay|shemalez)\.com$/i.test(
+        getHostname()
+      ) ||
+      /(^|\.)tporn\.(xxx|tube)$/i.test(getHostname()) ||
+      /(^|\.)desi-porn\.tube$/i.test(getHostname())
+    );
+  }
+
+  function isEpornerHost() {
+    return /(^|\.)eporner\.com$/i.test(getHostname());
+  }
+
+  function isSunpornoHost() {
+    return /(^|\.)sunporno\.com$/i.test(getHostname());
+  }
+
+  function isJacquieHost() {
+    return /(^|\.)jacquieetmichel(tv)?\.net$/i.test(getHostname());
+  }
+
+  function isAyloHost() {
+    return /(^|\.)(youporn|redtube)\.com$/i.test(getHostname());
+  }
+
+  function isPorntubeHost() {
+    return /(^|\.)porntube\.com$/i.test(getHostname());
+  }
+
+  function isPorncomHost() {
+    return /(^|\.)porn\.com$/i.test(getHostname());
+  }
+
+  function isStripchatHost() {
+    return /(^|\.)stripchat\.com$/i.test(getHostname());
+  }
+
+  function isBongacamsHost() {
+    return /(^|\.)bongacams\.com$/i.test(getHostname());
+  }
+
+  function isLivejasminHost() {
+    return /(^|\.)livejasmin\.com$/i.test(getHostname());
   }
 
   function getConfiguredProfiles() {
@@ -239,11 +423,13 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
   }
 
   function detectPornhub() {
-    if (isPornhubHost()) return true;
+    if (isPornhubHost() || isTube8Host()) return true;
     return !!(
       document.querySelector('.ageDisclaimer') ||
       document.body?.classList.contains('sfw-page') ||
-      document.querySelector('.buttonOver18')
+      document.querySelector('.buttonOver18') ||
+      document.getElementById('ageDisclaimerMainBG') ||
+      document.getElementById('accessButton')
     );
   }
 
@@ -260,13 +446,79 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
 
   function detectTukif() {
     if (isTukifHost()) return true;
+    return !!document.querySelector('iframe[src*="videos.tukif.porn"]');
+  }
+
+  function detectTkn() {
+    if (isTukifHost()) return false;
+    if (isTknHost()) return true;
     return !!(
-      document.querySelector('iframe[src*="videos.tukif.porn"]') ||
-      document.querySelector('.sfw_disclaimer_wrapper') ||
-      document.querySelector('.disclaimer_parent_wrapper') ||
-      document.querySelector('.blurmyass') ||
-      document.querySelector('script[src*="tkn_disclaimer"]')
+      document.querySelector('script[src*="tkn_disclaimer"]') ||
+      document.getElementById('disclaimer_parent_wrapper')
     );
+  }
+
+  function detectTxxx() {
+    if (isTxxxHost()) return true;
+    return !!(
+      document.querySelector('age-verification, age-verification-uk, age-verification-face') ||
+      document.querySelector('.modal-age-verification, .modal.modal-ageverification')
+    );
+  }
+
+  function detectEporner() {
+    if (isEpornerHost()) return true;
+    return !!document.getElementById('ageverifybox');
+  }
+
+  function detectSunporno() {
+    if (isSunpornoHost()) return true;
+    return !!document.getElementById('age-verification-overlay');
+  }
+
+  function detectJacquie() {
+    if (isJacquieHost()) return true;
+    return !!(
+      document.querySelector('custom-disclaimer.disclaimer') ||
+      document.getElementById('disclaimer') ||
+      document.documentElement.classList.contains('my18pass-blur')
+    );
+  }
+
+  function detectAylo() {
+    if (isAyloHost()) return true;
+    return !!(
+      document.querySelector('link[href*="age-wall"]') ||
+      document.body?.classList.contains('yp') ||
+      document.body?.classList.contains('rt')
+    );
+  }
+
+  function detectPorntube() {
+    if (isPorntubeHost()) return true;
+    return !!document.querySelector('[data-controller="click-verify"]');
+  }
+
+  function detectPorncom() {
+    return isPorncomHost();
+  }
+
+  function detectStripchat() {
+    if (isStripchatHost()) return true;
+    return !!document.getElementById('agreement-root');
+  }
+
+  function detectBongacams() {
+    if (isBongacamsHost()) return true;
+    return !!(
+      document.querySelector('.popup_18_plus') ||
+      document.querySelector('.verification_wrapper.__yoti')
+    );
+  }
+
+  function detectLivejasmin() {
+    if (isLivejasminHost()) return true;
+    return !!document.querySelector('#consent_modal.over-18');
   }
 
   function detectProfiles() {
@@ -280,6 +532,17 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
     if (detectPornhub()) profiles.add('pornhub');
     if (detectLebonporn()) profiles.add('lebonporn');
     if (detectTukif()) profiles.add('tukif');
+    if (detectTkn()) profiles.add('tkn');
+    if (detectTxxx()) profiles.add('txxx');
+    if (detectEporner()) profiles.add('eporner');
+    if (detectSunporno()) profiles.add('sunporno');
+    if (detectJacquie()) profiles.add('jacquie');
+    if (detectAylo()) profiles.add('aylo');
+    if (detectPorntube()) profiles.add('porntube');
+    if (detectPorncom()) profiles.add('porncom');
+    if (detectStripchat()) profiles.add('stripchat');
+    if (detectBongacams()) profiles.add('bongacams');
+    if (detectLivejasmin()) profiles.add('livejasmin');
     return [...profiles];
   }
 
@@ -289,10 +552,26 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
     );
   }
 
+  function isOverlayVisible(selector) {
+    const el = document.querySelector(selector);
+    if (!el) return false;
+    const cs = getComputedStyle(el);
+    return cs.display !== 'none' && cs.visibility !== 'hidden';
+  }
+
+  function hideMatches(selector) {
+    document.querySelectorAll(selector).forEach((el) => {
+      el.style.setProperty('display', 'none', 'important');
+      el.style.setProperty('pointer-events', 'none', 'important');
+      el.style.setProperty('visibility', 'hidden', 'important');
+    });
+  }
+
   function hasAgeGOThreat() {
     return !!(
       document.getElementById('agego-overlay-container') ||
       document.getElementById('agego-overlay') ||
+      document.getElementById('agego-verify-frame') ||
       document.body?.classList.contains('agego-blur-content') ||
       document.documentElement.classList.contains('agego-lock')
     );
@@ -436,6 +715,90 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
     );
   }
 
+  function hasTknThreat() {
+    if (isTukifHost()) return false;
+    return !!(
+      isOverlayVisible('#disclaimer_parent_wrapper') ||
+      isOverlayVisible('.disclaimer_parent_wrapper') ||
+      isOverlayVisible('.sfw_disclaimer_wrapper') ||
+      isOverlayVisible('.agechecker')
+    );
+  }
+
+  function hasTxxxThreat() {
+    return !!(
+      isOverlayVisible('age-verification') ||
+      isOverlayVisible('age-verification-uk') ||
+      isOverlayVisible('age-verification-face') ||
+      isOverlayVisible('.modal-age-verification') ||
+      isOverlayVisible('.modal.modal-ageverification') ||
+      isOverlayVisible('.overlay-modal')
+    );
+  }
+
+  function hasEpornerThreat() {
+    return !!(isOverlayVisible('#ageverifybox') || isOverlayVisible('.simplemodal-overlay'));
+  }
+
+  function hasSunpornoThreat() {
+    return isOverlayVisible('#age-verification-overlay');
+  }
+
+  function hasJacquieThreat() {
+    return !!(
+      isOverlayVisible('custom-disclaimer.disclaimer') ||
+      isOverlayVisible('#disclaimer') ||
+      document.documentElement.classList.contains('my18pass-blur')
+    );
+  }
+
+  function hasAyloThreat() {
+    return !!(
+      document.querySelector('link[href*="age-wall"]') ||
+      isOverlayVisible('.age-wall') ||
+      isOverlayVisible('[class*="AgeWall"]')
+    );
+  }
+
+  function hasPorntubeThreat() {
+    return isOverlayVisible('[data-controller="click-verify"]');
+  }
+
+  function hasPorncomThreat() {
+    return !!(isOverlayVisible('.modal.age') || isOverlayVisible('.age-modal'));
+  }
+
+  function hasStripchatThreat() {
+    return !!(
+      isOverlayVisible('#agreement-root') ||
+      isOverlayVisible('.visitors-agreement-modal')
+    );
+  }
+
+  function hasBongacamsThreat() {
+    return !!(
+      isOverlayVisible('.popup_18_plus') ||
+      isOverlayVisible('.verification_wrapper.__yoti') ||
+      isOverlayVisible('.verification_wrapper')
+    );
+  }
+
+  function hasLivejasminThreat() {
+    return !!(
+      isOverlayVisible('#consent_modal.over-18') ||
+      isOverlayVisible('#consent_modal.is-non-adult') ||
+      isOverlayVisible('#consent_modal')
+    );
+  }
+
+  function hasPornhubThreat() {
+    return !!(
+      isOverlayVisible('.ageDisclaimer') ||
+      isOverlayVisible('#ageDisclaimerMainBG') ||
+      isOverlayVisible('#ageDisclaimerWrapper')
+    );
+  }
+
   function hasThreat() {
     return (
       hasAgeGOThreat() ||
@@ -445,7 +808,19 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
       hasFaphouseThreat() ||
       hasChaturbateThreat() ||
       hasLebonpornThreat() ||
-      hasTukifThreat()
+      hasTukifThreat() ||
+      hasTknThreat() ||
+      hasTxxxThreat() ||
+      hasEpornerThreat() ||
+      hasSunpornoThreat() ||
+      hasJacquieThreat() ||
+      hasAyloThreat() ||
+      hasPorntubeThreat() ||
+      hasPorncomThreat() ||
+      hasStripchatThreat() ||
+      hasBongacamsThreat() ||
+      hasLivejasminThreat() ||
+      hasPornhubThreat()
     );
   }
 
@@ -454,6 +829,10 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
     document.body?.classList.remove('agego-blur-content');
     document.getElementById('agego-overlay-container')?.remove();
     document.getElementById('agego-overlay')?.remove();
+    document.getElementById('agego-blur-style')?.remove();
+    document.getElementById('agego-blur-stylev2')?.remove();
+    document.getElementById('agego-verify-frame')?.remove();
+    document.getElementById('AgeGoScript')?.remove();
   }
 
   function fixXvideosThumbnails() {
@@ -1114,18 +1493,117 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
 
   function dismissTukifDisclaimer() {
     try {
-      document.cookie = 'dsclcnst=2; path=/; max-age=31536000';
-      document.cookie = 'discl_s_t=1; path=/';
+      const maxAge = 31536000;
+      document.cookie = `dsclcnst=1; path=/; max-age=${maxAge}`;
+      document.cookie = `discl_s_t=1; path=/; max-age=${maxAge}`;
+      document.cookie = `ckcnsnt=1; path=/; max-age=${maxAge}`;
     } catch (_e) {}
     document
       .querySelectorAll(
-        '.disclaimer_parent_wrapper, .sfw_disclaimer_wrapper, .disclaimer_overlay, #preview_disclaimer_parent_wrapper, .agechecker, .sfw_video_poster, .img_18plus_wrapper, .blursfw_poster, iframe[src*="ageverif"], #ageverif, .ageverif'
+        '#disclaimer_parent_wrapper, #disclaimer_parent_wrapper .disclaimer_container, #disclaimer_parent_wrapper .disclaimer_wrapper, .disclaimer_parent_wrapper, .sfw_disclaimer_wrapper, .disclaimer_overlay, #preview_disclaimer_parent_wrapper, #birth_month, #birth_day, #birth_year, .agepass_check, .agechecker, .sfw_video_poster, .img_18plus_wrapper, .blursfw_poster, iframe[src*="ageverif"], [id*="ageverif"], [class*="ageverif"]'
       )
       .forEach((el) => {
         el.style.setProperty('display', 'none', 'important');
         el.style.setProperty('pointer-events', 'none', 'important');
         el.style.setProperty('visibility', 'hidden', 'important');
       });
+  }
+
+  function bindTukifClickGuard() {
+    if (tukifClickGuardBound || !isTukifHost()) return;
+    tukifClickGuardBound = true;
+    document.addEventListener(
+      'click',
+      (ev) => {
+        const target = ev.target;
+        if (!(target instanceof Element)) return;
+        if (
+          target.closest(
+            '.agepass_check, .js_remove_disclaimer, .js_remove_soft_disclaimer, #disclaimer_parent_wrapper'
+          )
+        ) {
+          ev.preventDefault();
+          ev.stopPropagation();
+        }
+      },
+      true
+    );
+  }
+
+  function isTukifDisclaimerVisible() {
+    const el = document.getElementById('disclaimer_parent_wrapper');
+    if (!el) return false;
+    const cs = window.getComputedStyle(el);
+    return cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
+  }
+
+  function onTukifNavigate() {
+    if (!isTukifHost()) return;
+    if (
+      location.pathname === lastTukifPath &&
+      document.getElementById(CSS_ID) &&
+      !isTukifDisclaimerVisible()
+    ) {
+      return;
+    }
+    lastTukifPath = location.pathname;
+    delete document.documentElement.dataset.agegoLbpInjected;
+    cleanTukif();
+    injectCSS();
+  }
+
+  function hookTukifHistory() {
+    if (tukifHistoryHooked) return;
+    tukifHistoryHooked = true;
+    const origPush = history.pushState.bind(history);
+    const origReplace = history.replaceState.bind(history);
+    history.pushState = function (...args) {
+      const ret = origPush(...args);
+      if (autoEnabled) onTukifNavigate();
+      return ret;
+    };
+    history.replaceState = function (...args) {
+      const ret = origReplace(...args);
+      if (autoEnabled) onTukifNavigate();
+      return ret;
+    };
+  }
+
+  function bindTukifNavGuard() {
+    if (tukifNavGuardBound || !isTukifHost()) return;
+    tukifNavGuardBound = true;
+    lastTukifPath = location.pathname;
+
+    const navHandler = () => {
+      if (isTukifHost() && autoEnabled) onTukifNavigate();
+    };
+
+    window.addEventListener('popstate', navHandler);
+    window.addEventListener('pageshow', navHandler);
+    window.addEventListener('hashchange', navHandler);
+
+    hookTukifHistory();
+
+    document.addEventListener(
+      'click',
+      (ev) => {
+        const target = ev.target;
+        if (!(target instanceof Element)) return;
+        const link = target.closest('a[href*="/videos/"]');
+        if (!link || !(link instanceof HTMLAnchorElement)) return;
+        try {
+          const href = new URL(link.href, location.href);
+          if (href.origin !== location.origin) return;
+        } catch (_e) {
+          return;
+        }
+        if (!autoEnabled) return;
+        setTimeout(() => onTukifNavigate(), 0);
+        setTimeout(() => onTukifNavigate(), 300);
+        setTimeout(() => onTukifNavigate(), 800);
+      },
+      true
+    );
   }
 
   function fixTukifBlur() {
@@ -1169,8 +1647,18 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
   function startTukifWatchdog() {
     if (tukifTickTimer || !isTukifHost()) return;
 
+    bindTukifClickGuard();
+    bindTukifNavGuard();
+
     tukifTickTimer = setInterval(() => {
       if (!autoEnabled || !watchdogActive) return;
+      if (location.pathname !== lastTukifPath) {
+        lastTukifPath = location.pathname;
+        delete document.documentElement.dataset.agegoLbpInjected;
+        cleanTukif();
+      }
+      injectCSS();
+      dismissTukifDisclaimer();
       fixTukifBlur();
       releaseTukifPlayers();
       document.dispatchEvent(new CustomEvent('agego-lbp-unlock'));
@@ -1179,6 +1667,7 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
   }
 
   function cleanTukif() {
+    injectCSS();
     dismissTukifDisclaimer();
     fixTukifBlur();
     releaseTukifPlayers();
@@ -1196,15 +1685,101 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
       document.cookie = `accessAgeDisclaimerPH=2; path=/; max-age=${maxAge}`;
       document.cookie = `accessPH=1; path=/; max-age=${maxAge}`;
       document.cookie = `cookieConsent=3; path=/; max-age=${maxAge}`;
+      document.cookie = `showAgeDisclaimer=1; path=/; max-age=${maxAge}`;
     } catch (_e) {}
-    const over18 = document.querySelector('.buttonOver18, .js-closeAgeModal, .js-av-cta');
+    const over18 = document.querySelector('.buttonOver18, .js-closeAgeModal, .js-av-cta, #accessButton');
     if (over18 && over18.offsetParent !== null) { try { over18.click(); } catch (_e) {} }
     document.querySelectorAll('.ageDisclaimer, .modalMTubes.ageDisclaimer').forEach((el) => {
       el.style.setProperty('display', 'none', 'important');
     });
+    hideMatches('#ageDisclaimerMainBG, #ageDisclaimerWrapper');
+    document.documentElement.classList.remove('showAgeDisclaimer');
     document.body?.classList.remove('isOpenMTubes');
-    injectPornhubPageScript();
-    document.dispatchEvent(new CustomEvent('agego-ph-unlock'));
+    if (isPornhubHost()) {
+      injectPornhubPageScript();
+      document.dispatchEvent(new CustomEvent('agego-ph-unlock'));
+    }
+  }
+
+  function cleanTkn() {
+    injectCSS();
+    dismissTukifDisclaimer();
+    fixTukifBlur();
+  }
+
+  function cleanTxxx() {
+    hideMatches(
+      'age-verification, age-verification-uk, age-verification-face, .modal-age-verification, .modal.modal-ageverification, .overlay-modal, .cookie-notify'
+    );
+    try {
+      localStorage.removeItem('_agvface');
+    } catch (_e) {}
+    document.documentElement.style.setProperty('overflow', 'auto', 'important');
+    document.body?.style.setProperty('overflow', 'auto', 'important');
+  }
+
+  function cleanEporner() {
+    hideMatches('#ageverifybox, #ageverifybox-inner, #simplemodal-overlay, .simplemodal-overlay, .simplemodal-container');
+    document.documentElement.style.setProperty('overflow', 'auto', 'important');
+    document.body?.style.setProperty('overflow', 'auto', 'important');
+  }
+
+  function cleanSunporno() {
+    hideMatches('#age-verification-overlay');
+  }
+
+  function cleanJacquie() {
+    try {
+      document.cookie = 'dscl=1; path=/; max-age=31536000';
+    } catch (_e) {}
+    const enterBtn = document.querySelector('.disclaimer__btn--enter');
+    if (enterBtn) { try { enterBtn.click(); } catch (_e) {} }
+    hideMatches('custom-disclaimer.disclaimer, .disclaimer__container, .disclaimer__btns, #disclaimer, .disclaimer-wrapper');
+    document.documentElement.classList.remove('my18pass-blur');
+  }
+
+  function cleanAylo() {
+    hideMatches('[class*="AgeWall"], .age-wall, [class*="age-wall"]');
+    document.querySelectorAll('link[href*="age-wall"]').forEach((link) => {
+      const next = link.nextElementSibling;
+      if (next) {
+        next.style.setProperty('display', 'none', 'important');
+        next.style.setProperty('pointer-events', 'none', 'important');
+        next.style.setProperty('visibility', 'hidden', 'important');
+      }
+    });
+  }
+
+  function cleanPorntube() {
+    hideMatches('[data-controller="click-verify"], [data-modal-target="modal"]');
+  }
+
+  function cleanPorncom() {
+    hideMatches('.modal.age, .age-modal');
+    document.querySelectorAll('.nc').forEach((el) => {
+      el.style.setProperty('filter', 'none', 'important');
+    });
+  }
+
+  function cleanStripchat() {
+    const accept = document.querySelector('.btn-visitors-agreement-accept');
+    if (accept) { try { accept.click(); } catch (_e) {} }
+    hideMatches(
+      '#agreement-root, .visitors-agreement-modal, .full-cover.modal-wrapper.visitors-agreement-modal, [data-testid="CookiesReminder"], #CookiesReminder, .cookies-banner'
+    );
+  }
+
+  function cleanBongacams() {
+    hideMatches(
+      '.verification_wrapper, .verification_wrapper.__yoti, .yoti_warning_popup, .warning_popup[data-type="18_plus"], .popup_18_plus, .cookies_bar'
+    );
+    document.body?.classList.remove('bd_18plus');
+    document.body?.style.setProperty('overflow', 'auto', 'important');
+    document.body?.style.setProperty('height', 'auto', 'important');
+  }
+
+  function cleanLivejasmin() {
+    hideMatches('#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal');
   }
 
   function runCleanup() {
@@ -1222,6 +1797,17 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
     if (activeProfiles.includes('pornhub')) cleanPornhub();
     if (activeProfiles.includes('lebonporn')) cleanLebonporn();
     if (activeProfiles.includes('tukif')) cleanTukif();
+    if (activeProfiles.includes('tkn')) cleanTkn();
+    if (activeProfiles.includes('txxx')) cleanTxxx();
+    if (activeProfiles.includes('eporner')) cleanEporner();
+    if (activeProfiles.includes('sunporno')) cleanSunporno();
+    if (activeProfiles.includes('jacquie')) cleanJacquie();
+    if (activeProfiles.includes('aylo')) cleanAylo();
+    if (activeProfiles.includes('porntube')) cleanPorntube();
+    if (activeProfiles.includes('porncom')) cleanPorncom();
+    if (activeProfiles.includes('stripchat')) cleanStripchat();
+    if (activeProfiles.includes('bongacams')) cleanBongacams();
+    if (activeProfiles.includes('livejasmin')) cleanLivejasmin();
 
     lastCleanup = Date.now();
     return true;
@@ -1332,6 +1918,19 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
       if (autoEnabled) cleanTukif();
     }
 
+    if (isTknHost() && autoEnabled) cleanTkn();
+    if (isTxxxHost() && autoEnabled) cleanTxxx();
+    if (isEpornerHost() && autoEnabled) cleanEporner();
+    if (isSunpornoHost() && autoEnabled) cleanSunporno();
+    if (isJacquieHost() && autoEnabled) cleanJacquie();
+    if (isAyloHost() && autoEnabled) cleanAylo();
+    if (isPorntubeHost() && autoEnabled) cleanPorntube();
+    if (isPorncomHost() && autoEnabled) cleanPorncom();
+    if (isStripchatHost() && autoEnabled) cleanStripchat();
+    if (isBongacamsHost() && autoEnabled) cleanBongacams();
+    if (isLivejasminHost() && autoEnabled) cleanLivejasmin();
+    if (isTube8Host() && autoEnabled) cleanPornhub();
+
     return true;
   }
 
@@ -1356,6 +1955,17 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
       chaturbateDetected: detectChaturbate(),
       lebonpornDetected: detectLebonporn(),
       tukifDetected: detectTukif(),
+      tknDetected: detectTkn(),
+      txxxDetected: detectTxxx(),
+      epornerDetected: detectEporner(),
+      sunpornoDetected: detectSunporno(),
+      jacquieDetected: detectJacquie(),
+      ayloDetected: detectAylo(),
+      porntubeDetected: detectPorntube(),
+      porncomDetected: detectPorncom(),
+      stripchatDetected: detectStripchat(),
+      bongacamsDetected: detectBongacams(),
+      livejasminDetected: detectLivejasmin(),
       threatPresent: isChaturbateHost() ? hasChaturbateThreatForStatus() : hasThreat(),
       watchdogActive,
     };
@@ -1377,6 +1987,17 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
       chaturbateDetected: detectChaturbate(),
       lebonpornDetected: detectLebonporn(),
       tukifDetected: detectTukif(),
+      tknDetected: detectTkn(),
+      txxxDetected: detectTxxx(),
+      epornerDetected: detectEporner(),
+      sunpornoDetected: detectSunporno(),
+      jacquieDetected: detectJacquie(),
+      ayloDetected: detectAylo(),
+      porntubeDetected: detectPorntube(),
+      porncomDetected: detectPorncom(),
+      stripchatDetected: detectStripchat(),
+      bongacamsDetected: detectBongacams(),
+      livejasminDetected: detectLivejasmin(),
       threatPresent: isChaturbateHost() ? hasChaturbateThreatForStatus() : hasThreat(),
       lastCleanup,
       videoSfw:
@@ -1459,6 +2080,18 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
         if (isTukifHost() && autoEnabled) {
           cleanTukif();
         }
+        if (isTknHost() && autoEnabled) cleanTkn();
+        if (isTxxxHost() && autoEnabled) cleanTxxx();
+        if (isEpornerHost() && autoEnabled) cleanEporner();
+        if (isSunpornoHost() && autoEnabled) cleanSunporno();
+        if (isJacquieHost() && autoEnabled) cleanJacquie();
+        if (isAyloHost() && autoEnabled) cleanAylo();
+        if (isPorntubeHost() && autoEnabled) cleanPorntube();
+        if (isPorncomHost() && autoEnabled) cleanPorncom();
+        if (isStripchatHost() && autoEnabled) cleanStripchat();
+        if (isBongacamsHost() && autoEnabled) cleanBongacams();
+        if (isLivejasminHost() && autoEnabled) cleanLivejasmin();
+        if (isTube8Host() && autoEnabled) cleanPornhub();
       }
     });
   }

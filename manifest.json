@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Banablur",
-  "version": "1.9.3",
-  "description": "Peel the blur. Removes age-gate overlays and video blur on XVIDEOS, XNXX, xHamster, xHamsterLive, Pornhub, Chaturbate, LebonPorn, Tukif, FapHouse, AgeGO/Deviants and similar sites. Optional video download button and xHamster geo proxy.",
+  "version": "1.10.0",
+  "description": "Peel the blur. Removes age-gate overlays and video blur on XVIDEOS, XNXX, xHamster, xHamsterLive, Pornhub, Chaturbate, LebonPorn, Tukif, FapHouse, AgeGO/Deviants, TNAFlix, Tube8, TXXX, Jacquie, Stripchat, YouPorn and similar sites. Optional video download button and xHamster geo proxy.",
   "background": {
     "service_worker": "background.js",
     "scripts": ["background.js"]
@@ -80,7 +80,10 @@
   "host_permissions": [
     "https://api.proxyscrape.com/*",
     "https://*.xvideos.com/*",
-    "https://*.xnxx.com/*"
+    "https://*.xnxx.com/*",
+    "https://*.xvideos.es/*",
+    "https://*.xnxx.es/*",
+    "https://*.xvideos.red/*"
   ],
   "web_accessible_resources": [
     {
@@ -93,16 +96,32 @@
         "*://xvideos.com/*",
         "*://*.xvideos.com/*",
         "*://xnxx.com/*",
-        "*://*.xnxx.com/*"
+        "*://*.xnxx.com/*",
+        "*://xvideos.es/*",
+        "*://*.xvideos.es/*",
+        "*://xnxx.es/*",
+        "*://*.xnxx.es/*",
+        "*://xvideos.red/*",
+        "*://*.xvideos.red/*"
       ]
     },
     {
       "resources": ["xhamster-page.js"],
-      "matches": ["*://xhamster.com/*", "*://*.xhamster.com/*"]
+      "matches": [
+        "*://xhamster.com/*",
+        "*://*.xhamster.com/*",
+        "*://xhamster.desi/*",
+        "*://*.xhamster.desi/*"
+      ]
     },
     {
       "resources": ["pornhub-page.js"],
-      "matches": ["*://pornhub.com/*", "*://*.pornhub.com/*"]
+      "matches": [
+        "*://pornhub.com/*",
+        "*://*.pornhub.com/*",
+        "*://pornhubpremium.com/*",
+        "*://*.pornhubpremium.com/*"
+      ]
     },
     {
       "resources": ["lebonporn-page.js"],
@@ -121,10 +140,13 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "agego-deblur@local.dev",
-      "strict_min_version": "128.0",
+      "strict_min_version": "140.0",
       "data_collection_permissions": {
         "required": ["none"]
       }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
     }
   }
 }

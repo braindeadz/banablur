@@ -62,23 +62,39 @@ foreach ($f in $files) {
 # "corrompu". On force des slashs Unix + Deflate via .NET ZipFile.
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
-$zip = [System.IO.Compression.ZipFile]::Open($zipPath, [System.IO.Compression.ZipArchiveMode]::Create)
-try {
-  $distFull = (Resolve-Path $dist).Path
-  Get-ChildItem -Path $dist -Recurse -File | ForEach-Object {
-    $rel = $_.FullName.Substring($distFull.Length).TrimStart('\').Replace('\', '/')
-    [void][System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
-      $zip,
-      $_.FullName,
-      $rel,
-      [System.IO.Compression.CompressionLevel]::Optimal
-    )
+
+function New-ExtensionZip {
+  param(
+    [Parameter(Mandatory = $true)][string]$SourceDir,
+    [Parameter(Mandatory = $true)][string]$OutPath
+  )
+  if (Test-Path $OutPath) { Remove-Item $OutPath -Force }
+  $zip = [System.IO.Compression.ZipFile]::Open($OutPath, [System.IO.Compression.ZipArchiveMode]::Create)
+  try {
+    $distFull = (Resolve-Path $SourceDir).Path
+    Get-ChildItem -Path $SourceDir -Recurse -File | ForEach-Object {
+      $rel = $_.FullName.Substring($distFull.Length).TrimStart('\').Replace('\', '/')
+      [void][System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+        $zip,
+        $_.FullName,
+        $rel,
+        [System.IO.Compression.CompressionLevel]::Optimal
+      )
+    }
+  } finally {
+    $zip.Dispose()
   }
-} finally {
-  $zip.Dispose()
 }
-Copy-Item $zipPath $xpiPath -Force
+
+# Chrome zip + dossier extrait: manifest avec service_worker (MV3 Chrome).
+New-ExtensionZip -SourceDir $dist -OutPath $zipPath
+
+# Firefox XPI: AMO ignore service_worker; garder background.scripts seulement.
+$manifestPath = Join-Path $dist "manifest.json"
+$manifestText = [System.IO.File]::ReadAllText($manifestPath)
+$manifestText = $manifestText -replace '"service_worker"\s*:\s*"background\.js"\s*,', ''
+[System.IO.File]::WriteAllText($manifestPath, $manifestText)
+New-ExtensionZip -SourceDir $dist -OutPath $xpiPath
 
 # --- Extraction automatique du zip (evite de le decompresser a la main) ---
 Expand-Archive -Path $zipPath -DestinationPath $unpacked -Force
