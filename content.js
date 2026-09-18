@@ -115,6 +115,65 @@
     'tukif.porn': ['tukif'],
     'www.tukif.porn': ['tukif'],
     'videos.tukif.porn': ['tukif'],
+    'xtube.com': ['stripchat'],
+    'www.xtube.com': ['stripchat'],
+    'fr.xtube.com': ['stripchat'],
+    'empflix.com': ['agego'],
+    'www.empflix.com': ['agego'],
+    'perfectgirls.net': ['agego'],
+    'www.perfectgirls.net': ['agego'],
+    'daftsex.com': ['aylo'],
+    'www.daftsex.com': ['aylo'],
+    'extremetube.com': ['aylo'],
+    'www.extremetube.com': ['aylo'],
+    'spankwire.com': ['aylo'],
+    'www.spankwire.com': ['aylo'],
+    'keezmovies.com': ['aylo'],
+    'www.keezmovies.com': ['aylo'],
+    'xxxbunker.com': ['xxxbunker'],
+    'www.xxxbunker.com': ['xxxbunker'],
+    'cam4.com': ['cam4'],
+    'www.cam4.com': ['cam4'],
+    'fr.cam4.com': ['cam4'],
+    'spankbang.com': ['gate18'],
+    'www.spankbang.com': ['gate18'],
+    'fr.spankbang.com': ['gate18'],
+    '4tube.com': ['gate18'],
+    'www.4tube.com': ['gate18'],
+    'youjizz.com': ['gate18'],
+    'www.youjizz.com': ['gate18'],
+    'hqporner.com': ['gate18'],
+    'www.hqporner.com': ['gate18'],
+    'motherless.com': ['gate18'],
+    'www.motherless.com': ['gate18'],
+    'porntrex.com': ['gate18'],
+    'www.porntrex.com': ['gate18'],
+    'rule34.xxx': ['gate18'],
+    'www.rule34.xxx': ['gate18'],
+    'ixxx.com': ['gate18'],
+    'www.ixxx.com': ['gate18'],
+    'pornmd.com': ['gate18'],
+    'www.pornmd.com': ['gate18'],
+    'beeg.com': ['gate18'],
+    'www.beeg.com': ['gate18'],
+    'thisvid.com': ['gate18'],
+    'www.thisvid.com': ['gate18'],
+    'hdtube.porn': ['gate18'],
+    'www.hdtube.porn': ['gate18'],
+    'alohatube.com': ['gate18'],
+    'www.alohatube.com': ['gate18'],
+    'hellporno.com': ['gate18'],
+    'www.hellporno.com': ['gate18'],
+    'drtuber.com': ['gate18'],
+    'www.drtuber.com': ['gate18'],
+    'nuvid.com': ['gate18'],
+    'www.nuvid.com': ['gate18'],
+    'analdin.com': ['gate18'],
+    'www.analdin.com': ['gate18'],
+    'streamate.com': ['gate18'],
+    'www.streamate.com': ['gate18'],
+    'pornhat.com': ['gate18'],
+    'www.pornhat.com': ['gate18'],
   };
 
   const OVERRIDE_CSS = `
@@ -226,6 +285,18 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
 
 /* LIVEJASMIN — NE PAS cacher #overlay ni #fi-18-22 */
 #consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* XXXBUNKER — ne pas viser #overlay tout seul (LiveJasmin) */
+body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* CAM4 */
+#AgeConsentGenderDisclaimer, dialog[data-id="AgeConsentGenderDisclaimer"], [data-id="AgeConsentGenderDisclaimer"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* GATE18 générique (hosts listés seulement via profil, CSS chargé si page activée) */
+#age_verification, #age-verification, #ageVerification, #age_gate, #age-gate, #ageGate,
+#age-check, #age_check, #ageDisclaimer, #age-disclaimer, #age_disclaimer,
+#age-verification-container, .age-verification-overlay, .age-verification, .age_verification,
+.age-gate, .age_gate, .js-age-gate, #cookie-policy, .cc-window, .cc-banner, #full-page-loader { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 `.trim();
 
   const api = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : null;
@@ -327,7 +398,7 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
   }
 
   function isAyloHost() {
-    return /(^|\.)(youporn|redtube)\.com$/i.test(getHostname());
+    return /(^|\.)(youporn|redtube|daftsex|extremetube|spankwire|keezmovies)\.com$/i.test(getHostname());
   }
 
   function isPorntubeHost() {
@@ -339,8 +410,29 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
   }
 
   function isStripchatHost() {
-    return /(^|\.)stripchat\.com$/i.test(getHostname());
+    return /(^|\.)(stripchat|xtube)\.com$/i.test(getHostname());
   }
+
+  function isXxxbunkerHost() {
+    return /(^|\.)xxxbunker\.com$/i.test(getHostname());
+  }
+
+  function isCam4Host() {
+    return /(^|\.)cam4\.com$/i.test(getHostname());
+  }
+
+  function isGate18Host() {
+    return (
+      /(^|\.)(spankbang|4tube|youjizz|hqporner|motherless|porntrex|ixxx|pornmd|beeg|thisvid|alohatube|hellporno|drtuber|nuvid|analdin|streamate|pornhat)\.com$/i.test(
+        getHostname()
+      ) ||
+      /(^|\.)(rule34)\.xxx$/i.test(getHostname()) ||
+      /(^|\.)hdtube\.porn$/i.test(getHostname())
+    );
+  }
+
+  const GATE18_SELECTORS =
+    '#age_verification, #age-verification, #ageVerification, #age_gate, #age-gate, #ageGate, #age-check, #age_check, #ageDisclaimer, #age-disclaimer, #age_disclaimer, #age-verification-container, .age-verification-overlay, .age-verification, .age_verification, .age-gate, .age_gate, .js-age-gate, #cookie-policy, .cc-window, .cc-banner, #full-page-loader';
 
   function isBongacamsHost() {
     return /(^|\.)bongacams\.com$/i.test(getHostname());
@@ -521,6 +613,28 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
     return !!document.querySelector('#consent_modal.over-18');
   }
 
+  function detectXxxbunker() {
+    if (isXxxbunkerHost()) return true;
+    return !!(
+      document.body?.getAttribute('data-ageconfirmed') === 'false' ||
+      document.querySelector('body[data-ageconfirmed="false"] #overlay')
+    );
+  }
+
+  function detectCam4() {
+    if (isCam4Host()) return true;
+    return !!(
+      document.getElementById('AgeConsentGenderDisclaimer') ||
+      document.querySelector('dialog[data-id="AgeConsentGenderDisclaimer"]') ||
+      document.querySelector('[data-id="AgeConsentGenderDisclaimer"]')
+    );
+  }
+
+  function detectGate18() {
+    if (isGate18Host()) return true;
+    return !!document.querySelector(GATE18_SELECTORS);
+  }
+
   function detectProfiles() {
     const profiles = new Set(getConfiguredProfiles());
     if (detectAgeGO()) profiles.add('agego');
@@ -543,6 +657,9 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
     if (detectStripchat()) profiles.add('stripchat');
     if (detectBongacams()) profiles.add('bongacams');
     if (detectLivejasmin()) profiles.add('livejasmin');
+    if (detectXxxbunker()) profiles.add('xxxbunker');
+    if (detectCam4()) profiles.add('cam4');
+    if (detectGate18()) profiles.add('gate18');
     return [...profiles];
   }
 
@@ -791,6 +908,25 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
     );
   }
 
+  function hasXxxbunkerThreat() {
+    if (document.body?.getAttribute('data-ageconfirmed') === 'false') return true;
+    if (!isXxxbunkerHost()) return false;
+    return isOverlayVisible('body[data-ageconfirmed="false"] #overlay') || isOverlayVisible('#overlay');
+  }
+
+  function hasCam4Threat() {
+    return !!(
+      isOverlayVisible('#AgeConsentGenderDisclaimer') ||
+      isOverlayVisible('dialog[data-id="AgeConsentGenderDisclaimer"]') ||
+      isOverlayVisible('[data-id="AgeConsentGenderDisclaimer"]')
+    );
+  }
+
+  function hasGate18Threat() {
+    return GATE18_SELECTORS.split(', ')
+      .some((sel) => isOverlayVisible(sel.trim()));
+  }
+
   function hasPornhubThreat() {
     return !!(
       isOverlayVisible('.ageDisclaimer') ||
@@ -820,7 +956,10 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
       hasStripchatThreat() ||
       hasBongacamsThreat() ||
       hasLivejasminThreat() ||
-      hasPornhubThreat()
+      hasPornhubThreat() ||
+      hasXxxbunkerThreat() ||
+      hasCam4Threat() ||
+      hasGate18Threat()
     );
   }
 
@@ -1762,6 +1901,11 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
   }
 
   function cleanStripchat() {
+    try {
+      const maxAge = 31536000;
+      document.cookie = `18PlusGenderSelected=1; path=/; max-age=${maxAge}`;
+      document.cookie = `isAgeVerified=1; path=/; max-age=${maxAge}`;
+    } catch (_e) {}
     const accept = document.querySelector('.btn-visitors-agreement-accept');
     if (accept) { try { accept.click(); } catch (_e) {} }
     hideMatches(
@@ -1780,6 +1924,41 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
 
   function cleanLivejasmin() {
     hideMatches('#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal');
+  }
+
+  function cleanXxxbunker() {
+    if (document.body) {
+      document.body.setAttribute('data-ageconfirmed', 'true');
+    }
+    hideMatches('body[data-ageconfirmed] #overlay');
+    if (isXxxbunkerHost()) {
+      hideMatches('#overlay');
+    }
+  }
+
+  function cleanCam4() {
+    try {
+      const maxAge = 31536000;
+      document.cookie = `ageVerification=1; path=/; max-age=${maxAge}`;
+      document.cookie = `requireCookieConsent=0; path=/; max-age=${maxAge}`;
+    } catch (_e) {}
+    hideMatches(
+      '#AgeConsentGenderDisclaimer, dialog[data-id="AgeConsentGenderDisclaimer"], [data-id="AgeConsentGenderDisclaimer"]'
+    );
+  }
+
+  function cleanGate18() {
+    try {
+      const maxAge = 31536000;
+      document.cookie = `age_verified=1; path=/; max-age=${maxAge}`;
+      document.cookie = `ageVerified=1; path=/; max-age=${maxAge}`;
+      document.cookie = `age_check=1; path=/; max-age=${maxAge}`;
+      document.cookie = `ageVerification=1; path=/; max-age=${maxAge}`;
+      document.cookie = `ageGateDetails=1; path=/; max-age=${maxAge}`;
+    } catch (_e) {}
+    hideMatches(GATE18_SELECTORS);
+    document.documentElement.style.setProperty('overflow', 'auto', 'important');
+    document.body?.style.setProperty('overflow', 'auto', 'important');
   }
 
   function runCleanup() {
@@ -1808,6 +1987,9 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
     if (activeProfiles.includes('stripchat')) cleanStripchat();
     if (activeProfiles.includes('bongacams')) cleanBongacams();
     if (activeProfiles.includes('livejasmin')) cleanLivejasmin();
+    if (activeProfiles.includes('xxxbunker')) cleanXxxbunker();
+    if (activeProfiles.includes('cam4')) cleanCam4();
+    if (activeProfiles.includes('gate18')) cleanGate18();
 
     lastCleanup = Date.now();
     return true;
@@ -1930,6 +2112,9 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
     if (isBongacamsHost() && autoEnabled) cleanBongacams();
     if (isLivejasminHost() && autoEnabled) cleanLivejasmin();
     if (isTube8Host() && autoEnabled) cleanPornhub();
+    if (isXxxbunkerHost() && autoEnabled) cleanXxxbunker();
+    if (isCam4Host() && autoEnabled) cleanCam4();
+    if (isGate18Host() && autoEnabled) cleanGate18();
 
     return true;
   }
@@ -1966,6 +2151,9 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
       stripchatDetected: detectStripchat(),
       bongacamsDetected: detectBongacams(),
       livejasminDetected: detectLivejasmin(),
+      xxxbunkerDetected: detectXxxbunker(),
+      cam4Detected: detectCam4(),
+      gate18Detected: detectGate18(),
       threatPresent: isChaturbateHost() ? hasChaturbateThreatForStatus() : hasThreat(),
       watchdogActive,
     };
@@ -1998,6 +2186,9 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
       stripchatDetected: detectStripchat(),
       bongacamsDetected: detectBongacams(),
       livejasminDetected: detectLivejasmin(),
+      xxxbunkerDetected: detectXxxbunker(),
+      cam4Detected: detectCam4(),
+      gate18Detected: detectGate18(),
       threatPresent: isChaturbateHost() ? hasChaturbateThreatForStatus() : hasThreat(),
       lastCleanup,
       videoSfw:
@@ -2092,6 +2283,9 @@ body.bd_18plus { overflow: auto !important; height: auto !important; }
         if (isBongacamsHost() && autoEnabled) cleanBongacams();
         if (isLivejasminHost() && autoEnabled) cleanLivejasmin();
         if (isTube8Host() && autoEnabled) cleanPornhub();
+        if (isXxxbunkerHost() && autoEnabled) cleanXxxbunker();
+        if (isCam4Host() && autoEnabled) cleanCam4();
+        if (isGate18Host() && autoEnabled) cleanGate18();
       }
     });
   }

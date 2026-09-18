@@ -249,7 +249,7 @@ console.log('Test 4: manifest v1.5');
 
   const m = require('./manifest.json');
 
-  assert(m.version === '1.10.0', 'version 1.10.0');
+  assert(m.version === '1.10.1', 'version 1.10.1');
   assert(!!m.web_accessible_resources?.length, 'web_accessible_resources');
   const war = m.web_accessible_resources?.[0]?.resources || [];
   assert(war.includes('hls.min.js'), 'hls.min.js accessible');
@@ -595,6 +595,11 @@ console.log('Test 7: popup sites list');
   assert(popupJs.includes('youporn.com'), 'popup.js: youporn.com');
   assert(popupJs.includes('txxx.com'), 'popup.js: txxx.com');
   assert(popupJs.includes('stripchat.com'), 'popup.js: stripchat.com');
+  assert(popupJs.includes('spankbang.com'), 'popup.js: spankbang.com');
+  assert(popupJs.includes('cam4.com'), 'popup.js: cam4.com');
+  assert(popupJs.includes('xxxbunker.com'), 'popup.js: xxxbunker.com');
+  assert(popupJs.includes('xtube.com'), 'popup.js: xtube.com');
+  assert(popupJs.includes('youjizz.com'), 'popup.js: youjizz.com');
   assert(popupJs.includes('tabs.create'), 'popup.js: tabs.create');
   assert(popupJs.includes('renderSites'), 'popup.js: renderSites');
   assert(popupHtml.includes('sites-list'), 'popup.html: sites-list');
@@ -685,6 +690,49 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
     !ljOverlayIsolated || ljOverlayComment,
     'content: pas de #overlay isole pour LiveJasmin (ou commentaire)'
   );
+}
+
+console.log('Test 9: content.js v1.10.1 (xtube/cam4/xxxbunker/gate18)');
+{
+  const fs = require('fs');
+  const path = require('path');
+  const src = fs.readFileSync(path.join(__dirname, 'content.js'), 'utf8');
+  const contentProfiles = extractContentSiteProfiles(src);
+  const mf = require('./manifest.json');
+
+  const v1101HostMap = [
+    ['xtube.com', 'stripchat'],
+    ['xxxbunker.com', 'xxxbunker'],
+    ['cam4.com', 'cam4'],
+    ['spankbang.com', 'gate18'],
+    ['empflix.com', 'agego'],
+    ['youjizz.com', 'gate18'],
+  ];
+  for (const [host, profile] of v1101HostMap) {
+    assert(
+      contentHostHasProfile(contentProfiles, src, host, profile),
+      `content.js SITE_PROFILES: ${host} -> ${profile}`
+    );
+  }
+
+  assert(/function cleanXxxbunker\(/.test(src), 'content: cleanXxxbunker existe');
+  assert(/function cleanCam4\(/.test(src), 'content: cleanCam4 existe');
+  assert(/function cleanGate18\(/.test(src), 'content: cleanGate18 existe');
+
+  const cssBlock = (src.match(/const OVERRIDE_CSS = `([\s\S]*?)`;/) || ['', ''])[1];
+  assert(
+    cssBlock.includes('body[data-ageconfirmed="false"] #overlay'),
+    'OVERRIDE_CSS: body[data-ageconfirmed="false"] #overlay (XxxBunker)'
+  );
+  assert(
+    !/(?:^|\n)\s*#overlay\s*\{/.test(cssBlock),
+    'OVERRIDE_CSS: pas de #overlay { isole (LiveJasmin)'
+  );
+
+  const stripchatHostFn = extractFnBody(src, 'isStripchatHost');
+  assert(/xtube/.test(stripchatHostFn), 'content: isStripchatHost inclut xtube');
+
+  assert(!(mf.permissions || []).includes('tabs'), 'manifest v1.10.1: pas de permission tabs');
 }
 
 console.log('\n--- Resultat:', passed, 'OK,', failed, 'echecs ---');
