@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Banablur",
-  "version": "1.10.1",
-  "description": "Peel the blur. Removes age-gate overlays and video blur on XVIDEOS, XNXX, xHamster, xHamsterLive, Pornhub, Chaturbate, LebonPorn, Tukif, FapHouse, AgeGO/Deviants, TNAFlix, Tube8, TXXX, Jacquie, Stripchat, YouPorn and similar sites. Optional video download button and xHamster geo proxy.",
+  "version": "1.10.2",
+  "description": "Peel the blur. Removes age-gate overlays and video blur on XVIDEOS, XNXX, xHamster, xHamsterLive, Pornhub, Chaturbate, LebonPorn, Tukif, FapHouse, AgeGO/Deviants, TNAFlix, Tube8, TXXX, Jacquie, Stripchat and similar sites. Optional video download button. All requests use your local IP.",
   "background": {
     "service_worker": "background.js",
     "scripts": ["background.js"]
@@ -76,9 +76,8 @@
       "run_at": "document_start"
     }
   ],
-  "permissions": ["storage", "activeTab", "downloads", "proxy"],
+  "permissions": ["storage", "activeTab", "downloads"],
   "host_permissions": [
-    "https://api.proxyscrape.com/*",
     "https://*.xvideos.com/*",
     "https://*.xnxx.com/*",
     "https://*.xvideos.es/*",

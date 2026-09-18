@@ -93,9 +93,6 @@ const SITE_PROFILES = {
     'www.jacquieetmicheltv.net': ['jacquie'],
     'jacquieetmichel.net': ['jacquie'],
     'www.jacquieetmichel.net': ['jacquie'],
-    'youporn.com': ['aylo'],
-    'www.youporn.com': ['aylo'],
-    'fr.youporn.com': ['aylo'],
     'redtube.com': ['aylo'],
     'www.redtube.com': ['aylo'],
     'porntube.com': ['porntube'],
@@ -203,7 +200,6 @@ assert(SITE_PROFILES['porndig.com'].includes('tkn'), 'porndig -> tkn');
 assert(SITE_PROFILES['txxx.com'].includes('txxx'), 'txxx -> txxx');
 assert(SITE_PROFILES['eporner.com'].includes('eporner'), 'eporner -> eporner');
 assert(SITE_PROFILES['jacquieetmicheltv.net'].includes('jacquie'), 'jacquieetmicheltv -> jacquie');
-assert(SITE_PROFILES['youporn.com'].includes('aylo'), 'youporn -> aylo');
 assert(SITE_PROFILES['stripchat.com'].includes('stripchat'), 'stripchat -> stripchat');
 assert(SITE_PROFILES['bongacams.com'].includes('bongacams'), 'bongacams -> bongacams');
 assert(SITE_PROFILES['livejasmin.com'].includes('livejasmin'), 'livejasmin -> livejasmin');
@@ -249,14 +245,15 @@ console.log('Test 4: manifest v1.5');
 
   const m = require('./manifest.json');
 
-  assert(m.version === '1.10.1', 'version 1.10.1');
+  assert(m.version === '1.10.2', 'version 1.10.2');
   assert(!!m.web_accessible_resources?.length, 'web_accessible_resources');
   const war = m.web_accessible_resources?.[0]?.resources || [];
   assert(war.includes('hls.min.js'), 'hls.min.js accessible');
   assert((m.permissions || []).includes('downloads'), 'permission downloads');
-  assert((m.permissions || []).includes('proxy'), 'permission proxy (deflou xHamster)');
+  assert(!(m.permissions || []).includes('proxy'), 'manifest: pas de permission proxy');
   assert(!(m.permissions || []).includes('tabs'), 'manifest: pas de permission tabs');
   const hostPerms = (m.host_permissions || []).join(' ');
+  assert(!/proxyscrape\.com/.test(hostPerms), 'manifest: pas host_permission proxyscrape');
   assert(/xvideos\.com/.test(hostPerms), 'manifest host_permissions: xvideos.com');
   assert(/xnxx\.com/.test(hostPerms), 'manifest host_permissions: xnxx.com');
   assert(/xvideos\.es/.test(hostPerms), 'manifest host_permissions: xvideos.es');
@@ -364,7 +361,7 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   assert(xvPage.includes('getToken'), 'xvideos page utilise le token URL pour embedframe');
   assert(xvPage.includes('/video[.-]'), 'xvideos page getToken: chemin /video-TOKEN ou /video.TOKEN');
   assert(xvPage.includes('fetchEmbedframe(getToken())'), 'xvideos page token en priorite, id en secours');
-  assert(xvPage.includes('agego-xv-embedframe'), 'xvideos page: evenement proxy embedframe');
+  assert(!xvPage.includes('agego-xv-embedframe'), 'xvideos page: pas d evenement proxy embedframe');
   assert(xvPage.includes('disableSfwLimit'), 'xvideos page desactive la limite SFW (boucle 44s)');
   assert(xvPage.includes('bIsSfwLimited = false'), 'xvideos page coupe bIsSfwLimited');
   assert(xvPage.includes('.buttons-bar'), 'xvideos page masque la barre de boutons du site');
@@ -382,13 +379,21 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   assert(fs.existsSync(path.join(__dirname, 'background.js')), 'fichier background.js present');
   const bg = fs.readFileSync(path.join(__dirname, 'background.js'), 'utf8');
   assert(bg.includes('downloads.download'), 'background utilise chrome.downloads');
-  assert(bg.includes('xv:embedframe'), 'background: handler proxy embedframe xv/xnxx');
-  assert(bg.includes('/embedframe/'), 'background: route PAC /embedframe/');
-  assert(
-    /buildPacData[\s\S]{0,800}(xnxx|xvideos|embedframe)/i.test(bg),
-    'background: buildPacData mentionne xnxx/xvideos embedframe'
-  );
-  assert(src.includes('agego-xv-embedframe'), 'content: evenement proxy embedframe xv/xnxx');
+  assert(!/proxyscrape/i.test(bg), 'background: pas de proxyscrape');
+  assert(!bg.includes('proxy:ensure'), 'background: pas de proxy:ensure');
+  assert(!bg.includes('xv:embedframe'), 'background: pas de handler proxy embedframe');
+  assert(!/buildPacData/.test(bg), 'background: pas de buildPacData');
+  assert(!src.includes('agego-xv-embedframe'), 'content: pas d evenement proxy embedframe');
+  assert(!src.includes('ensureXhamsterProxy'), 'content: pas de ensureXhamsterProxy');
+  assert(!src.includes('agego-xh-proxy-state'), 'content: pas d evenement agego-xh-proxy-state');
+  const contentProfiles = extractContentSiteProfiles(src);
+  for (const removedHost of ['youporn.com', 'ixxx.com', 'porntrex.com', '4tube.com', 'pornmd.com']) {
+    assert(
+      !contentHostHasProfile(contentProfiles, src, removedHost, 'aylo') &&
+        !contentHostHasProfile(contentProfiles, src, removedHost, 'gate18'),
+      `content.js SITE_PROFILES: ${removedHost} absent`
+    );
+  }
 
   assert(fs.existsSync(path.join(__dirname, 'xhamster-page.js')), 'fichier xhamster-page.js present');
   const xhPage = fs.readFileSync(path.join(__dirname, 'xhamster-page.js'), 'utf8');
@@ -592,7 +597,9 @@ console.log('Test 7: popup sites list');
   assert(popupJs.includes('tukif.porn'), 'popup.js: tukif.porn');
   assert(popupJs.includes('xvideos.com'), 'popup.js: xvideos.com');
   assert(popupJs.includes('tnaflix.com'), 'popup.js: tnaflix.com');
-  assert(popupJs.includes('youporn.com'), 'popup.js: youporn.com');
+  assert(!popupJs.includes('youporn.com'), 'popup.js: pas youporn.com');
+  assert(!popupJs.includes('ixxx.com'), 'popup.js: pas ixxx.com');
+  assert(!popupJs.includes('toggle-proxy'), 'popup.js: pas toggle-proxy');
   assert(popupJs.includes('txxx.com'), 'popup.js: txxx.com');
   assert(popupJs.includes('stripchat.com'), 'popup.js: stripchat.com');
   assert(popupJs.includes('spankbang.com'), 'popup.js: spankbang.com');
@@ -635,7 +642,6 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
     ['txxx.com', 'txxx'],
     ['eporner.com', 'eporner'],
     ['jacquieetmicheltv.net', 'jacquie'],
-    ['youporn.com', 'aylo'],
     ['stripchat.com', 'stripchat'],
     ['bongacams.com', 'bongacams'],
     ['livejasmin.com', 'livejasmin'],
@@ -692,7 +698,7 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
   );
 }
 
-console.log('Test 9: content.js v1.10.1 (xtube/cam4/xxxbunker/gate18)');
+console.log('Test 9: content.js v1.10.2 (xtube/cam4/xxxbunker/gate18)');
 {
   const fs = require('fs');
   const path = require('path');
@@ -732,7 +738,8 @@ console.log('Test 9: content.js v1.10.1 (xtube/cam4/xxxbunker/gate18)');
   const stripchatHostFn = extractFnBody(src, 'isStripchatHost');
   assert(/xtube/.test(stripchatHostFn), 'content: isStripchatHost inclut xtube');
 
-  assert(!(mf.permissions || []).includes('tabs'), 'manifest v1.10.1: pas de permission tabs');
+  assert(!(mf.permissions || []).includes('tabs'), 'manifest v1.10.2: pas de permission tabs');
+  assert(!(mf.permissions || []).includes('proxy'), 'manifest v1.10.2: pas de permission proxy');
 }
 
 console.log('\n--- Resultat:', passed, 'OK,', failed, 'echecs ---');

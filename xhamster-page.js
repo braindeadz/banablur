@@ -393,38 +393,6 @@
     return /\/videos\//.test(location.pathname) || !!document.querySelector('#xplayer__video');
   }
 
-  // ---------------------------------------------------------------------------
-  // Cascade proxy: si malgre le proxy la page revient en mode SFW/flou (proxy
-  // tombe, ou exit geolocalise en FR), on le signale au monde isole (content.js)
-  // qui demandera au service worker de basculer sur le proxy suivant puis
-  // rechargera. La detection se fait sur appContext.ageVerificationInfo.isSfw et
-  // la presence de /sfw/ dans les sources (signal deterministe cote serveur).
-  // ---------------------------------------------------------------------------
-  var proxyStateReported = false;
-  function detectSfwState() {
-    try {
-      var av = window.appContext && window.appContext.ageVerificationInfo;
-      if (!av || typeof av.isSfw === 'undefined') return null; // pas encore pret
-      if (av.isSfw || av.isBlurredMedia) return true;
-      var s = window.initials && window.initials.xplayerSettings && window.initials.xplayerSettings.sources;
-      var str = '';
-      try { str = JSON.stringify(s || ''); } catch (_e) {}
-      if (/\/sfw\//.test(str) || /\\\/sfw\\\//.test(str)) return true;
-      return false;
-    } catch (_e) {
-      return null;
-    }
-  }
-  function reportProxyState() {
-    if (proxyStateReported || !isVideoPage()) return;
-    var sfw = detectSfwState();
-    if (sfw === null) return; // appContext pas encore dispo, on reessaiera
-    proxyStateReported = true;
-    try {
-      document.dispatchEvent(new CustomEvent('agego-xh-proxy-state', { detail: { sfw: sfw } }));
-    } catch (_e) {}
-  }
-
   function ensureButton() {
     if (!isVideoPage()) return;
     if (document.getElementById('agego-dl-btn')) return;
@@ -466,8 +434,6 @@
     if (path !== lastPath || vid !== lastVideoId) {
       lastPath = path;
       lastVideoId = vid;
-      proxyStateReported = false;
-      setTimeout(reportProxyState, 1500);
     }
     hideCookieBanner();
     disableSfw();
@@ -491,8 +457,6 @@
         if (location.pathname !== lastPath || vid !== lastVideoId) {
           lastPath = location.pathname;
           lastVideoId = vid;
-          proxyStateReported = false;
-          setTimeout(reportProxyState, 1500);
         }
         hideCookieBanner();
         disableSfw();
@@ -513,9 +477,6 @@
     tick();
     startObserver();
     if (!loopTimer) loopTimer = setInterval(tick, 500);
-    // Verifie l'etat SFW tot (des que appContext est hydrate) pour une cascade
-    // proxy rapide; plusieurs tentatives car appContext peut arriver en retard.
-    [1200, 2500, 5000, 9000].forEach(function (ms) { setTimeout(reportProxyState, ms); });
   }
 
   document.addEventListener('agego-xh-unlock', tick);

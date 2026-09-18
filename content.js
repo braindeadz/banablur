@@ -92,11 +92,6 @@
     'www.jacquieetmicheltv.net': ['jacquie'],
     'jacquieetmichel.net': ['jacquie'],
     'www.jacquieetmichel.net': ['jacquie'],
-    'youporn.com': ['aylo'],
-    'www.youporn.com': ['aylo'],
-    'fr.youporn.com': ['aylo'],
-    'redtube.com': ['aylo'],
-    'www.redtube.com': ['aylo'],
     'porntube.com': ['porntube'],
     'www.porntube.com': ['porntube'],
     'porn.com': ['porncom'],
@@ -122,14 +117,6 @@
     'www.empflix.com': ['agego'],
     'perfectgirls.net': ['agego'],
     'www.perfectgirls.net': ['agego'],
-    'daftsex.com': ['aylo'],
-    'www.daftsex.com': ['aylo'],
-    'extremetube.com': ['aylo'],
-    'www.extremetube.com': ['aylo'],
-    'spankwire.com': ['aylo'],
-    'www.spankwire.com': ['aylo'],
-    'keezmovies.com': ['aylo'],
-    'www.keezmovies.com': ['aylo'],
     'xxxbunker.com': ['xxxbunker'],
     'www.xxxbunker.com': ['xxxbunker'],
     'cam4.com': ['cam4'],
@@ -138,22 +125,14 @@
     'spankbang.com': ['gate18'],
     'www.spankbang.com': ['gate18'],
     'fr.spankbang.com': ['gate18'],
-    '4tube.com': ['gate18'],
-    'www.4tube.com': ['gate18'],
     'youjizz.com': ['gate18'],
     'www.youjizz.com': ['gate18'],
     'hqporner.com': ['gate18'],
     'www.hqporner.com': ['gate18'],
     'motherless.com': ['gate18'],
     'www.motherless.com': ['gate18'],
-    'porntrex.com': ['gate18'],
-    'www.porntrex.com': ['gate18'],
     'rule34.xxx': ['gate18'],
     'www.rule34.xxx': ['gate18'],
-    'ixxx.com': ['gate18'],
-    'www.ixxx.com': ['gate18'],
-    'pornmd.com': ['gate18'],
-    'www.pornmd.com': ['gate18'],
     'beeg.com': ['gate18'],
     'www.beeg.com': ['gate18'],
     'thisvid.com': ['gate18'],
@@ -250,11 +229,8 @@ html.img-blured img, html.img-blured video, html.img-blured iframe, .img-blured,
 #agego-verify-frame { display: none !important; }
 
 /* TUBE8 */
-#ageDisclaimerMainBG, #ageDisclaimerWrapper, #ageDisclaimerTitle, #underAgeWrapper, .age-disclaimer-modal { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+#ageDisclaimerMainBG, #ageDisclaimerWrapper, #ageDisclaimerTitle, #underAgeWrapper, .age-disclaimer-modal, html.showAgeDisclaimer .disclaimer { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 html.showAgeDisclaimer, html.showAgeDisclaimer body { overflow: auto !important; }
-
-/* AYLO YouPorn/RedTube — overlay seulement, pas le catalogue serveur */
-link[href*="age-wall"] + *, [class*="AgeWall"], .age-wall, [class*="age-wall"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 
 /* JACQUIE */
 custom-disclaimer.disclaimer, .disclaimer__container, .disclaimer__btns, #disclaimer, .disclaimer-wrapper { display: none !important; pointer-events: none !important; visibility: hidden !important; }
@@ -319,13 +295,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
   let tukifNavGuardBound = false;
   let tukifHistoryHooked = false;
   let lastTukifPath = '';
-  let xhProxyEnsured = false;
-
-  function ensureXhamsterProxy() {
-    if (xhProxyEnsured || !isXhamsterHost() || !api?.runtime?.sendMessage) return;
-    xhProxyEnsured = true;
-    try { api.runtime.sendMessage({ action: 'proxy:ensure' }, () => { void api.runtime.lastError; }); } catch (_e) {}
-  }
 
   function getHostname() {
     return location.hostname;
@@ -397,10 +366,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     return /(^|\.)jacquieetmichel(tv)?\.net$/i.test(getHostname());
   }
 
-  function isAyloHost() {
-    return /(^|\.)(youporn|redtube|daftsex|extremetube|spankwire|keezmovies)\.com$/i.test(getHostname());
-  }
-
   function isPorntubeHost() {
     return /(^|\.)porntube\.com$/i.test(getHostname());
   }
@@ -423,7 +388,7 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
 
   function isGate18Host() {
     return (
-      /(^|\.)(spankbang|4tube|youjizz|hqporner|motherless|porntrex|ixxx|pornmd|beeg|thisvid|alohatube|hellporno|drtuber|nuvid|analdin|streamate|pornhat)\.com$/i.test(
+      /(^|\.)(spankbang|youjizz|hqporner|motherless|beeg|thisvid|alohatube|hellporno|drtuber|nuvid|analdin|streamate|pornhat)\.com$/i.test(
         getHostname()
       ) ||
       /(^|\.)(rule34)\.xxx$/i.test(getHostname()) ||
@@ -577,15 +542,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     );
   }
 
-  function detectAylo() {
-    if (isAyloHost()) return true;
-    return !!(
-      document.querySelector('link[href*="age-wall"]') ||
-      document.body?.classList.contains('yp') ||
-      document.body?.classList.contains('rt')
-    );
-  }
-
   function detectPorntube() {
     if (isPorntubeHost()) return true;
     return !!document.querySelector('[data-controller="click-verify"]');
@@ -651,7 +607,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     if (detectEporner()) profiles.add('eporner');
     if (detectSunporno()) profiles.add('sunporno');
     if (detectJacquie()) profiles.add('jacquie');
-    if (detectAylo()) profiles.add('aylo');
     if (detectPorntube()) profiles.add('porntube');
     if (detectPorncom()) profiles.add('porncom');
     if (detectStripchat()) profiles.add('stripchat');
@@ -869,14 +824,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     );
   }
 
-  function hasAyloThreat() {
-    return !!(
-      document.querySelector('link[href*="age-wall"]') ||
-      isOverlayVisible('.age-wall') ||
-      isOverlayVisible('[class*="AgeWall"]')
-    );
-  }
-
   function hasPorntubeThreat() {
     return isOverlayVisible('[data-controller="click-verify"]');
   }
@@ -950,7 +897,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
       hasEpornerThreat() ||
       hasSunpornoThreat() ||
       hasJacquieThreat() ||
-      hasAyloThreat() ||
       hasPorntubeThreat() ||
       hasPorncomThreat() ||
       hasStripchatThreat() ||
@@ -1114,46 +1060,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     const detail = event.detail || {};
     if (!detail.url || !api?.runtime?.sendMessage) return;
     api.runtime.sendMessage({ action: 'download', url: detail.url, filename: detail.filename });
-  });
-
-  // Relais embedframe: le script page (monde isole) demande un fetch proxifie
-  // quand le fetch same-origin ne renvoie que du SFW ou pas de HLS.
-  document.addEventListener('agego-xv-embedframe', (event) => {
-    if (!isXvideosHost() || !api?.runtime?.sendMessage) return;
-    const detail = event.detail || {};
-    const { key, origin, reqId } = detail;
-    if (!key) return;
-    api.runtime.sendMessage({ action: 'xv:embedframe', key, origin }, (resp) => {
-      void api.runtime.lastError;
-      document.dispatchEvent(
-        new CustomEvent('agego-xv-embedframe-result', { detail: { reqId, ...(resp || {}) } })
-      );
-    });
-  });
-
-  // Cascade proxy xHamster: xhamster-page.js (monde page) signale l'etat SFW.
-  // Si SFW (proxy tombe / exit FR), on demande au service worker de basculer sur
-  // le proxy suivant puis on recharge. Compteur anti-boucle (sessionStorage) pour
-  // ne pas boucler si tous les proxys echouent -> on laisse la page (floutee mais
-  // fonctionnelle) au-dela de XH_PROXY_MAX tentatives. Reset quand un flux clair
-  // est obtenu.
-  const XH_PROXY_MAX = 6;
-  document.addEventListener('agego-xh-proxy-state', (event) => {
-    if (!isXhamsterHost() || !api?.runtime?.sendMessage) return;
-    const sfw = !!(event.detail && event.detail.sfw);
-    if (!sfw) {
-      try { sessionStorage.removeItem('agegoXhProxyAttempts'); } catch (_e) {}
-      return;
-    }
-    let attempts = 0;
-    try { attempts = parseInt(sessionStorage.getItem('agegoXhProxyAttempts') || '0', 10) || 0; } catch (_e) {}
-    if (attempts >= XH_PROXY_MAX) return;
-    try { sessionStorage.setItem('agegoXhProxyAttempts', String(attempts + 1)); } catch (_e) {}
-    api.runtime.sendMessage({ action: 'proxy:rotate' }, (resp) => {
-      void api.runtime.lastError;
-      if (!resp || resp.ok !== true) return; // proxy desactive -> pas de reload
-      setTimeout(() => { try { location.reload(); } catch (_e) {} }, 400);
-    });
   });
 
   function injectXvideosPageScript() {
@@ -1831,7 +1737,7 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     document.querySelectorAll('.ageDisclaimer, .modalMTubes.ageDisclaimer').forEach((el) => {
       el.style.setProperty('display', 'none', 'important');
     });
-    hideMatches('#ageDisclaimerMainBG, #ageDisclaimerWrapper');
+    hideMatches('#ageDisclaimerMainBG, #ageDisclaimerWrapper, html.showAgeDisclaimer .disclaimer');
     document.documentElement.classList.remove('showAgeDisclaimer');
     document.body?.classList.remove('isOpenMTubes');
     if (isPornhubHost()) {
@@ -1875,18 +1781,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     if (enterBtn) { try { enterBtn.click(); } catch (_e) {} }
     hideMatches('custom-disclaimer.disclaimer, .disclaimer__container, .disclaimer__btns, #disclaimer, .disclaimer-wrapper');
     document.documentElement.classList.remove('my18pass-blur');
-  }
-
-  function cleanAylo() {
-    hideMatches('[class*="AgeWall"], .age-wall, [class*="age-wall"]');
-    document.querySelectorAll('link[href*="age-wall"]').forEach((link) => {
-      const next = link.nextElementSibling;
-      if (next) {
-        next.style.setProperty('display', 'none', 'important');
-        next.style.setProperty('pointer-events', 'none', 'important');
-        next.style.setProperty('visibility', 'hidden', 'important');
-      }
-    });
   }
 
   function cleanPorntube() {
@@ -1981,7 +1875,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     if (activeProfiles.includes('eporner')) cleanEporner();
     if (activeProfiles.includes('sunporno')) cleanSunporno();
     if (activeProfiles.includes('jacquie')) cleanJacquie();
-    if (activeProfiles.includes('aylo')) cleanAylo();
     if (activeProfiles.includes('porntube')) cleanPorntube();
     if (activeProfiles.includes('porncom')) cleanPorncom();
     if (activeProfiles.includes('stripchat')) cleanStripchat();
@@ -2086,7 +1979,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     }
 
     if (isXhamsterHost()) {
-      ensureXhamsterProxy();
       startXhamsterWatchdog();
     }
 
@@ -2105,7 +1997,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
     if (isEpornerHost() && autoEnabled) cleanEporner();
     if (isSunpornoHost() && autoEnabled) cleanSunporno();
     if (isJacquieHost() && autoEnabled) cleanJacquie();
-    if (isAyloHost() && autoEnabled) cleanAylo();
     if (isPorntubeHost() && autoEnabled) cleanPorntube();
     if (isPorncomHost() && autoEnabled) cleanPorncom();
     if (isStripchatHost() && autoEnabled) cleanStripchat();
@@ -2145,7 +2036,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
       epornerDetected: detectEporner(),
       sunpornoDetected: detectSunporno(),
       jacquieDetected: detectJacquie(),
-      ayloDetected: detectAylo(),
       porntubeDetected: detectPorntube(),
       porncomDetected: detectPorncom(),
       stripchatDetected: detectStripchat(),
@@ -2180,7 +2070,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
       epornerDetected: detectEporner(),
       sunpornoDetected: detectSunporno(),
       jacquieDetected: detectJacquie(),
-      ayloDetected: detectAylo(),
       porntubeDetected: detectPorntube(),
       porncomDetected: detectPorncom(),
       stripchatDetected: detectStripchat(),
@@ -2276,7 +2165,6 @@ body[data-ageconfirmed="false"] #overlay { display: none !important; pointer-eve
         if (isEpornerHost() && autoEnabled) cleanEporner();
         if (isSunpornoHost() && autoEnabled) cleanSunporno();
         if (isJacquieHost() && autoEnabled) cleanJacquie();
-        if (isAyloHost() && autoEnabled) cleanAylo();
         if (isPorntubeHost() && autoEnabled) cleanPorntube();
         if (isPorncomHost() && autoEnabled) cleanPorncom();
         if (isStripchatHost() && autoEnabled) cleanStripchat();

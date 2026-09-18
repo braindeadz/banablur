@@ -11,7 +11,6 @@ const SUPPORTED_SITES = [
   { name: 'Tukif', url: 'https://tukif.porn' },
   { name: 'FapHouse', url: 'https://www.faphouse.com' },
   { name: 'Deviants', url: 'https://deviants.com' },
-  { name: '4tube', url: 'https://www.4tube.com' },
   { name: 'AlohaTube', url: 'https://www.alohatube.com' },
   { name: 'AnalDin', url: 'https://www.analdin.com' },
   { name: 'Beeg', url: 'https://beeg.com' },
@@ -20,13 +19,11 @@ const SUPPORTED_SITES = [
   { name: 'DrTuber', url: 'https://www.drtuber.com' },
   { name: 'Empflix', url: 'https://www.empflix.com' },
   { name: 'Eporner', url: 'https://www.eporner.com' },
-  { name: 'ExtremeTube', url: 'https://www.extremetube.com' },
   { name: 'HClips', url: 'https://hclips.com' },
   { name: 'HDZog', url: 'https://hdzog.com' },
   { name: 'HDTube', url: 'https://www.hdtube.porn' },
   { name: 'HellPorno', url: 'https://www.hellporno.com' },
   { name: 'HQPorner', url: 'https://hqporner.com' },
-  { name: 'iXXX', url: 'https://www.ixxx.com' },
   { name: 'Jacquie et Michel', url: 'https://www.jacquieetmichel.net' },
   { name: 'Jacquie et Michel TV', url: 'https://www.jacquieetmicheltv.net' },
   { name: 'LiveJasmin', url: 'https://www.livejasmin.com' },
@@ -37,11 +34,8 @@ const SUPPORTED_SITES = [
   { name: 'Porn.com', url: 'https://www.porn.com' },
   { name: 'PornDig', url: 'https://www.porndig.com' },
   { name: 'PornHat', url: 'https://www.pornhat.com' },
-  { name: 'PornMD', url: 'https://www.pornmd.com' },
   { name: 'PornOne', url: 'https://www.pornone.com' },
-  { name: 'PornTrex', url: 'https://www.porntrex.com' },
   { name: 'PornTube', url: 'https://www.porntube.com' },
-  { name: 'RedTube', url: 'https://www.redtube.com' },
   { name: 'Rule34', url: 'https://rule34.xxx' },
   { name: 'SpankBang', url: 'https://spankbang.com' },
   { name: 'Stripchat', url: 'https://stripchat.com' },
@@ -59,7 +53,6 @@ const SUPPORTED_SITES = [
   { name: 'XVIDEOS.es', url: 'https://www.xvideos.es' },
   { name: 'XxxBunker', url: 'https://xxxbunker.com' },
   { name: 'YouJizz', url: 'https://www.youjizz.com' },
-  { name: 'YouPorn', url: 'https://www.youporn.com' },
 ];
 
 const els = {
@@ -74,9 +67,6 @@ const els = {
   labelVideo: document.getElementById('label-video'),
   toggleAuto: document.getElementById('toggle-auto'),
   btnForce: document.getElementById('btn-force'),
-  toggleProxy: document.getElementById('toggle-proxy'),
-  btnProxyRefresh: document.getElementById('btn-proxy-refresh'),
-  proxyInfo: document.getElementById('proxy-info'),
   lastCleanup: document.getElementById('last-cleanup'),
   feedback: document.getElementById('feedback'),
   sitesList: document.getElementById('sites-list'),
@@ -93,14 +83,6 @@ function sendToRuntime(message) {
       resolve({});
     }
   });
-}
-
-async function refreshProxyUI() {
-  const st = await sendToRuntime({ action: 'proxy:getStatus' });
-  els.toggleProxy.checked = st.enabled !== false;
-  els.proxyInfo.textContent = st.list && st.list.length
-    ? `Proxy : ${st.enabled ? 'actif' : 'inactif'} (${st.list.length} dispo, ${st.list[0]})`
-    : 'Proxy : —';
 }
 
 function setDot(el, state) {
@@ -306,26 +288,7 @@ async function init() {
     }
   });
 
-  els.toggleProxy.addEventListener('change', async () => {
-    const r = await sendToRuntime({ action: 'proxy:setEnabled', enabled: els.toggleProxy.checked });
-    showFeedback(
-      els.toggleProxy.checked ? 'Proxy xHamster active.' : 'Proxy xHamster desactive.',
-      r && r.ok === false
-    );
-    await refreshProxyUI();
-  });
-
-  els.btnProxyRefresh.addEventListener('click', async () => {
-    els.btnProxyRefresh.disabled = true;
-    els.proxyInfo.textContent = 'Proxy : rafraichissement...';
-    const r = await sendToRuntime({ action: 'proxy:refresh' });
-    showFeedback(r && r.ok ? `Proxys rafraichis (${r.count}).` : 'Echec du rafraichissement.', !(r && r.ok));
-    await refreshProxyUI();
-    els.btnProxyRefresh.disabled = false;
-  });
-
   await refreshStatus();
-  await refreshProxyUI();
 }
 
 init();

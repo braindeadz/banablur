@@ -1,6 +1,6 @@
 # Banablur
 
-**v1.10.1** · *Peel the blur.*
+**v1.10.2** · *Peel the blur.*
 
 Banablur is a browser extension for **Chromium** (Chrome, Edge, Brave) and **Firefox** that removes age-verification overlays, neutralizes CSS and player blur, and unlocks safe-mode / SFW video players where the site allows it.
 
@@ -11,13 +11,14 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 ## What it is
 
 - A **local-only** content script that detects known adult sites and strips consent gates, blur filters, and safe-for-work player locks.
-- A **popup toolbar** to toggle auto-removal, force a cleanup pass, and manage an optional xHamster geo-proxy.
+- A **popup toolbar** to toggle auto-removal and force a cleanup pass.
 - An **optional download button** on supported video pages (MP4 via the browser downloads API; HLS as concatenated segments where implemented).
+- **Direct connection** — all network requests use your **local IP**; no proxy or traffic rerouting.
 
 ## What it is not
 
 - **Not listed** on the Chrome Web Store or the public Mozilla Add-ons (AMO) catalog. Those stores prohibit extensions whose primary purpose is porn enhancement or age-gate circumvention.
-- **Not a VPN or anonymity tool.** The xHamster proxy only routes xHamster CDN traffic through public HTTP proxies to bypass France-specific blur; everything else stays direct.
+- **Not a VPN or anonymity tool.** Traffic stays on your normal connection.
 - **Not a guarantee** that every stream or quality tier will unlock — some restrictions are enforced server-side (geo, account tier, DRM).
 
 ---
@@ -32,7 +33,7 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 | Auto-detection | Built-in profiles per domain; learns similar domains over time |
 | Watchdog | Re-applies fixes when sites mutate the DOM |
 | Video download | Optional floating button on XVIDEOS, xHamster, Pornhub (MP4 / HLS) |
-| xHamster geo-proxy | Optional PAC proxy for xHamster domains only (helps defog FR geo-blur) |
+| Local IP | All requests go through your browser with your real IP — no proxy |
 | Privacy | No telemetry; Firefox 140+ `data_collection_permissions`: **none** |
 
 ---
@@ -56,13 +57,13 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 | [txxx.com](https://txxx.com) family (HClips, Upornia, HDZog, …) | TXXX | Vue `.modal-age-verification` |
 | [porndig.com](https://www.porndig.com), [sxyprn.com](https://sxyprn.com) | TKN | AgeVerif disclaimer without Tukif player inject |
 | [jacquieetmicheltv.net](https://www.jacquieetmicheltv.net), [jacquieetmichel.net](https://www.jacquieetmichel.net) | Jacquie | Custom 18+ disclaimer / my18pass blur |
-| [youporn.com](https://www.youporn.com), [redtube.com](https://www.redtube.com) | Aylo | Overlay only — FR legal wall may stay server-side |
+| [redtube.com](https://www.redtube.com) | Aylo | Overlay only |
 | [eporner.com](https://www.eporner.com), [sunporno.com](https://www.sunporno.com), [porntube.com](https://www.porntube.com), [porn.com](https://www.porn.com) | Custom | Site-specific age overlays |
 | [stripchat.com](https://stripchat.com), [bongacams.com](https://bongacams.com), [livejasmin.com](https://www.livejasmin.com) | Cam gates | 18+ modal / Yoti / consent modal |
 | [xtube.com](https://www.xtube.com) | Stripchat-like | Same agreement / cookie gates as Stripchat |
 | [cam4.com](https://cam4.com) | CAM4 | Age consent gender disclaimer |
 | [xxxbunker.com](https://xxxbunker.com) | XxxBunker | `#overlay` only when `data-ageconfirmed="false"` (avoids LiveJasmin clash) |
-| [spankbang.com](https://spankbang.com), [youjizz.com](https://www.youjizz.com), [4tube.com](https://www.4tube.com), [hqporner.com](https://hqporner.com), [motherless.com](https://www.motherless.com), [porntrex.com](https://www.porntrex.com), [beeg.com](https://beeg.com), [thisvid.com](https://thisvid.com), [alohatube.com](https://www.alohatube.com), [hellporno.com](https://www.hellporno.com), [drtuber.com](https://www.drtuber.com), [nuvid.com](https://www.nuvid.com), [analdin.com](https://www.analdin.com), [streamate.com](https://www.streamate.com), [pornhat.com](https://www.pornhat.com), [rule34.xxx](https://rule34.xxx), [ixxx.com](https://www.ixxx.com), [pornmd.com](https://www.pornmd.com), [hdtube.porn](https://www.hdtube.porn) | Gate18 | Generic 18+ / cookie overlays — **ARCOM-blocked domains may need VPN or access outside France** |
+| [spankbang.com](https://spankbang.com), [youjizz.com](https://www.youjizz.com), [hqporner.com](https://hqporner.com), [motherless.com](https://www.motherless.com), [beeg.com](https://beeg.com), [thisvid.com](https://thisvid.com), [alohatube.com](https://www.alohatube.com), [hellporno.com](https://www.hellporno.com), [drtuber.com](https://www.drtuber.com), [nuvid.com](https://www.nuvid.com), [analdin.com](https://www.analdin.com), [streamate.com](https://www.streamate.com), [pornhat.com](https://www.pornhat.com), [rule34.xxx](https://rule34.xxx), [hdtube.porn](https://www.hdtube.porn) | Gate18 | Generic 18+ / cookie overlays |
 | xvideos.es, xnxx.es, xvideos.red, xhamster.desi, pornhubpremium.com | Same engines | TLD / premium clones of existing profiles |
 | Similar domains | Auto-detected | Remembered after first visit |
 
@@ -72,10 +73,10 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 
 Banablur is distributed as an **unpacked extension** (developer mode). There is no Chrome Web Store package.
 
-1. Obtain a build: extract `banablur-1.10.1.zip` from a release, or build from source (see below).
+1. Obtain a build: extract `banablur-1.10.2.zip` from a release, or build from source (see below).
 2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).
 3. Enable **Developer mode**.
-4. Click **Load unpacked** and select the extracted folder (e.g. `banablur-1.10.1/`).
+4. Click **Load unpacked** and select the extracted folder (e.g. `banablur-1.10.2/`).
 5. Pin the extension from the puzzle icon in the toolbar.
 
 > Chromium does not install a `.zip` directly — use the extracted folder.
@@ -96,7 +97,7 @@ Firefox Release requires a **Mozilla-signed** add-on. Banablur is distributed as
 
 Use only a file that contains `META-INF/mozilla.rsa` (name ends with `FIREFOX-SIGNE.xpi`, `firefox-signed.xpi`, or comes from an AMO download). The unsigned build zip/xpi from `build.ps1` is **not** for Firefox Release — it will be rejected with “not verified”.
 
-1. Download `Banablur-1.10.1-FIREFOX-SIGNE.xpi` or `banablur-1.10.1-firefox-signed.xpi` (or the latest signed release asset).
+1. Download `Banablur-1.10.2-FIREFOX-SIGNE.xpi` or `banablur-1.10.2-firefox-signed.xpi` (or the latest signed release asset).
 2. Open `about:addons`.
 3. Click the gear menu → **Install Add-on From File…**
 4. Select the **signed** `.xpi`.
@@ -123,8 +124,6 @@ Click the Banablur icon in the toolbar. The popup UI labels are in **French**; b
 |--------------------|----------|
 | **Suppression auto** | Toggle automatic overlay/blur removal (default: on) |
 | **Forcer detection + nettoyage** | Force profile detection and run cleanup immediately |
-| **Proxy xHamster (deflou hors-FR)** | Enable/disable the xHamster-only geo-proxy |
-| **Rafraichir les proxys** | Refresh the free proxy list from the configured provider |
 
 **Status indicators** (also French in the UI):
 
@@ -152,10 +151,10 @@ Outputs in the **parent** directory:
 
 | Artifact | Purpose |
 |----------|---------|
-| `banablur-1.10.1.zip` | Unsigned build zip (Chrome/Edge **Load unpacked** after extract) |
-| `banablur-1.10.1.xpi` | Same unsigned bytes — **not** for Firefox Release |
-| `Banablur-1.10.1-FIREFOX-SIGNE.xpi` or `banablur-1.10.1-firefox-signed.xpi` | AMO-signed XPI for Firefox Release |
-| `banablur-1.10.1/` | Auto-extracted folder for Chromium **Load unpacked** |
+| `banablur-1.10.2.zip` | Unsigned build zip (Chrome/Edge **Load unpacked** after extract) |
+| `banablur-1.10.2.xpi` | Same unsigned bytes — **not** for Firefox Release |
+| `Banablur-1.10.2-FIREFOX-SIGNE.xpi` or `banablur-1.10.2-firefox-signed.xpi` | AMO-signed XPI for Firefox Release |
+| `banablur-1.10.2/` | Auto-extracted folder for Chromium **Load unpacked** |
 
 The build script reads the version from `manifest.json` and cleans previous build artifacts before generating new ones.
 
@@ -173,7 +172,7 @@ npm run test:chaturbate
 |---------------|------|
 | `manifest.json` | Manifest V3 (Chromium + Firefox gecko settings) |
 | `content.js` | Core profiles, CSS overrides, watchdog, site detection |
-| `background.js` | Service worker: downloads API, xHamster PAC proxy |
+| `background.js` | Service worker: downloads API only (local IP) |
 | `popup.html` / `popup.js` / `popup.css` | Toolbar popup UI |
 | `override.css` | Shared override styles |
 | `xvideos-page.js` | XVIDEOS page-world script (player, download) |
@@ -192,19 +191,18 @@ npm run test:chaturbate
 
 - **No telemetry**, analytics, or remote logging.
 - **No account** or sign-in.
-- Settings (`autoEnabled`, proxy list, known sites) are stored locally via `storage`.
-- The xHamster proxy feature fetches a **public free proxy list** from `api.proxyscrape.com` when you refresh proxies. The xHamster proxy still routes xHamster CDN traffic through those proxies; for XVIDEOS/XNXX, only `/embedframe/` requests are proxied to discover stream URLs — playback stays **DIRECT** from your IP.
+- Settings (`autoEnabled`, known sites) are stored locally via `storage`.
+- All network traffic uses your **local IP** — no proxy, no third-party proxy list fetch.
 - Firefox 140+ manifest declares `data_collection_permissions.required: ["none"]` (Android 142+).
 
 ### Permissions
 
 | Permission | Why |
 |------------|-----|
-| `storage` | Save toggles, proxy list, learned domains |
+| `storage` | Save toggles and learned domains |
 | `activeTab` | Popup communicates with the active tab |
 | `downloads` | Cross-origin video download via the downloads API |
-| `proxy` | xHamster-only PAC proxy |
-| `host_permissions`: `https://api.proxyscrape.com/*` | Fetch refreshed proxy list |
+| `host_permissions`: xvideos/xnxx TLDs | Direct embedframe fetch for stream discovery (local IP) |
 
 Content scripts run on `<all_urls>` with site-specific logic gated by hostname detection.
 

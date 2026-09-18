@@ -49,57 +49,9 @@
     }
   }
 
-  function looksSfw(url) {
-    return !!url && /sfw|video_sfw/i.test(url);
-  }
-
-  function urlsNeedProxy(urls) {
-    if (!urls) return true;
-    if (!urls.hls) return true;
-    if (looksSfw(urls.high) || looksSfw(urls.low) || looksSfw(urls.hls)) return true;
-    return false;
-  }
-
-  var embedframeReqSeq = 0;
-
-  function fetchEmbedframeProxied(key, origin) {
-    return new Promise(function (resolve) {
-      if (!key) { resolve(null); return; }
-      var reqId = 'xv-ef-' + (++embedframeReqSeq) + '-' + Date.now();
-      var settled = false;
-      function finish(result) {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timer);
-        document.removeEventListener('agego-xv-embedframe-result', onResult);
-        resolve(result);
-      }
-      function onResult(ev) {
-        var d = ev.detail || {};
-        if (d.reqId !== reqId) return;
-        finish(d);
-      }
-      var timer = setTimeout(function () { finish(null); }, 8000);
-      document.addEventListener('agego-xv-embedframe-result', onResult);
-      document.dispatchEvent(new CustomEvent('agego-xv-embedframe', {
-        detail: { key: key, origin: origin, reqId: reqId }
-      }));
-    });
-  }
-
   async function fetchUrls(id) {
-    // Token d'abord (fiable), puis ID numerique en secours.
+    // Token d'abord (fiable), puis ID numerique en secours — IP utilisateur uniquement.
     const urls = (await fetchEmbedframe(getToken())) || (await fetchEmbedframe(id));
-    if (!urlsNeedProxy(urls)) {
-      window.__agegoXvUrls = urls;
-      return urls;
-    }
-    const proxied = await fetchEmbedframeProxied(getToken() || id, location.origin);
-    if (proxied && (proxied.hls || proxied.high)) {
-      const resolved = { high: proxied.high || null, low: proxied.low || null, hls: proxied.hls || null };
-      window.__agegoXvUrls = resolved;
-      return resolved;
-    }
     if (urls) window.__agegoXvUrls = urls;
     return urls;
   }
