@@ -4,11 +4,32 @@
   const CSS_ID = 'banablur-override';
   const THUMB_INTERVAL_MS = 2500;
   const THUMB_DEBOUNCE_MS = 200;
-  const APP_REFRESH_MS = 25000;
   const RELOAD_COOLDOWN_MS = 4000;
+
+  const RESERVED_SLUGS = new Set([
+    'b', 'female', 'male', 'couple', 'trans', 'tags', 'accounts', 'auth', 'chat',
+    'discover', 'contest', 'apps', 'help', 'legal', 'affiliates', 'api', 'static',
+    'followed-cams', 'trending', 'about', 'terms', 'privacy', 'security',
+    'billingsupport', 'community', 'v2app',
+  ]);
+
+  const ENTRANCE_TERMS_SELECTORS = [
+    '#entrance_terms_overlay',
+    '#entrance_terms',
+    '.entrance_terms_overlay',
+  ];
+
+  const GATE_HIDE_SELECTORS = [
+    '#age_gate_overlay',
+    '#age_gate_home',
+    '#age-gate-visitor-text',
+    '#av-choices',
+    ...ENTRANCE_TERMS_SELECTORS,
+  ];
 
   const GATE_CSS = `
 #age_gate_overlay, #age_gate_home, #age_gate_overlay *,
+#entrance_terms_overlay, #entrance_terms, .entrance_terms_overlay, #entrance_terms_overlay *,
 #age-gate-header, #age-gate-visitor-text, #age-gate-timing-sentence,
 #age-gate-verify, #age-gate-account, #age-gate-tool-tip-icon, #age-gate-tool-tip-text,
 #age-key-div, #age-key-option, #av-choices, #av-choice-submit, .age-gate-tooltip, .multi-av {
@@ -19,14 +40,20 @@
   overflow: hidden !important;
   color: transparent !important;
 }
-#age_gate_overlay, #age_gate_home {
+#age_gate_overlay, #age_gate_home, #entrance_terms_overlay, .entrance_terms_overlay {
   z-index: -1 !important;
   max-height: 0 !important;
   max-width: 0 !important;
   width: 0 !important;
   height: 0 !important;
 }
-body.age-gate--shown { overflow: auto !important; }
+body.age-gate--shown,
+html:has(#entrance_terms_overlay),
+body:has(#entrance_terms_overlay),
+html:has(.entrance_terms_overlay),
+body:has(.entrance_terms_overlay) {
+  overflow: auto !important;
+}
 #main,
 #base,
 .main-content-wrapper,
@@ -49,16 +76,6 @@ body.age-gate--shown { overflow: auto !important; }
   let thumbObserver = null;
   let started = false;
   let lastCleanup = null;
-  let clicksBound = false;
-  let appRoot = null;
-  let appGrid = null;
-  let appSentinel = null;
-  let appCards = new Map();
-  let appObserver = null;
-  let appRefreshTimer = null;
-  let appSyncTimer = null;
-  let currentPage = 1;
-  let loadingPage = false;
 
   function injectCSS() {
     if (document.getElementById(CSS_ID)) return;
@@ -110,208 +127,16 @@ body.age-gate--shown { overflow: auto !important; }
     const next = new URLSearchParams(location.search).get('next');
     if (!next) return null;
     const parts = next.split('/').filter(Boolean);
-    if (parts.length === 1 && !['b', 'female', 'male', 'couple', 'trans'].includes(parts[0])) {
+    if (parts.length === 1 && !RESERVED_SLUGS.has(parts[0])) {
       return parts[0];
     }
     return null;
   }
 
-  function getSlugFromLink(link) {
-    if (!link) return null;
-    const fromImg = link.querySelector('img.RoomCardThumbnail__image')?.alt;
-    if (fromImg) return fromImg;
-    const parts = (link.getAttribute('href') || link.pathname || '').split('/').filter(Boolean);
-    return parts[0] || null;
-  }
-
-  function createCustomApp() {
-    if (appRoot) return;
-    currentPage = Number(new URLSearchParams(location.search).get('page') || 1);
-
-    appRoot = document.createElement('section');
-    appRoot.id = 'agego-app';
-    appRoot.setAttribute('aria-label', 'Chaturbate');
-    appRoot.style.cssText =
-      'position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;background:#0b0b0f;color:#f5f5f5;font:14px system-ui,sans-serif;overscroll-behavior:contain;';
-
-    const header = document.createElement('header');
-    header.style.cssText =
-      'position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:16px;padding:14px 20px;background:rgba(18,18,24,.96);backdrop-filter:blur(10px);border-bottom:1px solid #292936;';
-
-    const title = document.createElement('strong');
-    title.textContent = 'Banablur';
-    title.style.cssText = 'font-size:18px;white-space:nowrap;';
-
-    const count = document.createElement('span');
-    count.id = 'agego-app-count';
-    count.style.cssText = 'color:#aaa;white-space:nowrap;';
-
-    const categories = document.createElement('nav');
-    categories.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
-    for (const [label, target] of [
-      ['Female', '_female'],
-      ['Male', '_male'],
-      ['Couple', '_couple'],
-      ['Trans', '_trans'],
-    ]) {
-      const link = document.createElement('a');
-      link.textContent = label;
-      link.href = `/?next=%2Fb%2F${target}%2F`;
-      link.style.cssText =
-        'color:#ddd;background:#262633;border-radius:6px;padding:6px 10px;text-decoration:none;';
-      categories.appendChild(link);
-    }
-
-    header.append(title, count, categories);
-    appGrid = document.createElement('div');
-    appGrid.id = 'agego-app-grid';
-    appGrid.style.cssText =
-      'display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;padding:20px;align-content:start;';
-
-    appSentinel = document.createElement('div');
-    appSentinel.id = 'agego-app-sentinel';
-    appSentinel.style.cssText = 'height:80px;grid-column:1/-1;';
-    appGrid.appendChild(appSentinel);
-
-    appRoot.append(header, appGrid);
-    document.body.appendChild(appRoot);
-    document.body.style.setProperty('overflow', 'hidden', 'important');
-    document.documentElement.style.setProperty('overflow', 'hidden', 'important');
-
-    appRoot.addEventListener('click', (event) => {
-      const card = event.target.closest('[data-agego-room]');
-      if (!card) return;
-      event.preventDefault();
-      event.stopPropagation();
-      unlockChaturbateStream(card.dataset.agegoRoom);
-    });
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) loadNextPage();
-      },
-      { root: appRoot, rootMargin: '500px' }
-    );
-    observer.observe(appSentinel);
-  }
-
-  function makeAppCard(source) {
-    const link = source.querySelector('a.RoomCardThumbnail');
-    const img = source.querySelector('img.RoomCardThumbnail__image');
-    const slug = getSlugFromLink(link);
-    if (!slug || !img) return null;
-
-    const card = document.createElement('article');
-    card.dataset.agegoRoom = slug;
-    card.style.cssText =
-      'background:#181820;border:1px solid #2c2c38;border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s;';
-    card.addEventListener('mouseenter', () => {
-      card.style.transform = 'translateY(-2px)';
-      card.style.borderColor = '#7777ff';
-    });
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = '';
-      card.style.borderColor = '#2c2c38';
-    });
-
-    const image = document.createElement('img');
-    image.alt = img.alt || slug;
-    image.src = img.src.replace('/ribw/', '/riw/');
-    image.dataset.agegoSource = img.src;
-    image.style.cssText = 'display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000;';
-
-    const body = document.createElement('div');
-    body.style.cssText = 'padding:10px 12px;';
-    const name = document.createElement('strong');
-    name.textContent = slug;
-    name.style.cssText = 'display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
-    const subject = document.createElement('div');
-    subject.textContent = source.querySelector('.RoomCardSubject')?.textContent?.trim() || '';
-    subject.style.cssText = 'color:#bbb;margin-top:5px;min-height:34px;overflow:hidden;';
-    const meta = document.createElement('small');
-    meta.textContent =
-      source.querySelector('.cams')?.textContent?.replace(/\s+/g, ' ').trim() ||
-      [source.querySelector('.age')?.textContent, source.querySelector('.gender')?.textContent]
-        .filter(Boolean)
-        .join(' · ');
-    meta.style.cssText = 'display:block;color:#8f8fa5;margin-top:8px;';
-
-    body.append(name, subject, meta);
-    card.append(image, body);
-    return card;
-  }
-
-  function syncCustomCards() {
-    if (!appGrid) return;
-    const sources = document.querySelectorAll('ul.RoomCardGrid > .RoomCard');
-    let added = 0;
-    sources.forEach((source) => {
-      const slug = getSlugFromLink(source.querySelector('a.RoomCardThumbnail'));
-      if (!slug || appCards.has(slug)) return;
-      const card = makeAppCard(source);
-      if (!card) return;
-      appCards.set(slug, card);
-      appGrid.insertBefore(card, appSentinel);
-      added++;
-    });
-    const count = document.getElementById('agego-app-count');
-    if (count) count.textContent = `${appCards.size} rooms`;
-    if (added) fixThumbnails();
-  }
-
-  function refreshCustomThumbnails() {
-    appCards.forEach((card) => {
-      const image = card.querySelector('img');
-      const source = card.querySelector('img')?.dataset.agegoSource;
-      if (!image || !source) return;
-      const separator = source.includes('?') ? '&' : '?';
-      image.src = source.replace('/ribw/', '/riw/') + `${separator}agego=${Date.now()}`;
-    });
-  }
-
-  function loadNextPage() {
-    if (loadingPage) return;
-    const links = [...document.querySelectorAll('div.Pagination a')];
-    const next = links.find((link) => Number(new URL(link.href).searchParams.get('page')) === currentPage + 1);
-    if (!next) return;
-    loadingPage = true;
-    currentPage++;
-    next.click();
-    setTimeout(() => {
-      loadingPage = false;
-      syncCustomCards();
-    }, 1800);
-  }
-
-  function startCustomApp() {
-    if (!document.body) {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', startCustomApp, { once: true });
-      } else {
-        setTimeout(startCustomApp, 0);
-      }
-      return;
-    }
-    try {
-      createCustomApp();
-      syncCustomCards();
-    } catch (error) {
-      return;
-    }
-    if (!appObserver) {
-      const root = document.getElementById('roomlist_root') || document.body;
-      appObserver = new MutationObserver(() => {
-        clearTimeout(appSyncTimer);
-        appSyncTimer = setTimeout(() => {
-          ensureGateHidden();
-          syncCustomCards();
-        }, THUMB_DEBOUNCE_MS);
-      });
-      appObserver.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
-    }
-    if (!appRefreshTimer) {
-      appRefreshTimer = setInterval(refreshCustomThumbnails, APP_REFRESH_MS);
-    }
+  function getRoomSlugFromPath() {
+    const parts = location.pathname.split('/').filter(Boolean);
+    if (parts.length !== 1 || RESERVED_SLUGS.has(parts[0])) return null;
+    return parts[0];
   }
 
   function injectPageUnlock() {
@@ -339,9 +164,39 @@ body.age-gate--shown { overflow: auto !important; }
     return false;
   }
 
+  function hasEntranceTermsOverlay() {
+    return ENTRANCE_TERMS_SELECTORS.some((sel) => document.querySelector(sel));
+  }
+
+  function clickEntranceTermsAgree() {
+    const root =
+      document.getElementById('entrance_terms_overlay') ||
+      document.querySelector('.entrance_terms_overlay');
+    if (!root) return false;
+
+    const agreePattern = /\b(I\s+Agree|I\s+am\s+over\s+18|J['']accepte|J['']ai\s+plus\s+de\s+18)\b/i;
+    const candidates = root.querySelectorAll(
+      'button, a, input[type="button"], input[type="submit"], [role="button"]'
+    );
+
+    for (const el of candidates) {
+      const text = (el.textContent || el.value || '').trim();
+      if (!agreePattern.test(text)) continue;
+      try {
+        el.click();
+        return true;
+      } catch (_e) {
+        /* next */
+      }
+    }
+    return false;
+  }
+
   function ensureGateHidden() {
     injectCSS();
-    ['#age_gate_overlay', '#age_gate_home', '#age-gate-visitor-text', '#av-choices'].forEach((sel) => {
+    clickEntranceTermsAgree();
+
+    GATE_HIDE_SELECTORS.forEach((sel) => {
       const el = document.querySelector(sel);
       if (!el) return;
       el.style.setProperty('pointer-events', 'none', 'important');
@@ -350,8 +205,17 @@ body.age-gate--shown { overflow: auto !important; }
       el.style.setProperty('max-height', '0', 'important');
       el.style.setProperty('overflow', 'hidden', 'important');
     });
+
     if (document.body.classList.contains('age-gate--shown')) {
       document.body.classList.remove('age-gate--shown');
+    }
+
+    if (hasEntranceTermsOverlay()) {
+      document.body.style.setProperty('overflow', 'auto', 'important');
+      document.documentElement.style.setProperty('overflow', 'auto', 'important');
+    } else {
+      document.body.style.removeProperty('overflow');
+      document.documentElement.style.removeProperty('overflow');
     }
   }
 
@@ -360,7 +224,11 @@ body.age-gate--shown { overflow: auto !important; }
     window.__agegoGateObserver = true;
 
     const observer = new MutationObserver(() => {
-      if (document.getElementById('age_gate_overlay') || document.getElementById('age-gate-visitor-text')) {
+      if (
+        document.getElementById('age_gate_overlay') ||
+        document.getElementById('age-gate-visitor-text') ||
+        hasEntranceTermsOverlay()
+      ) {
         ensureGateHidden();
       }
     });
@@ -385,7 +253,6 @@ body.age-gate--shown { overflow: auto !important; }
         const reqId = Math.random().toString(36).slice(2);
         const timeout = setTimeout(() => {
           document.removeEventListener('agego-unlock-result', onResult);
-          showToast('Timeout stream');
           window.__agegoChaturbateStreamLoading = null;
           resolve(false);
         }, 45000);
@@ -403,11 +270,6 @@ body.age-gate--shown { overflow: auto !important; }
             lastCleanup = Date.now();
             resolve(true);
           } else {
-            showToast(
-              result.reason === 'no url'
-                ? 'Hors ligne : ' + roomSlug
-                : 'Stream indisponible'
-            );
             resolve(false);
           }
         }
@@ -418,18 +280,6 @@ body.age-gate--shown { overflow: auto !important; }
         );
       });
     });
-  }
-
-  function handleRoomAction(event) {
-    const link = event.target.closest && event.target.closest('a.RoomCardThumbnail');
-    if (!link) return false;
-
-    const slug = getSlugFromLink(link);
-    if (!slug) return false;
-
-    // Le script de page (chaturbate-page.js) gere le clic et le live.
-    injectPageUnlock();
-    return true;
   }
 
   function fixThumbnails() {
@@ -444,15 +294,6 @@ body.age-gate--shown { overflow: auto !important; }
     });
     if (count) lastCleanup = Date.now();
     return count;
-  }
-
-  function bindRoomClicks() {
-    if (clicksBound) return;
-    clicksBound = true;
-
-    ['pointerdown', 'mousedown', 'click'].forEach((type) => {
-      document.addEventListener(type, (event) => handleRoomAction(event), true);
-    });
   }
 
   function startThumbObserver() {
@@ -496,12 +337,10 @@ body.age-gate--shown { overflow: auto !important; }
   }
 
   function initGate() {
-    startCustomApp();
     injectCSS();
     injectPageReloadGuard();
     injectPageUnlock();
     startGateObserver();
-    bindRoomClicks();
   }
 
   function initAll() {
@@ -510,9 +349,9 @@ body.age-gate--shown { overflow: auto !important; }
     initGate();
     startThumbs();
 
-    const nextSlug = getNextRoomSlug();
-    if (nextSlug) {
-      setTimeout(() => unlockChaturbateStream(nextSlug), 2000);
+    const roomSlug = getNextRoomSlug() || getRoomSlugFromPath();
+    if (roomSlug) {
+      setTimeout(() => unlockChaturbateStream(roomSlug), 2000);
     }
   }
 
@@ -523,6 +362,13 @@ body.age-gate--shown { overflow: auto !important; }
       overlay &&
       getComputedStyle(overlay).pointerEvents !== 'none' &&
       parseFloat(getComputedStyle(overlay).opacity) > 0.01;
+    const entranceOverlay =
+      document.getElementById('entrance_terms_overlay') ||
+      document.querySelector('.entrance_terms_overlay');
+    const entranceBlocks =
+      entranceOverlay &&
+      getComputedStyle(entranceOverlay).pointerEvents !== 'none' &&
+      parseFloat(getComputedStyle(entranceOverlay).opacity) > 0.01;
 
     return {
       hostname: location.hostname,
@@ -530,7 +376,7 @@ body.age-gate--shown { overflow: auto !important; }
       watchdogActive: started,
       profiles: ['chaturbate'],
       chaturbateDetected: true,
-      threatPresent: ribw > 0 || overlayBlocks,
+      threatPresent: ribw > 0 || overlayBlocks || entranceBlocks,
       lastCleanup,
       videoSfw: false,
       videoBlurred: false,
@@ -544,7 +390,6 @@ body.age-gate--shown { overflow: auto !important; }
 
   injectCSS();
   initGate();
-  setTimeout(startCustomApp, 1000);
 
   if (api?.storage?.local) {
     api.storage.local.get(['autoEnabled'], onStorageReady);
@@ -579,7 +424,7 @@ body.age-gate--shown { overflow: auto !important; }
       if (message.action === 'forceCleanup') {
         injectCSS();
         fixThumbnails();
-        const slug = getNextRoomSlug();
+        const slug = getNextRoomSlug() || getRoomSlugFromPath();
         if (slug) unlockChaturbateStream(slug);
         sendResponse(getStatus());
         return false;

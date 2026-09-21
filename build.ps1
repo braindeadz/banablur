@@ -36,6 +36,7 @@ $files = @(
   "xvideos-page.js",
   "xhamster-page.js",
   "lebonporn-page.js",
+  "ageverif-page.js",
   "lebonporn-inject.js",
   "hls.min.js",
   "popup.html",
@@ -85,14 +86,20 @@ function New-ExtensionZip {
   }
 }
 
-# Chrome zip + dossier extrait: manifest avec service_worker (MV3 Chrome).
+# Source manifest keeps both keys for local mixed use.
+# Chrome MV3 rejects background.scripts (warning: requires manifest v2 or lower).
+# Firefox AMO uses background.scripts and ignores service_worker.
+$manifestPath = Join-Path $dist "manifest.json"
+$originalManifest = [System.IO.File]::ReadAllText($manifestPath)
+
+# Chrome zip + dossier extrait: service_worker only (no background.scripts).
+$chromeManifest = $originalManifest -replace ',\s*"scripts"\s*:\s*\[\s*"background\.js"\s*\]', ''
+[System.IO.File]::WriteAllText($manifestPath, $chromeManifest)
 New-ExtensionZip -SourceDir $dist -OutPath $zipPath
 
-# Firefox XPI: AMO ignore service_worker; garder background.scripts seulement.
-$manifestPath = Join-Path $dist "manifest.json"
-$manifestText = [System.IO.File]::ReadAllText($manifestPath)
-$manifestText = $manifestText -replace '"service_worker"\s*:\s*"background\.js"\s*,', ''
-[System.IO.File]::WriteAllText($manifestPath, $manifestText)
+# Firefox XPI: background.scripts only (no service_worker).
+$firefoxManifest = $originalManifest -replace '"service_worker"\s*:\s*"background\.js"\s*,', ''
+[System.IO.File]::WriteAllText($manifestPath, $firefoxManifest)
 New-ExtensionZip -SourceDir $dist -OutPath $xpiPath
 
 # --- Extraction automatique du zip (evite de le decompresser a la main) ---

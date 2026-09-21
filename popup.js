@@ -1,6 +1,8 @@
 const api = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : null;
 
 const SUPPORTED_SITES = [
+  { name: 'Teen21', url: 'https://teen21.com' },
+  { name: 'VR Porn Tube', url: 'https://vr-porn.tube' },
   { name: 'XVIDEOS', url: 'https://www.xvideos.com' },
   { name: 'XNXX', url: 'https://www.xnxx.com' },
   { name: 'xHamster', url: 'https://www.xhamster.com' },
@@ -20,7 +22,6 @@ const SUPPORTED_SITES = [
   { name: 'MovieFap', url: 'https://www.moviefap.com' },
   { name: 'PerfectGirls', url: 'https://www.perfectgirls.xxx' },
   { name: 'PornDig', url: 'https://www.porndig.com' },
-  { name: 'PornHat', url: 'https://www.pornhat.com' },
   { name: 'Stripchat', url: 'https://stripchat.com' },
   { name: 'SunPorno', url: 'https://www.sunporno.com' },
   { name: 'sxyprn', url: 'https://sxyprn.com' },
@@ -28,10 +29,7 @@ const SUPPORTED_SITES = [
   { name: 'ThisVid', url: 'https://thisvid.com' },
   { name: 'TXXX', url: 'https://txxx.com' },
   { name: 'Upornia', url: 'https://upornia.com' },
-  { name: 'xHamster.desi', url: 'https://xhamster.desi' },
-  { name: 'XNXX.es', url: 'https://www.xnxx.es' },
   { name: 'Xtube', url: 'https://www.xtube.com' },
-  { name: 'XVIDEOS.es', url: 'https://www.xvideos.es' },
 ];
 
 const els = {

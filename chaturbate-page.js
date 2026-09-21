@@ -395,32 +395,5 @@
       new CustomEvent('agego-unlock-result', { detail: { id: reqId, result } })
     );
   });
-
-  let clickLoading = null;
-
-  function onRoomClick(event) {
-    const link = event.target?.closest?.('a.RoomCardThumbnail');
-    if (!link) return;
-
-    const slug =
-      link.querySelector('img.RoomCardThumbnail__image')?.alt ||
-      (link.getAttribute('href') || link.pathname || '').split('/').filter(Boolean)[0];
-    if (!slug) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-
-    if (clickLoading === slug && document.getElementById('agego-live-overlay')) return;
-    clickLoading = slug;
-    unlockStream(slug)
-      .catch(() => {})
-      .finally(() => {
-        clickLoading = null;
-      });
-  }
-
-  ['pointerdown', 'mousedown', 'click'].forEach((type) => {
-    document.addEventListener(type, onRoomClick, true);
-  });
 })();
+

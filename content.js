@@ -73,6 +73,10 @@
     'www.thegay.com': ['txxx'],
     'shemalez.com': ['txxx'],
     'www.shemalez.com': ['txxx'],
+    'teen21.com': ['txxx'],
+    'www.teen21.com': ['txxx'],
+    'vr-porn.tube': ['txxx'],
+    'www.vr-porn.tube': ['txxx'],
     'sunporno.com': ['sunporno'],
     'www.sunporno.com': ['sunporno'],
     'jacquieetmichel.net': ['jacquie'],
@@ -101,8 +105,6 @@
     'www.hdtube.porn': ['gate18'],
     'analdin.com': ['gate18'],
     'www.analdin.com': ['gate18'],
-    'pornhat.com': ['gate18'],
-    'www.pornhat.com': ['gate18'],
   };
 
   const OVERRIDE_CSS = `
@@ -178,22 +180,38 @@ custom-disclaimer.disclaimer, .disclaimer__container, .disclaimer__btns, #discla
 html.my18pass-blur, html.my18pass-blur body, html.my18pass-blur img, html.my18pass-blur video { filter: none !important; }
 
 /* TXXX family */
-age-verification, age-verification-uk, age-verification-face, .modal-age-verification, .modal.modal-ageverification, .overlay-modal, .cookie-notify { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+age-verification, age-verification-uk, age-verification-face, .modal-age-verification, .modal.modal-ageverification, .overlay-modal, .cookie-notify, [class*="modal-age"], iframe[src*="ageverif"], iframe[src*="ageverif.com"], [src*="static.ageverif.com"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+html, body { filter: none !important; }
+html, body { overflow: auto !important; height: auto !important; position: static !important; pointer-events: auto !important; }
 
 /* SUNPORNO */
-#age-verification-overlay { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+#age-verification-overlay, [id*="age-verif"], [class*="age-verif"], [class*="age_verif"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+html, body, #wrapper, .wrapper, main, .container { filter: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; overflow: auto !important; pointer-events: auto !important; }
 
 /* STRIPCHAT */
 #agreement-root, .visitors-agreement-modal, .full-cover.modal-wrapper.visitors-agreement-modal, [data-testid="CookiesReminder"], #CookiesReminder, .cookies-banner { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 
 /* LIVEJASMIN — NE PAS cacher #overlay ni #fi-18-22 */
-#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal, [data-testid="Over18ModalVariant1Modal"], .over-18.is-non-adult, .over-18__popover, [class*="AvpShutter"], [class*="avp-shutter"], [class*="NonAdultShutter"], [class*="thumb"] .over-18, [class*="Thumb"] .over-18, [class*="preview"] .over-18, [class*="Preview"] .over-18 { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+html, body, #page, .layout, [class*="layout"], main, .main-content { overflow: auto !important; height: auto !important; position: static !important; overscroll-behavior: auto !important; pointer-events: auto !important; }
+[class*="thumb"] img, [class*="thumb"] video, [class*="thumb"] canvas, [class*="Thumb"] img, [class*="Thumb"] video, [class*="Thumb"] canvas, [class*="preview"] img, [class*="preview"] video, [class*="preview"] canvas, [class*="Preview"] img, [class*="Preview"] video, [class*="Preview"] canvas, [class*="modelTile"] img, [class*="ModelTile"] img, [class*="modelTile"] video, [class*="ModelTile"] video { filter: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
 /* GATE18 générique (hosts listés seulement via profil, CSS chargé si page activée) */
 #age_verification, #age-verification, #ageVerification, #age_gate, #age-gate, #ageGate,
 #age-check, #age_check, #ageDisclaimer, #age-disclaimer, #age_disclaimer,
 #age-verification-container, .age-verification-overlay, .age-verification, .age_verification,
 .age-gate, .age_gate, .js-age-gate, #cookie-policy, .cc-window, .cc-banner, #full-page-loader { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* ADS / preroll — never hide .videoplayer .jwplayer #kt_player #player-1 video */
+.vast_player, .vast_player_content, .vast_player_resume, .vast_player_click_link, .vast_player_close,
+.jw-plugin-vast, [id$="_vast"], .exo-native, [class*="ExoClick"],
+iframe[src*="poloptrex.com"], iframe[src*="mrdmca.com"], iframe[src*="exoclick.com"],
+iframe[src*="ads.exoclick"], iframe[src*="tsvideo.sacdnssedge.com"],
+iframe[src*="satencedge"], iframe[src*="sacfedge"], iframe[src*="sacdnssedge"],
+iframe[src*="under_faphouse"], iframe[src*="adsterra"], iframe[src*="trafficjunky"],
+iframe[src*="juicyads"], iframe[src*="clickadu"], iframe[src*="ad-maven"],
+iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
+.video-underplayer, .video-underplayer__buttons { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 `.trim();
 
   const api = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : null;
@@ -211,6 +229,10 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
   let xvideosTickTimer = null;
   let xhamsterTickTimer = null;
   let lebonpornTickTimer = null;
+  let ageverifWatchTimer = null;
+  let ageverifObserver = null;
+  let ageverifHistoryHooked = false;
+  let ageverifCallbacksCalled = false;
   let tukifTickTimer = null;
   let tukifClickGuardBound = false;
   let tukifNavGuardBound = false;
@@ -259,11 +281,11 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
 
   function isTxxxHost() {
     return (
-      /(^|\.)(txxx|hclips|upornia|hdzog|voyeurhit|hotmovs|ooxxx|manysex|tubepornclassic|pornzog|thegay|shemalez)\.com$/i.test(
+      /(^|\.)(txxx|hclips|upornia|hdzog|voyeurhit|hotmovs|ooxxx|manysex|tubepornclassic|pornzog|thegay|shemalez|teen21)\.com$/i.test(
         getHostname()
       ) ||
       /(^|\.)tporn\.(xxx|tube)$/i.test(getHostname()) ||
-      /(^|\.)desi-porn\.tube$/i.test(getHostname())
+      /(^|\.)(desi-porn|vr-porn)\.tube$/i.test(getHostname())
     );
   }
 
@@ -281,7 +303,7 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
 
   function isGate18Host() {
     return (
-      /(^|\.)(thisvid|analdin|pornhat)\.com$/i.test(getHostname()) ||
+      /(^|\.)(thisvid|analdin)\.com$/i.test(getHostname()) ||
       /(^|\.)hdtube\.porn$/i.test(getHostname())
     );
   }
@@ -427,6 +449,34 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
     return !!document.querySelector(GATE18_SELECTORS);
   }
 
+  function detectAgeverif() {
+    if (
+      document.querySelector('script[src*="ageverif.com"]') ||
+      document.querySelector('script[src*="static.ageverif.com"]') ||
+      document.querySelector('iframe[src*="ageverif"]')
+    ) {
+      return true;
+    }
+    if (
+      typeof window.ageverifSuccess === 'function' ||
+      typeof window.ageverifReady === 'function' ||
+      typeof window.ageverifError === 'function'
+    ) {
+      return true;
+    }
+    if (
+      'ageverifSuccess' in window ||
+      'ageverifReady' in window ||
+      'ageverifError' in window
+    ) {
+      return true;
+    }
+    try {
+      if (localStorage.getItem('_agvface')) return true;
+    } catch (_e) {}
+    return false;
+  }
+
   function detectProfiles() {
     const profiles = new Set(getConfiguredProfiles());
     if (detectAgeGO()) profiles.add('agego');
@@ -444,6 +494,7 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
     if (detectStripchat()) profiles.add('stripchat');
     if (detectLivejasmin()) profiles.add('livejasmin');
     if (detectGate18()) profiles.add('gate18');
+    if (detectAgeverif()) profiles.add('ageverif');
     return [...profiles];
   }
 
@@ -466,6 +517,40 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
       el.style.setProperty('pointer-events', 'none', 'important');
       el.style.setProperty('visibility', 'hidden', 'important');
     });
+  }
+
+  const AD_HIDE_SELECTORS = '.vast_player, .vast_player_content, .vast_player_resume, .vast_player_click_link, .jw-plugin-vast, [id$="_vast"], iframe[src*="poloptrex.com"], iframe[src*="mrdmca.com"], iframe[src*="exoclick.com"], iframe[src*="tsvideo.sacdnssedge.com"], iframe[src*="satencedge"], iframe[src*="sacfedge"], iframe[src*="under_faphouse"], iframe[src*="yengo.com"], .video-underplayer';
+  const AD_VIDEO_SRC_RE = /tsvideo|sacdnssedge|satencedge|sacfedge|exoclick|poloptrex|mrdmca|yengo|imasdk|doubleclick|googlesyndication|trafficjunky|juicyads|adsterra|clickadu|exosrv|realsrv/i;
+  function isInsidePlayer(el) {
+    return !!el.closest('#kt_player, #player, #player-1, #html5video, .jwplayer, .videoplayer, .player-container, .player, [id*="player"]');
+  }
+  function isAdVideoEl(v) {
+    if (isInsidePlayer(v)) return false;
+    const src = `${v.currentSrc || ''} ${v.src || ''}`.toLowerCase();
+    if (!AD_VIDEO_SRC_RE.test(src)) return false;
+    return !!v.closest('.vast_player, [id$="_vast"], .video-underplayer');
+  }
+  function killAdVideos() {
+    document.querySelectorAll('video').forEach((v) => {
+      if (!isAdVideoEl(v)) return;
+      try { v.pause(); } catch (_e) {}
+      v.style.setProperty('display', 'none', 'important');
+    });
+  }
+  function skipJwPreroll() {
+    try {
+      const jw = typeof window.jwplayer === 'function' ? window.jwplayer() : null;
+      if (jw && typeof jw.skipAd === 'function') jw.skipAd();
+    } catch (_e) {}
+  }
+  function dismissPrerollAds() {
+    document.querySelectorAll('.vast_player_close, .vast_player_close--do, .jw-skip, .jw-icon-skip, [class*="skip-ad"], .vast_skip, [class*="SkipAd"]').forEach((el) => { try { el.click(); } catch (_e) {} });
+    skipJwPreroll();
+    killAdVideos();
+  }
+  function cleanAds() {
+    dismissPrerollAds();
+    hideMatches(AD_HIDE_SELECTORS);
   }
 
   function hasAgeGOThreat() {
@@ -633,12 +718,33 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
       isOverlayVisible('age-verification-face') ||
       isOverlayVisible('.modal-age-verification') ||
       isOverlayVisible('.modal.modal-ageverification') ||
-      isOverlayVisible('.overlay-modal')
+      isOverlayVisible('.overlay-modal') ||
+      isOverlayVisible('.cookie-notify') ||
+      isOverlayVisible('[class*="modal-age"]') ||
+      isOverlayVisible('iframe[src*="ageverif"]')
     );
   }
 
   function hasSunpornoThreat() {
-    return isOverlayVisible('#age-verification-overlay');
+    const htmlCs = getComputedStyle(document.documentElement);
+    const bodyCs = document.body ? getComputedStyle(document.body) : null;
+    const pageBlocked =
+      htmlCs.filter.includes('blur') ||
+      htmlCs.pointerEvents === 'none' ||
+      (bodyCs && (bodyCs.filter.includes('blur') || bodyCs.pointerEvents === 'none'));
+    const container = document.querySelector('.container');
+    const containerBlurred =
+      container &&
+      (getComputedStyle(container).filter.includes('blur') ||
+        getComputedStyle(container).pointerEvents === 'none');
+    return !!(
+      isOverlayVisible('#age-verification-overlay') ||
+      isOverlayVisible('[id*="age-verif"]') ||
+      isOverlayVisible('[class*="age-verif"]') ||
+      isOverlayVisible('[class*="age_verif"]') ||
+      pageBlocked ||
+      containerBlurred
+    );
   }
 
   function hasJacquieThreat() {
@@ -657,10 +763,19 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
   }
 
   function hasLivejasminThreat() {
+    const htmlCs = getComputedStyle(document.documentElement);
+    const bodyCs = document.body ? getComputedStyle(document.body) : null;
+    const scrollLocked =
+      htmlCs.overflow === 'hidden' ||
+      (bodyCs && bodyCs.overflow === 'hidden');
     return !!(
       isOverlayVisible('#consent_modal.over-18') ||
       isOverlayVisible('#consent_modal.is-non-adult') ||
-      isOverlayVisible('#consent_modal')
+      isOverlayVisible('#consent_modal') ||
+      isOverlayVisible('[data-testid="Over18ModalVariant1Modal"]') ||
+      isOverlayVisible('.over-18.is-non-adult') ||
+      isOverlayVisible('.over-18__popover') ||
+      scrollLocked
     );
   }
 
@@ -1497,19 +1612,260 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
     fixTukifBlur();
   }
 
-  function cleanTxxx() {
-    hideMatches(
-      'age-verification, age-verification-uk, age-verification-face, .modal-age-verification, .modal.modal-ageverification, .overlay-modal, .cookie-notify'
-    );
+  const TXXX_HIDE_SELECTORS =
+    'age-verification, age-verification-uk, age-verification-face, .modal-age-verification, .modal.modal-ageverification, .overlay-modal, .cookie-notify, [class*="modal-age"], iframe[src*="ageverif"], iframe[src*="ageverif.com"], [src*="static.ageverif.com"]';
+
+  const TXXX_AGE_HOST_SELECTORS =
+    'age-verification, age-verification-uk, age-verification-face, .modal-age-verification, .modal.modal-ageverification, .overlay-modal, [class*="modal-age"]';
+
+  const TXXX_AGE_BTN_RE =
+    /(?:^|\s)(?:18\s*\+|i\s*'?m?\s*(?:over\s*)?18|j.?ai\s+(?:plus\s+de\s+)?18|enter|entrer|oui|yes|accept|continue|confirm)(?:\s|$)/i;
+
+  const TXXX_AGE_BTN_SELECTORS =
+    'button, [role="button"], input[type="button"], input[type="submit"]';
+
+  function setTxxxAgeFlags() {
     try {
-      localStorage.removeItem('_agvface');
+      localStorage.setItem('ageVerified', '1');
+      localStorage.setItem('age_verified', '1');
+      localStorage.setItem('_agvface', 'passed');
     } catch (_e) {}
-    document.documentElement.style.setProperty('overflow', 'auto', 'important');
-    document.body?.style.setProperty('overflow', 'auto', 'important');
+    try {
+      const maxAge = 31536000;
+      document.cookie = `age_verified=1; path=/; max-age=${maxAge}`;
+      document.cookie = `ageVerified=1; path=/; max-age=${maxAge}`;
+      document.cookie = `kt_age_verified=1; path=/; max-age=${maxAge}`;
+      document.cookie = `kt_is_age_verified=1; path=/; max-age=${maxAge}`;
+      document.cookie = `kt_agv=1; path=/; max-age=${maxAge}`;
+    } catch (_e) {}
+  }
+
+  function collectTxxxRoots() {
+    const roots = [];
+    document.querySelectorAll(TXXX_AGE_HOST_SELECTORS).forEach((host) => {
+      roots.push(host);
+      if (host.shadowRoot) roots.push(host.shadowRoot);
+    });
+    return roots;
+  }
+
+  function clickTxxxAgeButtonsInRoot(root, selector) {
+    let clicked = false;
+    root.querySelectorAll(selector).forEach((btn) => {
+      const label = (btn.textContent || btn.value || btn.getAttribute('aria-label') || '').trim();
+      if (!label || label.length > 100) return;
+      if (!TXXX_AGE_BTN_RE.test(label) && !/^18\+?$/.test(label)) return;
+      try {
+        btn.click();
+        clicked = true;
+      } catch (_e) {}
+    });
+    return clicked;
+  }
+
+  function clickTxxxAgeButtons() {
+    collectTxxxRoots().forEach((root) => {
+      if (!clickTxxxAgeButtonsInRoot(root, TXXX_AGE_BTN_SELECTORS)) {
+        clickTxxxAgeButtonsInRoot(root, 'a');
+      }
+    });
+  }
+
+  let txxxAgeverifSuccessCalled = false;
+
+  function invokeTxxxAgeverifSuccess() {
+    if (txxxAgeverifSuccessCalled) return;
+    try {
+      if (typeof window.ageverifSuccess !== 'function') return;
+      window.ageverifSuccess();
+      txxxAgeverifSuccessCalled = true;
+    } catch (_e) {}
+  }
+
+  function unlockTxxxPage() {
+    [document.documentElement, document.body].forEach((el) => {
+      if (!el) return;
+      el.style.setProperty('overflow', 'auto', 'important');
+      el.style.setProperty('height', 'auto', 'important');
+      el.style.setProperty('position', 'static', 'important');
+      el.style.setProperty('pointer-events', 'auto', 'important');
+    });
+  }
+
+  function cleanTxxx() {
+    injectCSS();
+    setTxxxAgeFlags();
+    invokeTxxxAgeverifSuccess();
+    clickTxxxAgeButtons();
+    hideMatches(TXXX_HIDE_SELECTORS);
+    unlockTxxxPage();
+  }
+
+  const AGEVERIF_HIDE_SELECTORS =
+    'iframe[src*="ageverif"], [src*="static.ageverif.com"], [class*="ageverif"], [id*="ageverif"], .modal-age-verification, [class*="modal-age"], age-verification';
+
+  function injectAgeverifPageScript() {
+    if (document.documentElement.dataset.agegoAvInjected === '1') return;
+    if (!api?.runtime?.getURL) return;
+    document.documentElement.dataset.agegoAvInjected = '1';
+    const script = document.createElement('script');
+    const url = api.runtime.getURL('ageverif-page.js');
+    let injected = false;
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url, false);
+      xhr.send(null);
+      if (xhr.status === 200 || xhr.status === 0) {
+        script.textContent = xhr.responseText;
+        injected = true;
+      }
+    } catch (_e) {}
+    if (!injected) {
+      script.src = url;
+      script.onload = () => script.remove();
+    }
+    (document.head || document.documentElement).appendChild(script);
+    if (injected) script.remove();
+  }
+
+  function invokeAgeverifCallbacks() {
+    if (ageverifCallbacksCalled) return;
+    try {
+      if (typeof window.ageverifSuccess === 'function') {
+        window.ageverifSuccess();
+        ageverifCallbacksCalled = true;
+        return;
+      }
+    } catch (_e) {}
+    try {
+      if (typeof window.ageverifReady === 'function') {
+        window.ageverifReady();
+        ageverifCallbacksCalled = true;
+      }
+    } catch (_e) {}
+  }
+
+  function lightDeblurAgeverif() {
+    [document.documentElement, document.body].forEach((el) => {
+      if (!el) return;
+      const cs = getComputedStyle(el);
+      if (cs.filter && cs.filter.includes('blur')) {
+        el.style.setProperty('filter', 'none', 'important');
+      }
+    });
+    document.querySelectorAll('video, img').forEach((el) => {
+      const cs = getComputedStyle(el);
+      if (cs.filter && cs.filter.includes('blur')) {
+        el.style.setProperty('filter', 'none', 'important');
+      }
+    });
+  }
+
+  function cleanAgeverif() {
+    injectCSS();
+    injectAgeverifPageScript();
+    setTxxxAgeFlags();
+    invokeAgeverifCallbacks();
+    hideMatches(AGEVERIF_HIDE_SELECTORS);
+    unlockTxxxPage();
+    lightDeblurAgeverif();
+  }
+
+  function resetAgeverifNavState() {
+    ageverifCallbacksCalled = false;
+  }
+
+  function hookAgeverifNavigation() {
+    if (ageverifHistoryHooked) return;
+    ageverifHistoryHooked = true;
+    const onNav = () => {
+      resetAgeverifNavState();
+      if (autoEnabled && detectAgeverif()) {
+        if (!watchdogActive) activateWatchdog(true);
+        cleanAgeverif();
+      }
+    };
+    ['pushState', 'replaceState'].forEach((method) => {
+      const orig = history[method];
+      if (typeof orig !== 'function') return;
+      history[method] = function (...args) {
+        const ret = orig.apply(this, args);
+        onNav();
+        return ret;
+      };
+    });
+    window.addEventListener('popstate', onNav);
+    window.addEventListener('hashchange', onNav);
+  }
+
+  function startGlobalAgeverifWatch() {
+    hookAgeverifNavigation();
+    if (!ageverifWatchTimer) {
+      ageverifWatchTimer = setInterval(() => {
+        if (!autoEnabled || !detectAgeverif()) return;
+        if (!watchdogActive) activateWatchdog(true);
+        cleanAgeverif();
+      }, 700);
+    }
+    if (!ageverifObserver) {
+      ageverifObserver = new MutationObserver(() => {
+        if (!autoEnabled || !detectAgeverif()) return;
+        if (!watchdogActive) activateWatchdog(true);
+        cleanAgeverif();
+      });
+      ageverifObserver.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class', 'style', 'src'],
+      });
+    }
+  }
+
+  const SUNPORNO_HIDE_SELECTORS =
+    '#age-verification-overlay, [id*="age-verif"], [class*="age-verif"], [class*="age_verif"]';
+
+  function hideSunpornoViewportVeils() {
+    document.querySelectorAll('.overlay, [class*="overlay"], [class*="veil"], [class*="blur"]').forEach((el) => {
+      if (el.closest('.player, .video-player, .video, #player, .jwplayer, video')) return;
+      const tag = `${el.id} ${el.className}`.toLowerCase();
+      if (!/(?:age|verif|blur|veil|gate|consent|adult|18)/.test(tag)) return;
+      const cs = getComputedStyle(el);
+      if (cs.position !== 'fixed' && cs.position !== 'absolute') return;
+      const r = el.getBoundingClientRect();
+      if (r.width < window.innerWidth * 0.85 || r.height < window.innerHeight * 0.85) return;
+      el.style.setProperty('display', 'none', 'important');
+      el.style.setProperty('pointer-events', 'none', 'important');
+      el.style.setProperty('visibility', 'hidden', 'important');
+      el.style.setProperty('filter', 'none', 'important');
+    });
+  }
+
+  function unlockSunpornoPage() {
+    const roots = [
+      document.documentElement,
+      document.body,
+      ...document.querySelectorAll('#wrapper, .wrapper, main, .container'),
+    ];
+    document.querySelectorAll('div, section, main').forEach((el) => {
+      const cs = getComputedStyle(el);
+      if (cs.filter.includes('blur') || cs.backdropFilter.includes('blur')) roots.push(el);
+    });
+    roots.forEach((el) => {
+      if (!el) return;
+      el.style.setProperty('filter', 'none', 'important');
+      el.style.setProperty('backdrop-filter', 'none', 'important');
+      el.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+      el.style.setProperty('overflow', 'auto', 'important');
+      el.style.setProperty('pointer-events', 'auto', 'important');
+    });
   }
 
   function cleanSunporno() {
-    hideMatches('#age-verification-overlay');
+    injectCSS();
+    hideMatches(SUNPORNO_HIDE_SELECTORS);
+    hideSunpornoViewportVeils();
+    unlockSunpornoPage();
   }
 
   function cleanJacquie() {
@@ -1535,8 +1891,61 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
     );
   }
 
+  const LIVEJASMIN_HIDE_SELECTORS =
+    '#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal, [data-testid="Over18ModalVariant1Modal"], .over-18.is-non-adult';
+
+  const LIVEJASMIN_HOVER_HIDE_SELECTORS =
+    '.over-18__popover, [class*="AvpShutter"], [class*="avp-shutter"], [class*="NonAdultShutter"], [class*="thumb"] .over-18, [class*="Thumb"] .over-18, [class*="preview"] .over-18, [class*="Preview"] .over-18';
+
+  function unlockLivejasminScroll() {
+    [document.documentElement, document.body, ...document.querySelectorAll('#page, .layout, [class*="layout"], main, .main-content')].forEach((el) => {
+      if (!el) return;
+      el.style.setProperty('overflow', 'auto', 'important');
+      el.style.setProperty('height', 'auto', 'important');
+      el.style.setProperty('position', 'static', 'important');
+      el.style.setProperty('overscroll-behavior', 'auto', 'important');
+      el.style.setProperty('pointer-events', 'auto', 'important');
+    });
+  }
+
+  function unblurLivejasminThumbs() {
+    document
+      .querySelectorAll(
+        '[class*="thumb"] img, [class*="thumb"] video, [class*="thumb"] canvas, [class*="Thumb"] img, [class*="Thumb"] video, [class*="Thumb"] canvas, [class*="preview"] img, [class*="preview"] video, [class*="preview"] canvas, [class*="Preview"] img, [class*="Preview"] video, [class*="Preview"] canvas, [class*="modelTile"] img, [class*="ModelTile"] img, [class*="modelTile"] video, [class*="ModelTile"] video'
+      )
+      .forEach((el) => {
+        el.style.setProperty('filter', 'none', 'important');
+        el.style.setProperty('backdrop-filter', 'none', 'important');
+        el.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+      });
+  }
+
+  function hideLivejasminHoverAvp() {
+    document.querySelectorAll('[class*="shutter"], [class*="Shutter"], .over-18, [class*="over-18"], [class*="Avp"], [class*="avp"]').forEach((el) => {
+      if (el.id === 'overlay' || el.id === 'overlay_container' || el.id === 'fi-18-22') return;
+      if (el.closest('#overlay, #overlay_container, #fi-18-22')) return;
+      if (el.id === 'consent_modal' || el.closest('#consent_modal')) return;
+      const r = el.getBoundingClientRect();
+      if (r.width > window.innerWidth * 0.9 && r.height > window.innerHeight * 0.9) return;
+      el.style.setProperty('display', 'none', 'important');
+      el.style.setProperty('pointer-events', 'none', 'important');
+      el.style.setProperty('visibility', 'hidden', 'important');
+    });
+  }
+
   function cleanLivejasmin() {
-    hideMatches('#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal');
+    injectCSS();
+    const accept = document.querySelector('.over-18__accept-button, [data-testid*="Accept"]');
+    if (accept) {
+      try {
+        accept.click();
+      } catch (_e) {}
+    }
+    hideMatches(LIVEJASMIN_HIDE_SELECTORS);
+    hideMatches(LIVEJASMIN_HOVER_HIDE_SELECTORS);
+    hideLivejasminHoverAvp();
+    unlockLivejasminScroll();
+    unblurLivejasminThumbs();
   }
 
   function cleanGate18() {
@@ -1574,6 +1983,9 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
     if (activeProfiles.includes('stripchat')) cleanStripchat();
     if (activeProfiles.includes('livejasmin')) cleanLivejasmin();
     if (activeProfiles.includes('gate18')) cleanGate18();
+    if (activeProfiles.includes('ageverif') || detectAgeverif()) cleanAgeverif();
+
+    cleanAds();
 
     lastCleanup = Date.now();
     return true;
@@ -1631,9 +2043,12 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
     if (!fallbackInterval) {
       fallbackInterval = setInterval(() => {
         if (isChaturbateHost()) return;
-        if (autoEnabled && watchdogActive && hasThreat()) {
-          runCleanup();
-          injectCSS();
+        if (autoEnabled && watchdogActive) {
+          cleanAds();
+          if (hasThreat()) {
+            runCleanup();
+            injectCSS();
+          }
         }
       }, FALLBACK_INTERVAL_MS);
     }
@@ -1836,8 +2251,11 @@ age-verification, age-verification-uk, age-verification-face, .modal-age-verific
         if (isStripchatHost() && autoEnabled) cleanStripchat();
         if (isLivejasminHost() && autoEnabled) cleanLivejasmin();
         if (isGate18Host() && autoEnabled) cleanGate18();
+        if (autoEnabled && detectAgeverif()) cleanAgeverif();
       }
     });
+
+    startGlobalAgeverifWatch();
   }
 
   if (api?.runtime?.onMessage) {

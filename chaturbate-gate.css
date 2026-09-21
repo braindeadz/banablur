@@ -2,6 +2,10 @@
 #age_gate_overlay,
 #age_gate_home,
 #age_gate_overlay *,
+#entrance_terms_overlay,
+#entrance_terms,
+.entrance_terms_overlay,
+#entrance_terms_overlay *,
 #age-gate-header,
 #age-gate-visitor-text,
 #age-gate-timing-sentence,
@@ -26,14 +30,20 @@
   line-height: 0 !important;
 }
 #age_gate_overlay,
-#age_gate_home {
+#age_gate_home,
+#entrance_terms_overlay,
+.entrance_terms_overlay {
   z-index: -1 !important;
   max-height: 0 !important;
   max-width: 0 !important;
   width: 0 !important;
   height: 0 !important;
 }
-body.age-gate--shown {
+body.age-gate--shown,
+html:has(#entrance_terms_overlay),
+body:has(#entrance_terms_overlay),
+html:has(.entrance_terms_overlay),
+body:has(.entrance_terms_overlay) {
   overflow: auto !important;
 }
 #main,

@@ -1,10 +1,49 @@
 # Banablur
 
-**v1.10.3** · *Peel the blur.*
+**v1.10.9** · *Peel the blur.*
 
 Banablur is a browser extension for **Chromium** (Chrome, Edge, Brave) and **Firefox** that removes age-verification overlays, neutralizes CSS and player blur, and unlocks safe-mode / SFW video players where the site allows it.
 
 The name is a playful mix of **banana** and **blur** — fun, but the purpose is clear.
+
+## Télécharger et installer (2 minutes)
+
+**Fichiers officiels :** [Dernière version sur GitHub](https://github.com/braindeadz/banablur/releases/latest) (page *Releases* → section *Assets*).
+
+### Firefox (recommandé)
+
+1. Sur la page des releases, téléchargez le fichier **`Banablur-*-FIREFOX-SIGNE.xpi`** (icône orange / Firefox). **Ne prenez jamais le `.zip`.**
+2. Ouvrez **Firefox**.
+3. Dans la barre d’adresse, tapez **`about:addons`** puis Entrée.
+4. Menu **engrenage** (⚙) → **Install Add-on From File…** / **Installer un module depuis un fichier…**
+5. Choisissez le fichier **`.xpi`** que vous venez de télécharger.
+
+> **Important :** ne **double-cliquez pas** le `.xpi`. Firefox peut refuser l’installation ; passez toujours par **about:addons → engrenage → Install Add-on From File**.
+
+### Chrome / Edge / Brave
+
+1. Même page : [releases/latest](https://github.com/braindeadz/banablur/releases/latest).
+2. Téléchargez **`Banablur-*-CHROME.zip`** (**pas** le `.xpi`).
+3. Clic droit sur le zip → **Extraire tout** / **Extract all**.
+4. Ouvrez **`chrome://extensions`** (Edge : **`edge://extensions`**, Brave : **`brave://extensions`**).
+5. Activez le **Mode développeur** / **Developer mode**.
+6. **Charger l’extension non empaquetée** / **Load unpacked** → sélectionnez le **dossier extrait** (pas le fichier zip).
+
+> **Important :** Chrome n’installe **pas** une extension en double-cliquant sur le `.zip`. Il faut extraire, puis **Load unpacked**.
+
+---
+
+## Install in 2 minutes
+
+**Official files:** [Latest release on GitHub](https://github.com/braindeadz/banablur/releases/latest).
+
+### Firefox (recommended)
+
+Download **`Banablur-*-FIREFOX-SIGNE.xpi`** (not `.zip`) → Firefox → **`about:addons`** → gear → **Install Add-on From File** → pick the `.xpi`. Do **not** double-click the XPI.
+
+### Chrome / Edge / Brave
+
+Download **`Banablur-*-CHROME.zip`** → extract → **`chrome://extensions`** → enable **Developer mode** → **Load unpacked** → select the extracted folder. Do not double-click the zip.
 
 ---
 
@@ -28,6 +67,7 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 | Feature | Description |
 |---------|-------------|
 | Age & consent overlays | Hides AgeGO, cookie walls, age banners, and modal gates |
+| AgeVerif.com popups | Blocks AgeVerif.com verification popups on **any** site while the add-on is enabled (including redirect flows) |
 | CSS / player blur | Removes `filter: blur`, backdrop blur, SFW overlays, and related classes |
 | Safe-mode unlock | Switches SFW streams to full video where possible (e.g. XVIDEOS, LebonPorn / Tukif Shaka safe mode) |
 | Auto-detection | Built-in profiles per domain; learns similar domains over time |
@@ -53,6 +93,8 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 | [tukif.porn](https://tukif.porn) / videos.tukif.porn | Tukif | TKN AgeVerif / disclaimer, CSS deblur, Shaka safe-mode unlock (same stack as LebonPorn) |
 | [tnaflix.com](https://www.tnaflix.com), [moviefap.com](https://www.moviefap.com), [pornone.com](https://www.pornone.com), [perfectgirls.xxx](https://www.perfectgirls.xxx) | AgeGO | Overlay + extra player deblur |
 | [txxx.com](https://txxx.com) family (HClips, Upornia, HDZog, …) | TXXX | Vue `.modal-age-verification` |
+| [teen21.com](https://teen21.com) | TXXX | Same Vue `.modal-age-verification` + AgeVerif |
+| [vr-porn.tube](https://vr-porn.tube) | TXXX | AgeVerif modal; player DeoVR (seek HTML5 non prouvable) |
 | [porndig.com](https://www.porndig.com), [sxyprn.com](https://sxyprn.com) | TKN | AgeVerif disclaimer without Tukif player inject |
 | [jacquieetmicheltv.net](https://www.jacquieetmicheltv.net), [jacquieetmichel.net](https://www.jacquieetmichel.net) | Jacquie | Custom 18+ disclaimer / my18pass blur |
 | [redtube.com](https://www.redtube.com) | Aylo | Overlay only |
@@ -61,56 +103,19 @@ The name is a playful mix of **banana** and **blur** — fun, but the purpose is
 | [xtube.com](https://www.xtube.com) | Stripchat-like | Same agreement / cookie gates as Stripchat |
 | [cam4.com](https://cam4.com) | CAM4 | Age consent gender disclaimer |
 | [xxxbunker.com](https://xxxbunker.com) | XxxBunker | `#overlay` only when `data-ageconfirmed="false"` (avoids LiveJasmin clash) |
-| [spankbang.com](https://spankbang.com), [youjizz.com](https://www.youjizz.com), [hqporner.com](https://hqporner.com), [motherless.com](https://www.motherless.com), [beeg.com](https://beeg.com), [thisvid.com](https://thisvid.com), [alohatube.com](https://www.alohatube.com), [hellporno.com](https://www.hellporno.com), [drtuber.com](https://www.drtuber.com), [nuvid.com](https://www.nuvid.com), [analdin.com](https://www.analdin.com), [streamate.com](https://www.streamate.com), [pornhat.com](https://www.pornhat.com), [rule34.xxx](https://rule34.xxx), [hdtube.porn](https://www.hdtube.porn) | Gate18 | Generic 18+ / cookie overlays |
+| [spankbang.com](https://spankbang.com), [youjizz.com](https://www.youjizz.com), [hqporner.com](https://hqporner.com), [motherless.com](https://www.motherless.com), [beeg.com](https://beeg.com), [thisvid.com](https://thisvid.com), [alohatube.com](https://www.alohatube.com), [hellporno.com](https://www.hellporno.com), [drtuber.com](https://www.drtuber.com), [nuvid.com](https://www.nuvid.com), [analdin.com](https://www.analdin.com), [streamate.com](https://www.streamate.com), [rule34.xxx](https://rule34.xxx), [hdtube.porn](https://www.hdtube.porn) | Gate18 | Generic 18+ / cookie overlays |
 | xvideos.es, xnxx.es, xvideos.red, xhamster.desi | Same engines | TLD clones of existing profiles |
 | Similar domains | Auto-detected | Remembered after first visit |
 
 ---
 
-## Install — Chrome / Edge / Brave
+## Install (details)
 
-Banablur is distributed as an **unpacked extension** (developer mode). There is no Chrome Web Store package.
+See **Télécharger et installer** at the top of this README for step-by-step downloads.
 
-1. Obtain a build: extract `banablur-1.10.3.zip` from a release, or build from source (see below).
-2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).
-3. Enable **Developer mode**.
-4. Click **Load unpacked** and select the extracted folder (e.g. `banablur-1.10.3/`).
-5. Pin the extension from the puzzle icon in the toolbar.
+**Maintainers:** the signed Firefox XPI must contain `META-INF/mozilla.rsa`. Temporary **`about:debugging`** → **Load Temporary Add-on** remains for local development only.
 
-> Chromium does not install a `.zip` directly — use the extracted folder.
-
----
-
-## Install — Firefox
-
-**Firefox add-on ID (stable):** `agego-deblur@local.dev` — do not change; existing installs rely on it for updates.
-
-**Minimum versions:** Firefox desktop **140+**, Firefox for Android **142+** (`strict_min_version` / `gecko_android` in `manifest.json`).
-
-The AMO / Firefox **XPI** omits `background.service_worker` (Firefox uses `background.scripts` only); the Chromium **zip** keeps both.
-
-### Permanent install (signed XPI — recommended for Firefox Release)
-
-Firefox Release requires a **Mozilla-signed** add-on. Banablur is distributed as an **unlisted** AMO-signed `.xpi` (not in the public AMO catalog).
-
-Use only a file that contains `META-INF/mozilla.rsa` (name ends with `FIREFOX-SIGNE.xpi`, `firefox-signed.xpi`, or comes from an AMO download). The unsigned build zip/xpi from `build.ps1` is **not** for Firefox Release — it will be rejected with “not verified”.
-
-1. Download `Banablur-1.10.3-FIREFOX-SIGNE.xpi` or `banablur-1.10.3-firefox-signed.xpi` (or the latest signed release asset).
-2. Open `about:addons`.
-3. Click the gear menu → **Install Add-on From File…**
-4. Select the **signed** `.xpi`.
-
-Double-clicking an XPI can fail even when the file is signed (Firefox treats `file://` as a web install). Prefer **Install Add-on From File**.
-
-Maintainers sign builds through Mozilla's developer hub; end users only need the signed artifact.
-
-### Temporary install (development)
-
-1. Open `about:debugging`.
-2. Click **This Firefox**.
-3. **Load Temporary Add-on…** → select `manifest.json` inside the source or extracted folder.
-
-Temporary add-ons are removed when Firefox closes.
+**Firefox add-on ID (stable):** `agego-deblur@local.dev` — do not change. **Minimum:** Firefox desktop **140+**, Firefox for Android **142+**.
 
 ---
 
@@ -149,10 +154,11 @@ Outputs in the **parent** directory:
 
 | Artifact | Purpose |
 |----------|---------|
-| `banablur-1.10.3.zip` | Unsigned build zip (Chrome/Edge **Load unpacked** after extract) |
-| `banablur-1.10.3.xpi` | Same unsigned bytes — **not** for Firefox Release |
-| `Banablur-1.10.3-FIREFOX-SIGNE.xpi` or `banablur-1.10.3-firefox-signed.xpi` | AMO-signed XPI for Firefox Release |
-| `banablur-1.10.3/` | Auto-extracted folder for Chromium **Load unpacked** |
+| `Banablur-1.10.9-CHROME.zip` | **GitHub release name** for Chromium — extract, then **Load unpacked** |
+| `Banablur-1.10.9-FIREFOX-SIGNE.xpi` | **GitHub release name** for Firefox Release (Mozilla-signed) |
+| `banablur-1.10.9.zip` | Same unsigned pack produced locally by `build.ps1` (Chromium after extract) |
+| `banablur-1.10.9.xpi` | Same unsigned bytes from `build.ps1` — **not** for Firefox Release |
+| `banablur-1.10.9/` | Folder auto-extracted by `build.ps1` for **Load unpacked** |
 
 The build script reads the version from `manifest.json` and cleans previous build artifacts before generating new ones.
 
@@ -177,6 +183,7 @@ npm run test:sites
 |---------------|------|
 | `manifest.json` | Manifest V3 (Chromium + Firefox gecko settings) |
 | `content.js` | Core profiles, CSS overrides, watchdog, site detection |
+| `ageverif-page.js` | Global AgeVerif MAIN-world stub (blocks AgeVerif.com flows) |
 | `background.js` | Service worker: downloads API only (local IP) |
 | `popup.html` / `popup.js` / `popup.css` | Toolbar popup UI |
 | `override.css` | Shared override styles |

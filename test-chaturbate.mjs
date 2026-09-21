@@ -1,5 +1,5 @@
 /**
- * Test E2E Chaturbate — age gate masque + live overlay Hls.js.
+ * Test E2E Chaturbate — age gate masque + navigation native + unlock room page.
  * Usage: node test-chaturbate.mjs
  * Exit 0 = OK, 1 = echec
  */
@@ -22,6 +22,12 @@ function checkPage() {
     overlayPE: document.getElementById('age_gate_overlay')
       ? getComputedStyle(document.getElementById('age_gate_overlay')).pointerEvents
       : null,
+    entranceOverlayOp: document.getElementById('entrance_terms_overlay')
+      ? getComputedStyle(document.getElementById('entrance_terms_overlay')).opacity
+      : null,
+    entranceOverlayPE: document.getElementById('entrance_terms_overlay')
+      ? getComputedStyle(document.getElementById('entrance_terms_overlay')).pointerEvents
+      : null,
     gateTextVisible: (() => {
       const t = document.getElementById('age-gate-visitor-text');
       if (!t) return false;
@@ -31,22 +37,16 @@ function checkPage() {
     })(),
     hasLiveOverlay: !!document.getElementById('agego-live-overlay'),
     hasCustomApp: !!document.getElementById('agego-app'),
-    customCards: document.querySelectorAll('#agego-app [data-agego-room]').length,
-    customScrollable: (() => {
-      const app = document.getElementById('agego-app');
-      return !!app && app.scrollHeight > app.clientHeight;
-    })(),
     videoW: overlayVideo?.videoWidth ?? 0,
     videoReady: overlayVideo?.readyState ?? 0,
     toast: document.getElementById('agego-cb-toast')?.textContent || null,
+    nativeThumbs: document.querySelectorAll('a.RoomCardThumbnail').length,
     clickable: (() => {
-      const card =
-        document.querySelector('#agego-app [data-agego-room]') ||
-        document.querySelector('a.RoomCardThumbnail');
+      const card = document.querySelector('a.RoomCardThumbnail');
       const rect = card?.getBoundingClientRect();
       if (!rect) return false;
       const el = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      return !!el?.closest('[data-agego-room], a.RoomCardThumbnail');
+      return !!el?.closest('a.RoomCardThumbnail');
     })(),
   };
 }
@@ -99,25 +99,33 @@ async function main() {
     () => {
       const overlay = document.getElementById('age_gate_overlay');
       const overlayPE = overlay ? getComputedStyle(overlay).pointerEvents : null;
+      const entranceOverlay =
+        document.getElementById('entrance_terms_overlay') ||
+        document.querySelector('.entrance_terms_overlay');
+      const entranceOverlayPE = entranceOverlay
+        ? getComputedStyle(entranceOverlay).pointerEvents
+        : null;
+      const entranceOverlayOp = entranceOverlay
+        ? parseFloat(getComputedStyle(entranceOverlay).opacity)
+        : 0;
       const gateText = document.getElementById('age-gate-visitor-text');
       const gateTextVisible =
         gateText &&
         gateText.getBoundingClientRect().width > 0 &&
         getComputedStyle(gateText).opacity !== '0' &&
         getComputedStyle(gateText).visibility !== 'hidden';
-      const card =
-        document.querySelector('#agego-app [data-agego-room]') ||
-        document.querySelector('a.RoomCardThumbnail');
+      const card = document.querySelector('a.RoomCardThumbnail');
       const rect = card?.getBoundingClientRect();
       const clickable =
         rect &&
         document
           .elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
-          ?.closest('[data-agego-room], a.RoomCardThumbnail');
+          ?.closest('a.RoomCardThumbnail');
       return (
         !!document.getElementById('banablur-override') &&
-        !!document.getElementById('agego-app') &&
+        !document.getElementById('agego-app') &&
         overlayPE === 'none' &&
+        (!entranceOverlay || (entranceOverlayPE === 'none' && entranceOverlayOp <= 0.01)) &&
         !gateTextVisible &&
         !!clickable
       );
@@ -126,27 +134,13 @@ async function main() {
   );
 
   if (!gateOk) {
-    console.error('ECHEC: fenetre age gate encore visible ou clics bloques');
+    console.error('ECHEC: fenetre age gate encore visible, overlay custom present, ou clics bloques');
     state = await page.evaluate(checkPage);
     console.log(JSON.stringify(state, null, 2));
     await context.close();
     process.exit(1);
   }
-  console.log('OK: age gate masquee, clics possibles');
-
-  const appOk = await waitFor(
-    page,
-    () => {
-      const app = document.getElementById('agego-app');
-      return !!app && app.querySelectorAll('[data-agego-room]').length > 0;
-    },
-    15000
-  );
-  if (!appOk) {
-    console.error('ECHEC: page custom ou grille absente');
-    await context.close();
-    process.exit(1);
-  }
+  console.log('OK: age gate masquee, pas de #agego-app, miniatures natives cliquables');
 
   const slug = await page.evaluate(async () => {
     const imgs = [...document.querySelectorAll('img.RoomCardThumbnail__image')];
@@ -178,15 +172,23 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('3) Clic room (overlay live):', slug);
-  const thumb = page.locator(`#agego-app [data-agego-room="${slug}"]`).first();
+  console.log('3) Clic miniature native (navigation room):', slug);
+  const thumb = page.locator(`a.RoomCardThumbnail:has(img[alt="${slug}"])`).first();
   await thumb.scrollIntoViewIfNeeded();
-  await thumb.click({ force: true, timeout: 10000 });
 
-  // Playwright utilise Chromium (sans codecs H.264/AAC proprietaires). La chaine
-  // complete que l'extension controle est validee ainsi : overlay cree + manifeste
-  // HLS recupere par le player. Le seul blocage restant sous Chromium est le decodage
-  // (manifestIncompatibleCodecsError), qui n'existe pas dans un vrai Chrome (voir MCP).
+  const navPromise = page.waitForURL(
+    (url) => {
+      const parts = url.pathname.split('/').filter(Boolean);
+      return parts.length === 1 && parts[0] === slug;
+    },
+    { timeout: 15000 }
+  );
+  await thumb.click({ timeout: 10000 });
+  await navPromise;
+  console.log('OK: navigation native vers /' + slug + '/');
+
+  // Playwright utilise Chromium (sans codecs H.264/AAC proprietaires). Sur la page
+  // room, l'extension tente unlockStream via agego-unlock-stream apres navigation.
   const liveOk = await waitFor(
     page,
     () => {
@@ -199,13 +201,15 @@ async function main() {
           /IncompatibleCodecs/i.test(err))
       );
     },
-    35000
+    40000
   );
 
   state = await page.evaluate(() => {
     const v = document.querySelector('#agego-live-overlay video');
     return {
+      url: location.href,
       hasLiveOverlay: !!document.getElementById('agego-live-overlay'),
+      hasCustomApp: !!document.getElementById('agego-app'),
       videoW: v?.videoWidth ?? 0,
       fragLoaded: document.documentElement.dataset.agegoFragLoaded === '1',
       hlsError: document.documentElement.dataset.agegoHlsError || null,
@@ -214,7 +218,7 @@ async function main() {
   console.log('Etat live:', JSON.stringify(state, null, 2));
 
   if (!liveOk) {
-    console.error('ECHEC: overlay live non demarre (manifeste HLS non recupere)');
+    console.error('ECHEC: unlock room page non demarre (manifeste HLS non recupere)');
     await page.waitForTimeout(3000);
     await context.close();
     process.exit(1);
@@ -224,7 +228,7 @@ async function main() {
     state.videoW >= 160
       ? 'video decodee (' + state.videoW + 'px)'
       : 'manifeste HLS recupere ; decodage indisponible sous Chromium (OK en vrai Chrome)';
-  console.log('SUCCES: age gate masque + overlay live cree + ' + mode);
+  console.log('SUCCES: gate masque + navigation native + unlock room page + ' + mode);
   await page.waitForTimeout(5000);
   await context.close();
   process.exit(0);

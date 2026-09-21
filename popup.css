@@ -172,7 +172,7 @@ header .tagline {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  max-height: 180px;
+  max-height: 320px;
   overflow-y: auto;
 }
 
