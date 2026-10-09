@@ -17,7 +17,6 @@ const SUPPORTED_SITES = [
   { name: 'HDZog', url: 'https://hdzog.com' },
   { name: 'HDTube', url: 'https://www.hdtube.porn' },
   { name: 'Jacquie et Michel', url: 'https://www.jacquieetmichel.net' },
-  { name: 'LiveJasmin', url: 'https://www.livejasmin.com' },
   { name: 'MovieFap', url: 'https://www.moviefap.com' },
   { name: 'PerfectGirls', url: 'https://www.perfectgirls.xxx' },
   { name: 'PornDig', url: 'https://www.porndig.com' },

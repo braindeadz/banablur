@@ -70,10 +70,10 @@ Download **`Banablur-*-CHROME.zip`** → extract → **`chrome://extensions`** �
 | [jacquieetmicheltv.net](https://www.jacquieetmicheltv.net), [jacquieetmichel.net](https://www.jacquieetmichel.net) | Jacquie | Custom 18+ disclaimer / my18pass blur |
 | [redtube.com](https://www.redtube.com) | Aylo | Overlay only |
 | [eporner.com](https://www.eporner.com), [sunporno.com](https://www.sunporno.com), [porntube.com](https://www.porntube.com), [porn.com](https://www.porn.com) | Custom | Site-specific age overlays |
-| [stripchat.com](https://stripchat.com), [bongacams.com](https://bongacams.com), [livejasmin.com](https://www.livejasmin.com) | Cam gates | 18+ modal / Yoti / consent modal |
+| [stripchat.com](https://stripchat.com), [bongacams.com](https://bongacams.com) | Cam gates | 18+ modal / Yoti / consent modal |
 | [xtube.com](https://www.xtube.com) | Stripchat-like | Same agreement / cookie gates as Stripchat |
 | [cam4.com](https://cam4.com) | CAM4 | Age consent gender disclaimer |
-| [xxxbunker.com](https://xxxbunker.com) | XxxBunker | `#overlay` only when `data-ageconfirmed="false"` (avoids LiveJasmin clash) |
+| [xxxbunker.com](https://xxxbunker.com) | XxxBunker | `#overlay` only when `data-ageconfirmed="false"` |
 | [spankbang.com](https://spankbang.com), [youjizz.com](https://www.youjizz.com), [hqporner.com](https://hqporner.com), [motherless.com](https://www.motherless.com), [beeg.com](https://beeg.com), [thisvid.com](https://thisvid.com), [alohatube.com](https://www.alohatube.com), [hellporno.com](https://www.hellporno.com), [drtuber.com](https://www.drtuber.com), [nuvid.com](https://www.nuvid.com), [analdin.com](https://www.analdin.com), [streamate.com](https://www.streamate.com), [rule34.xxx](https://rule34.xxx), [hdtube.porn](https://www.hdtube.porn) | Gate18 | Generic 18+ / cookie overlays |
 | [darknessporn.com](https://darknessporn.com) | ABN (AgeGo age-by-nosotros) | KolorTube player: gate/blur off, preroll ads skipped, ExoClick natives hidden |
 | xvideos.es, xnxx.es, xvideos.red | Same engines | TLD clones of existing profiles |

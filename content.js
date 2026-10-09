@@ -26,6 +26,13 @@
   function isAbnHost() {
     return ABN_HOST_RE.test(location.hostname || '');
   }
+  // AgeGo "Flix" platform (TNAFlix, Empflix). Their player bundle computes
+  // Flix.ageVerified = (cookie age_verified_mnt === "true") once, at load time.
+  // When that flag is false the play handler PAUSES the player and diverts the click to the
+  // age overlay instead of playing, so the video never starts (removing the overlay does not
+  // help: the pause already happened). The site itself does the same thing after its own
+  // verification: FlixUtils.setCookie('age_verified_mnt', 'true', 31).
+  const AGEGO_FLIX_HOST_RE = /(^|\.)(tnaflix\.com|empflix\.com)$/i;
   try {
     const host = location.hostname || '';
     if (/(^|\.)punishworld\.com$/i.test(host)) {
@@ -37,6 +44,9 @@
       sessionStorage.setItem(key, '1');
     } else if (isAbnHost()) {
       setAgeVerifiedCookies('');
+    }
+    if (AGEGO_FLIX_HOST_RE.test(host)) {
+      document.cookie = 'age_verified_mnt=true; path=/; max-age=2678400; SameSite=Lax';
     }
   } catch (_e) {}
 
@@ -113,8 +123,6 @@
     'stripchat.com': ['stripchat'],
     'www.stripchat.com': ['stripchat'],
     'fr.stripchat.com': ['stripchat'],
-    'livejasmin.com': ['livejasmin'],
-    'www.livejasmin.com': ['livejasmin'],
     'lebon.porn': ['lebonporn'],
     'www.lebon.porn': ['lebonporn'],
     'videos.lebon.porn': ['lebonporn'],
@@ -224,8 +232,8 @@ html, body, #wrapper, .wrapper, main, .container { filter: none !important; back
 /* STRIPCHAT */
 #agreement-root, .visitors-agreement-modal, .full-cover.modal-wrapper.visitors-agreement-modal, [data-testid="CookiesReminder"], #CookiesReminder, .cookies-banner { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 
-/* LIVEJASMIN — DO NOT hide #overlay nor #fi-18-22 */
-#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal, [data-testid="Over18ModalVariant1Modal"], .over-18.is-non-adult, .over-18__popover, [class*="AvpShutter"], [class*="avp-shutter"], [class*="NonAdultShutter"], [class*="thumb"] .over-18, [class*="Thumb"] .over-18, [class*="preview"] .over-18, [class*="Preview"] .over-18 { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+/* SHARED GATE / MODAL NEUTRALIZERS (used by several cam sites) — DO NOT hide #overlay nor #fi-18-22 */
+#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal, [data-testid="Over18ModalVariant1Modal"], .over-18.is-non-adult, .over-18__popover, [class*="thumb"] .over-18, [class*="Thumb"] .over-18, [class*="preview"] .over-18, [class*="Preview"] .over-18 { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 html, body, #page, .layout, [class*="layout"], main, .main-content { overflow: auto !important; height: auto !important; position: static !important; overscroll-behavior: auto !important; pointer-events: auto !important; }
 [class*="thumb"] img, [class*="thumb"] video, [class*="thumb"] canvas, [class*="Thumb"] img, [class*="Thumb"] video, [class*="Thumb"] canvas, [class*="preview"] img, [class*="preview"] video, [class*="preview"] canvas, [class*="Preview"] img, [class*="Preview"] video, [class*="Preview"] canvas, [class*="modelTile"] img, [class*="ModelTile"] img, [class*="modelTile"] video, [class*="ModelTile"] video { filter: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
@@ -384,10 +392,6 @@ html, body { filter: none !important; }
   const GATE18_SELECTORS =
     '#age_verification, #age-verification, #ageVerification, #age_gate, #age-gate, #ageGate, #age-check, #age_check, #ageDisclaimer, #age-disclaimer, #age_disclaimer, #age-verification-container, .age-verification-overlay, .age-verification, .age_verification, .age-gate, .age_gate, .js-age-gate, #cookie-policy, .cc-window, .cc-banner, #full-page-loader';
 
-  function isLivejasminHost() {
-    return /(^|\.)livejasmin\.com$/i.test(getHostname());
-  }
-
   function getConfiguredProfiles() {
     return SITE_PROFILES[getHostname()] || [];
   }
@@ -533,11 +537,6 @@ html, body { filter: none !important; }
     return !!document.getElementById('agreement-root');
   }
 
-  function detectLivejasmin() {
-    if (isLivejasminHost()) return true;
-    return !!document.querySelector('#consent_modal.over-18');
-  }
-
   function detectGate18() {
     if (isGate18Host()) return true;
     return !!document.querySelector(GATE18_SELECTORS);
@@ -588,7 +587,6 @@ html, body { filter: none !important; }
     if (detectAbn()) profiles.add('abn');
     if (detectJacquie()) profiles.add('jacquie');
     if (detectStripchat()) profiles.add('stripchat');
-    if (detectLivejasmin()) profiles.add('livejasmin');
     if (detectGate18()) profiles.add('gate18');
     if (detectAgeverif()) profiles.add('ageverif');
     return [...profiles];
@@ -665,7 +663,10 @@ html, body { filter: none !important; }
     } catch (_e) {}
   }
   function dismissPrerollAds() {
-    document.querySelectorAll('.vast_player_close, .vast_player_close--do, .jw-skip, .jw-icon-skip, [class*="skip-ad"], .vast_skip, [class*="SkipAd"]').forEach((el) => { try { el.click(); } catch (_e) {} });
+    // TNAFlix (Flix platform) shows a preroll whose only exit is #prerollAdSkip ("Skip Ad in
+    // N" then "Skip Ad >>>"). While that preroll is on screen the real video stays source-less
+    // and paused, so playback never starts until the skip control is used.
+    document.querySelectorAll('.vast_player_close, .vast_player_close--do, .jw-skip, .jw-icon-skip, [class*="skip-ad"], .vast_skip, [class*="SkipAd"], #prerollAdSkip, [id*="prerollAdSkip"]').forEach((el) => { try { el.click(); } catch (_e) {} });
     skipJwPreroll();
     skipPlayerAd();
     killAdVideos();
@@ -917,23 +918,6 @@ html, body { filter: none !important; }
     );
   }
 
-  function hasLivejasminThreat() {
-    const htmlCs = getComputedStyle(document.documentElement);
-    const bodyCs = document.body ? getComputedStyle(document.body) : null;
-    const scrollLocked =
-      htmlCs.overflow === 'hidden' ||
-      (bodyCs && bodyCs.overflow === 'hidden');
-    return !!(
-      isOverlayVisible('#consent_modal.over-18') ||
-      isOverlayVisible('#consent_modal.is-non-adult') ||
-      isOverlayVisible('#consent_modal') ||
-      isOverlayVisible('[data-testid="Over18ModalVariant1Modal"]') ||
-      isOverlayVisible('.over-18.is-non-adult') ||
-      isOverlayVisible('.over-18__popover') ||
-      scrollLocked
-    );
-  }
-
   function hasGate18Threat() {
     return GATE18_SELECTORS.split(', ')
       .some((sel) => isOverlayVisible(sel.trim()));
@@ -956,7 +940,6 @@ html, body { filter: none !important; }
       hasAbnThreat() ||
       hasJacquieThreat() ||
       hasStripchatThreat() ||
-      hasLivejasminThreat() ||
       hasGate18Threat()
     );
   }
@@ -2093,63 +2076,6 @@ html, body { filter: none !important; }
     );
   }
 
-  const LIVEJASMIN_HIDE_SELECTORS =
-    '#consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal, [data-testid="Over18ModalVariant1Modal"], .over-18.is-non-adult';
-
-  const LIVEJASMIN_HOVER_HIDE_SELECTORS =
-    '.over-18__popover, [class*="AvpShutter"], [class*="avp-shutter"], [class*="NonAdultShutter"], [class*="thumb"] .over-18, [class*="Thumb"] .over-18, [class*="preview"] .over-18, [class*="Preview"] .over-18';
-
-  function unlockLivejasminScroll() {
-    [document.documentElement, document.body, ...document.querySelectorAll('#page, .layout, [class*="layout"], main, .main-content')].forEach((el) => {
-      if (!el) return;
-      el.style.setProperty('overflow', 'auto', 'important');
-      el.style.setProperty('height', 'auto', 'important');
-      el.style.setProperty('position', 'static', 'important');
-      el.style.setProperty('overscroll-behavior', 'auto', 'important');
-      el.style.setProperty('pointer-events', 'auto', 'important');
-    });
-  }
-
-  function unblurLivejasminThumbs() {
-    document
-      .querySelectorAll(
-        '[class*="thumb"] img, [class*="thumb"] video, [class*="thumb"] canvas, [class*="Thumb"] img, [class*="Thumb"] video, [class*="Thumb"] canvas, [class*="preview"] img, [class*="preview"] video, [class*="preview"] canvas, [class*="Preview"] img, [class*="Preview"] video, [class*="Preview"] canvas, [class*="modelTile"] img, [class*="ModelTile"] img, [class*="modelTile"] video, [class*="ModelTile"] video'
-      )
-      .forEach((el) => {
-        el.style.setProperty('filter', 'none', 'important');
-        el.style.setProperty('backdrop-filter', 'none', 'important');
-        el.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
-      });
-  }
-
-  function hideLivejasminHoverAvp() {
-    document.querySelectorAll('[class*="shutter"], [class*="Shutter"], .over-18, [class*="over-18"], [class*="Avp"], [class*="avp"]').forEach((el) => {
-      if (el.id === 'overlay' || el.id === 'overlay_container' || el.id === 'fi-18-22') return;
-      if (el.closest('#overlay, #overlay_container, #fi-18-22')) return;
-      if (el.id === 'consent_modal' || el.closest('#consent_modal')) return;
-      const r = el.getBoundingClientRect();
-      if (r.width > window.innerWidth * 0.9 && r.height > window.innerHeight * 0.9) return;
-      el.style.setProperty('display', 'none', 'important');
-      el.style.setProperty('pointer-events', 'none', 'important');
-      el.style.setProperty('visibility', 'hidden', 'important');
-    });
-  }
-
-  function cleanLivejasmin() {
-    injectCSS();
-    const accept = document.querySelector('.over-18__accept-button, [data-testid*="Accept"]');
-    if (accept) {
-      try {
-        accept.click();
-      } catch (_e) {}
-    }
-    hideMatches(LIVEJASMIN_HIDE_SELECTORS);
-    hideMatches(LIVEJASMIN_HOVER_HIDE_SELECTORS);
-    hideLivejasminHoverAvp();
-    unlockLivejasminScroll();
-    unblurLivejasminThumbs();
-  }
-
   function cleanGate18() {
     try {
       const maxAge = 31536000;
@@ -2185,7 +2111,6 @@ html, body { filter: none !important; }
     if (activeProfiles.includes('abn')) cleanAbn();
     if (activeProfiles.includes('jacquie')) cleanJacquie();
     if (activeProfiles.includes('stripchat')) cleanStripchat();
-    if (activeProfiles.includes('livejasmin')) cleanLivejasmin();
     if (activeProfiles.includes('gate18')) cleanGate18();
     if (activeProfiles.includes('ageverif') || detectAgeverif()) cleanAgeverif();
 
@@ -2307,7 +2232,6 @@ html, body { filter: none !important; }
     if (isSunpornoHost() && autoEnabled) cleanSunporno();
     if (isJacquieHost() && autoEnabled) cleanJacquie();
     if (isStripchatHost() && autoEnabled) cleanStripchat();
-    if (isLivejasminHost() && autoEnabled) cleanLivejasmin();
     if (isGate18Host() && autoEnabled) cleanGate18();
 
     return true;
@@ -2339,7 +2263,6 @@ html, body { filter: none !important; }
       sunpornoDetected: detectSunporno(),
       jacquieDetected: detectJacquie(),
       stripchatDetected: detectStripchat(),
-      livejasminDetected: detectLivejasmin(),
       gate18Detected: detectGate18(),
       threatPresent: isChaturbateHost() ? hasChaturbateThreatForStatus() : hasThreat(),
       watchdogActive,
@@ -2367,7 +2290,6 @@ html, body { filter: none !important; }
       sunpornoDetected: detectSunporno(),
       jacquieDetected: detectJacquie(),
       stripchatDetected: detectStripchat(),
-      livejasminDetected: detectLivejasmin(),
       gate18Detected: detectGate18(),
       threatPresent: isChaturbateHost() ? hasChaturbateThreatForStatus() : hasThreat(),
       lastCleanup,
@@ -2452,7 +2374,6 @@ html, body { filter: none !important; }
         if (isSunpornoHost() && autoEnabled) cleanSunporno();
         if (isJacquieHost() && autoEnabled) cleanJacquie();
         if (isStripchatHost() && autoEnabled) cleanStripchat();
-        if (isLivejasminHost() && autoEnabled) cleanLivejasmin();
         if (isGate18Host() && autoEnabled) cleanGate18();
         if (isAbnHost() && autoEnabled) cleanAbn();
         if (autoEnabled && detectAgeverif()) cleanAgeverif();

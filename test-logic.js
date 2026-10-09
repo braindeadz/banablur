@@ -90,8 +90,6 @@ const SITE_PROFILES = {
     'bongacams.com': ['bongacams'],
     'www.bongacams.com': ['bongacams'],
     'fr.bongacams.com': ['bongacams'],
-    'livejasmin.com': ['livejasmin'],
-    'www.livejasmin.com': ['livejasmin'],
     'lebon.porn': ['lebonporn'],
     'www.lebon.porn': ['lebonporn'],
     'videos.lebon.porn': ['lebonporn'],
@@ -189,7 +187,6 @@ assert(SITE_PROFILES['eporner.com'].includes('eporner'), 'eporner -> eporner');
 assert(SITE_PROFILES['jacquieetmicheltv.net'].includes('jacquie'), 'jacquieetmicheltv -> jacquie');
 assert(SITE_PROFILES['stripchat.com'].includes('stripchat'), 'stripchat -> stripchat');
 assert(SITE_PROFILES['bongacams.com'].includes('bongacams'), 'bongacams -> bongacams');
-assert(SITE_PROFILES['livejasmin.com'].includes('livejasmin'), 'livejasmin -> livejasmin');
 assert(SITE_PROFILES['sxyprn.com'].includes('tkn'), 'sxyprn -> tkn');
 assert(SITE_PROFILES['sunporno.com'].includes('sunporno'), 'sunporno -> sunporno');
 assert(SITE_PROFILES['pornone.com'].includes('agego'), 'pornone -> agego');
@@ -298,6 +295,9 @@ console.log('Test 5: content.js contains xvideos + xhamster profiles');
   assert(src.includes('/ribw/'), 'target ribw');
   assert(src.includes('pointer-events'), 'target pointer-events overlay');
   assert(src.includes('cookie-wall'), 'target cookie-wall');
+  assert(src.includes('age_verified_mnt'), 'content: AgeGo/Flix age cookie');
+  assert(src.includes('AGEGO_FLIX_HOST_RE'), 'content: AgeGo/Flix host scope');
+  assert(src.includes('prerollAdSkip'), 'content: TNAFlix preroll skip control');
   assert(src.includes('snapshot_blurred'), 'target snapshot_blurred');
 
   assert(src.includes('xp-sfw'), 'target xp-sfw');
@@ -322,6 +322,8 @@ console.log('Test 5: content.js contains xvideos + xhamster profiles');
   assert(!cb.includes('createCustomApp'), 'chaturbate: no createCustomApp');
   assert(!cb.includes('startCustomApp'), 'chaturbate: no startCustomApp');
   assert(cb.includes('entrance_terms_overlay'), 'chaturbate: hide entrance_terms_overlay');
+  assert(cb.includes('location.assign'), 'chaturbate: click falls back to room navigation');
+  assert(cb.includes('Inline player unavailable'), 'chaturbate: visible toast when falling back');
 
   const cbPage = fs.readFileSync(path.join(__dirname, 'chaturbate-page.js'), 'utf8');
   assert(cbPage.includes('agego-live-overlay'), 'standalone live overlay');
@@ -651,7 +653,6 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
     ['vr-porn.tube', 'txxx'],
     ['jacquieetmichel.net', 'jacquie'],
     ['stripchat.com', 'stripchat'],
-    ['livejasmin.com', 'livejasmin'],
     ['sxyprn.com', 'tkn'],
     ['sunporno.com', 'sunporno'],
     ['punishworld.com', 'punishworld'],
@@ -691,16 +692,6 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
   assert(cssBlock.includes('#consent_modal'), 'OVERRIDE_CSS: #consent_modal');
   assert(!cssBlock.includes('#ageverifybox'), 'OVERRIDE_CSS: no #ageverifybox (pornhub removed)');
   assert(cssBlock.includes('custom-disclaimer'), 'OVERRIDE_CSS: custom-disclaimer');
-
-  const ljCss = (src.match(/\/\*\s*LIVEJASMIN[\s\S]*?(?=\n\s*\/\*\s*[A-Z]|\n\s*`;)/i) || [''])[0];
-  assert(/#consent_modal/.test(ljCss), 'content CSS livejasmin: #consent_modal');
-  const ljOverlayIsolated = /#overlay(?:\s|,|\{)/.test(ljCss);
-  const ljOverlayComment = /#overlay/.test(src) && /livejasmin/i.test(src) &&
-    /DO NOT hide #overlay|#overlay[^\n]{0,80}livejasmin|livejasmin[^\n]{0,120}#overlay/i.test(src);
-  assert(
-    !ljOverlayIsolated || ljOverlayComment,
-    'content: no isolated #overlay for LiveJasmin (or comment)'
-  );
 }
 
 console.log('Test 9: content.js v1.10.9 (xtube/gate18)');
@@ -743,7 +734,7 @@ console.log('Test 9: content.js v1.10.9 (xtube/gate18)');
   );
   assert(
     !/(?:^|\n)\s*#overlay\s*\{/.test(cssBlock),
-    'OVERRIDE_CSS: no isolated #overlay { (LiveJasmin)'
+    'OVERRIDE_CSS: no isolated #overlay {'
   );
 
   const stripchatHostFn = extractFnBody(src, 'isStripchatHost');
@@ -753,7 +744,7 @@ console.log('Test 9: content.js v1.10.9 (xtube/gate18)');
   assert(!(mf.permissions || []).includes('proxy'), 'manifest v1.10.3: no proxy permission');
 }
 
-console.log('Test 11: content.js cleaners (txxx/sunporno/livejasmin)');
+console.log('Test 11: content.js cleaners (txxx/sunporno)');
 {
   const fs = require('fs');
   const path = require('path');
@@ -783,13 +774,9 @@ console.log('Test 11: content.js cleaners (txxx/sunporno/livejasmin)');
   assert(/\.container/.test(cssBlock), 'OVERRIDE_CSS SUNPORNO: .container deblur');
   assert(src.includes("querySelectorAll('#wrapper, .wrapper, main, .container')"), 'unlockSunpornoPage: .container');
 
-  const cleanLivejasminBody = extractFnBody(src, 'cleanLivejasmin');
-  assert(cleanLivejasminBody.includes('unlockLivejasminScroll'), 'cleanLivejasmin: unlockLivejasminScroll');
-  assert(cleanLivejasminBody.includes('injectCSS'), 'cleanLivejasmin: injectCSS');
-  const ljCss = (src.match(/\/\*\s*LIVEJASMIN[\s\S]*?(?=\n\s*\/\*\s*[A-Z]|\n\s*`;)/i) || [''])[0];
-  assert(/overflow:\s*auto/.test(ljCss), 'OVERRIDE_CSS LIVEJASMIN: overflow auto');
-  assert(ljCss.includes('Over18ModalVariant1Modal'), 'OVERRIDE_CSS LIVEJASMIN: Over18ModalVariant1Modal');
-  assert(/DO NOT hide #overlay/.test(ljCss), 'OVERRIDE_CSS LIVEJASMIN: #overlay comment');
+  assert(cssBlock.includes('Over18ModalVariant1Modal'), 'OVERRIDE_CSS shared: Over18ModalVariant1Modal');
+  assert(/overflow:\s*auto/.test(cssBlock), 'OVERRIDE_CSS shared: overflow auto');
+  assert(/DO NOT hide #overlay/.test(cssBlock), 'OVERRIDE_CSS shared: #overlay comment');
 
   assert(
     cssBlock.includes('vast_player') || src.includes('vast_player'),
@@ -810,7 +797,7 @@ console.log('Test 11: content.js cleaners (txxx/sunporno/livejasmin)');
   assert(src.includes('skipJwPreroll'), 'content: skipJwPreroll');
   assert(
     !/(?:^|\n)\s*#overlay\s*\{/.test(cssBlock),
-    'OVERRIDE_CSS: no isolated #overlay { (LiveJasmin preroll)'
+    'OVERRIDE_CSS: no isolated #overlay {'
   );
 
   const isGate18HostBody = extractFnBody(src, 'isGate18Host');

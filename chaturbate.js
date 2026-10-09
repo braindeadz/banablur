@@ -291,9 +291,26 @@ body:has(.entrance_terms_overlay) {
         const anchor = event.target?.closest?.('a[href], a[data-room]');
         const slug = slugFromAnchor(anchor);
         if (!slug) return;
+        const href = anchor.getAttribute('href');
+        const inNewTab = anchor.getAttribute('target') === '_blank';
         event.preventDefault();
         event.stopPropagation();
-        unlockChaturbateStream(slug);
+        showToast('Loading live…');
+        unlockChaturbateStream(slug).then((ok) => {
+          // Never leave a dead click: when the inline player cannot deliver a stream
+          // (page script blocked, room not public, timeout) fall back to the normal
+          // room navigation so a thumbnail always leads to a playable page.
+          if (ok || inNewTab || !href) return;
+          let sameUrl = false;
+          try {
+            sameUrl = new URL(href, location.href).href === location.href;
+          } catch (_error) {
+            sameUrl = false;
+          }
+          if (sameUrl) return;
+          showToast('Inline player unavailable, opening room page');
+          location.assign(href);
+        });
       },
       true
     );
