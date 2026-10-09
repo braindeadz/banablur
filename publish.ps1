@@ -259,7 +259,7 @@ Write-Host "  item: $itemId (publisher: $publisherId)"
 function Invoke-CwsUpload([string]$token, [byte[]]$bytes) {
   $urls = @()
   if ($publisherId) { $urls += "https://chromewebstore.googleapis.com/upload/v2/publishers/$publisherId/items/$itemId`:upload" }
-  $urls += "https://www.googleapis.com/upload/chromewebstore/v1.1/items/$itemId?uploadType=media"
+  $urls += "https://www.googleapis.com/upload/chromewebstore/v1.1/items/${itemId}?uploadType=media"
   $last = ""
   foreach ($u in $urls) {
     $m = if ($u -match '/v1\.1/') { [System.Net.Http.HttpMethod]::Put } else { [System.Net.Http.HttpMethod]::Post }
