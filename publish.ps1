@@ -269,8 +269,13 @@ function Invoke-CwsUpload([string]$token, [byte[]]$bytes) {
     $req.Content.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::Parse("application/zip")
     $resp = $http.SendAsync($req).GetAwaiter().GetResult()
     $body = $resp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
-    if ($resp.IsSuccessStatusCode) { return @{ ok = $true; url = $u; body = $body } }
-    $last = "$([int]$resp.StatusCode) $body [$u]"
+    # The legacy endpoint answers 200 even when it refused the upload: the real
+    # verdict is in "uploadState". Without this check an "in review" refusal was
+    # reported as a successful upload.
+    if ($resp.IsSuccessStatusCode -and $body -notmatch '"uploadState"\s*:\s*"FAILURE"') {
+      return @{ ok = $true; url = $u; body = $body }
+    }
+    $last = "$([int]$resp.StatusCode) $(($body -replace '\s+', ' ').Trim()) [$u]"
   }
   return @{ ok = $false; body = $last }
 }
