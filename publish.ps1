@@ -137,12 +137,13 @@ $jwtRaw = [IO.File]::ReadAllText((Join-Path $codeRoot "JWT_API.txt"))
 $issuer = ([regex]::Match($jwtRaw, 'issuer\s*[:=]\s*(\S+)')).Groups[1].Value
 $secret = ([regex]::Match($jwtRaw, 'secret\s*[:=]\s*(\S+)')).Groups[1].Value
 if (!$issuer -or !$secret) { throw "JWT_API.txt: issuer/secret not found" }
-$jwt = New-AmoJwt $issuer $secret
-$auth = "JWT $jwt"
+# AMO caps the JWT lifetime (5 min), but signing a version and waiting for its
+# processed status often takes longer. Mint a fresh token for every request.
+function Get-AmoAuth { return "JWT $(New-AmoJwt $issuer $secret)" }
 
 function Invoke-AmoGet([string]$url) {
   $r = New-Object System.Net.Http.HttpRequestMessage([System.Net.Http.HttpMethod]::Get, $url)
-  $r.Headers.Add("Authorization", $auth)
+  $r.Headers.Add("Authorization", (Get-AmoAuth))
   $resp = $http.SendAsync($r).GetAwaiter().GetResult()
   $body = $resp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
   if (!$resp.IsSuccessStatusCode) { throw "AMO GET $url -> $([int]$resp.StatusCode): $body" }
@@ -157,7 +158,7 @@ $bc.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::Parse(
 $mp.Add($bc, "upload", "banablur-$ver.xpi")
 $mp.Add((New-Object System.Net.Http.StringContent("unlisted")), "channel")
 $req = New-Object System.Net.Http.HttpRequestMessage([System.Net.Http.HttpMethod]::Post, "https://addons.mozilla.org/api/v5/addons/upload/")
-$req.Headers.Add("Authorization", $auth)
+$req.Headers.Add("Authorization", (Get-AmoAuth))
 $req.Content = $mp
 $resp = $http.SendAsync($req).GetAwaiter().GetResult()
 $upBody = $resp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
@@ -182,7 +183,7 @@ if (!$st.processed) { throw "AMO: upload not processed (timeout)" }
 $verUrl = "https://addons.mozilla.org/api/v5/addons/addon/$([uri]::EscapeDataString($addonId))/versions/"
 $verPayload = @{ upload = $uuid } | ConvertTo-Json
 $req = New-Object System.Net.Http.HttpRequestMessage([System.Net.Http.HttpMethod]::Post, $verUrl)
-$req.Headers.Add("Authorization", $auth)
+$req.Headers.Add("Authorization", (Get-AmoAuth))
 $req.Content = New-Object System.Net.Http.StringContent($verPayload, [Text.Encoding]::UTF8, "application/json")
 $resp = $http.SendAsync($req).GetAwaiter().GetResult()
 $verBody = $resp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
@@ -218,7 +219,7 @@ $sb = $null
 $lastCode = 0
 for ($i = 0; $i -lt 20; $i++) {
   $req = New-Object System.Net.Http.HttpRequestMessage([System.Net.Http.HttpMethod]::Get, $fileUrl)
-  $req.Headers.Add("Authorization", $auth)
+  $req.Headers.Add("Authorization", (Get-AmoAuth))
   $resp = $http.SendAsync($req).GetAwaiter().GetResult()
   if ($resp.IsSuccessStatusCode) {
     $sb = $resp.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Banablur",
-  "version": "1.10.14",
+  "version": "1.10.15",
   "description": "Peel the blur. Removes age-gate overlays and video blur on supported sites. Optional download. Uses your local IP.",
   "background": {
     "service_worker": "background.js",
