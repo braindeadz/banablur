@@ -1,9 +1,9 @@
 /**
- * Banc séquentiel Banablur — zéro dépendance (CDP + WebSocket Node).
+ * Banablur sequential bench — zero dependencies (CDP + Node WebSocket).
  *
- * KEEP seulement si : pas de mur légal/ARCOM/CF, pas de page âge seule,
- * pas de catalogue SFW/geo (Pornhub FR), pas de popup, thumbs clean,
- * lecture réelle, seek OK (sauf live), toujours clean après changement de vidéo.
+ * KEEP only if: no legal/ARCOM/CF wall, no age-only page,
+ * no SFW/geo catalog (Pornhub FR), no popup, clean thumbs,
+ * real playback, seek OK (except live), still clean after video change.
  *
  *   node bench-sites.mjs --port=9222
  */

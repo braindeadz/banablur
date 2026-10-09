@@ -1,11 +1,11 @@
 (function () {
   'use strict';
 
-  // Avant tout script du site : PunishWorld et AgeGo "age-by-nosotros" (ABN) ne lisent
-  // les cookies qu'au chargement. Pour les pays AgeGo (FR/GB), age.js BLOQUE le lecteur
-  // tant que abn_age_verified=1 est absent (blur + clic joueur intercepte). Il faut donc
-  // poser les cookies attendus AU document_start ; sinon l'extension masque le bouton
-  // "Commencer" sans jamais debloquer la lecture (lecteur fige).
+  // Before any site script runs: PunishWorld and AgeGo "age-by-nosotros" (ABN) only read
+  // cookies at load time. For AgeGo countries (FR/GB), age.js BLOCKS the player as long
+  // as abn_age_verified=1 is absent (blur + intercepted player click). So we must set the
+  // expected cookies AT document_start; otherwise the extension hides the "Start" button
+  // without ever unlocking playback (player frozen).
   function abnSlugFromHost(host) {
     return String(host || '').replace(/^www\./i, '').replace(/\./g, '-');
   }
@@ -224,12 +224,12 @@ html, body, #wrapper, .wrapper, main, .container { filter: none !important; back
 /* STRIPCHAT */
 #agreement-root, .visitors-agreement-modal, .full-cover.modal-wrapper.visitors-agreement-modal, [data-testid="CookiesReminder"], #CookiesReminder, .cookies-banner { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 
-/* LIVEJASMIN — NE PAS cacher #overlay ni #fi-18-22 */
+/* LIVEJASMIN — DO NOT hide #overlay nor #fi-18-22 */
 #consent_modal.over-18, #consent_modal.is-non-adult, #consent_modal, [data-testid="Over18ModalVariant1Modal"], .over-18.is-non-adult, .over-18__popover, [class*="AvpShutter"], [class*="avp-shutter"], [class*="NonAdultShutter"], [class*="thumb"] .over-18, [class*="Thumb"] .over-18, [class*="preview"] .over-18, [class*="Preview"] .over-18 { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 html, body, #page, .layout, [class*="layout"], main, .main-content { overflow: auto !important; height: auto !important; position: static !important; overscroll-behavior: auto !important; pointer-events: auto !important; }
 [class*="thumb"] img, [class*="thumb"] video, [class*="thumb"] canvas, [class*="Thumb"] img, [class*="Thumb"] video, [class*="Thumb"] canvas, [class*="preview"] img, [class*="preview"] video, [class*="preview"] canvas, [class*="Preview"] img, [class*="Preview"] video, [class*="Preview"] canvas, [class*="modelTile"] img, [class*="ModelTile"] img, [class*="modelTile"] video, [class*="ModelTile"] video { filter: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
-/* PUNISHWORLD — blur AgeGO injecté en !important sur le lecteur kolortube */
+/* PUNISHWORLD — AgeGO blur injected with !important on the kolortube player */
 html body video.xp-Player-video,
 html body .xp-Player-video,
 html body .xp-Player-videoPreview,
@@ -250,7 +250,7 @@ html body .xp-Video--related {
   pointer-events: none !important;
 }
 
-/* GATE18 générique (hosts listés seulement via profil, CSS chargé si page activée) */
+/* GATE18 generic (hosts listed only via profile, CSS loaded if page activated) */
 #age_verification, #age-verification, #ageVerification, #age_gate, #age-gate, #ageGate,
 #age-check, #age_check, #ageDisclaimer, #age-disclaimer, #age_disclaimer,
 #age-verification-container, .age-verification-overlay, .age-verification, .age_verification,
@@ -273,7 +273,7 @@ iframe[src*="vidoomy"], iframe[src*="vimmy"], iframe[src*="magsrv"],
 [id^="native-boxes"], [id*="native-boxes"], ins.adsbyexoclick,
 .video-underplayer, .video-underplayer__buttons { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 
-/* AGE-BY-NOSOTROS (ABN) — gate AgeGo FR/GB: ne jamais laisser le blur ni le gate joueur */
+/* AGE-BY-NOSOTROS (ABN) — AgeGo FR/GB gate: never leave the blur nor the player gate */
 .abn-age-banner, .abn-age-overlay, .abn-age-badge, .abn-age-badge-tags, .abn-age-player-gate,
 [class*="abn-age-banner"], [class*="abn-age-overlay"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
 html, body { filter: none !important; }
@@ -392,8 +392,8 @@ html, body { filter: none !important; }
     return SITE_PROFILES[getHostname()] || [];
   }
 
-  // Garde-fou: l'addon ne modifie QUE les sites explicitement listes dans SITE_PROFILES.
-  // Aucune modification DOM/CSS/cookies n'est appliquee ailleurs (pas de casse de sites tiers).
+  // Safety net: the addon only modifies sites explicitly listed in SITE_PROFILES.
+  // No DOM/CSS/cookie change is applied anywhere else (no breakage of third-party sites).
   function isListedSite() {
     return getConfiguredProfiles().length > 0;
   }
@@ -505,7 +505,7 @@ html, body { filter: none !important; }
   }
 
   function detectPunishworld() {
-    // PunishWorld est un site ABN: le profil 'abn' (generique) gere les autres.
+    // PunishWorld is an ABN site: the 'abn' (generic) profile handles the others.
     return isPunishworldHost();
   }
 
@@ -634,8 +634,8 @@ html, body { filter: none !important; }
       v.style.setProperty('display', 'none', 'important');
     });
   }
-  // Kolortube/ExoClick: les iframes pub (magsrv/trustberrie/...) recoivent leur src en JS
-  // apres le chargement -> un selecteur CSS ne suffit pas, on les retire au fil de l'eau.
+  // Kolortube/ExoClick: ad iframes (magsrv/trustberrie/...) get their src in JS
+  // after load -> a CSS selector is not enough, we remove them on the fly.
   function killAdIframes() {
     document.querySelectorAll('iframe').forEach((f) => {
       const s = `${f.src || ''} ${f.getAttribute('data-src') || ''}`;
@@ -647,9 +647,9 @@ html, body { filter: none !important; }
     });
     document.querySelectorAll('[id^="msg-native"], [id*="exo-native"], .exo-native-widget').forEach((el) => el.remove());
   }
-  // KolorTube joue le preroll DANS le <video> principal (ExoClick "330x250.mp4",
-  // puis "c.adplsr.com/..._fix.mp4") avant la vraie video. On ne peut pas retirer
-  // l'element (c'est le lecteur), donc on saute l'ad en la poussant a sa fin.
+  // KolorTube plays the preroll INSIDE the main <video> (ExoClick "330x250.mp4",
+  // then "c.adplsr.com/..._fix.mp4") before the real video. We can't remove the
+  // element (it's the player), so we skip the ad by seeking it to its end.
   const AD_PLAYER_SRC_RE = /adplsr\.com|330x250|\/vast\/|exoclick|magsrv|jerkmate|cash4porn/i;
   function skipPlayerAd() {
     const v = document.querySelector('.xp-Player video, video.xp-Player-video, .xp-Player-videoWrapper video');
@@ -973,8 +973,8 @@ html, body { filter: none !important; }
   }
 
   function fixXvideosThumbnails() {
-    // Defloutage EN PLACE uniquement (jamais de suppression de noeud): retirer des
-    // .video-pic en boucle raccourcissait la page et renvoyait le scroll en haut.
+    // Deblur IN PLACE only (never remove nodes): removing .video-pic in a loop
+    // shortened the page and scrolled back to the top.
     document.querySelectorAll('img').forEach((img) => {
       const style = img.getAttribute('style') || '';
       const blurred = style.includes('blur') || getComputedStyle(img).filter.includes('blur');
@@ -985,8 +985,8 @@ html, body { filter: none !important; }
   }
 
   function clearXvideosPlayerBlockers() {
-    // Non destructif: masquage (display:none) plutot que remove(), et poster limite
-    // au lecteur, pour ne pas modifier la hauteur de page (cause du saut de scroll).
+    // Non-destructive: hide (display:none) rather than remove(), and limit the poster
+    // to the player, so we don't change the page height (cause of the scroll jump).
     document.querySelectorAll('.sfw-blur, .sfw-click-area, .sfw-click').forEach((el) => {
       el.style.setProperty('display', 'none', 'important');
     });
@@ -1015,9 +1015,9 @@ html, body { filter: none !important; }
       fixXvideosThumbnails();
       if (isXvideosVideoPath()) {
         injectXvideosPageScript();
-        // Une fois l'unlock reussi (flag pose par xvideos-page.js), on cesse de
-        // redemander l'unlock: cela evite la re-init en boucle du lecteur qui
-        // provoquait l'ecran noir et le saut de scroll.
+        // Once the unlock succeeds (flag set by xvideos-page.js), we stop
+        // re-requesting the unlock: this avoids the player re-init loop that
+        // caused the black screen and the scroll jump.
         if (document.documentElement.dataset.agegoXvDone !== '1') {
           document.dispatchEvent(new CustomEvent('agego-xv-unlock'));
         }
@@ -1044,8 +1044,8 @@ html, body { filter: none !important; }
       /accept all cookies|tout accepter|accepter tout|j'?accepte/i.test((b.textContent || '').trim())
     );
     if (btn) { try { btn.click(); } catch (_e) {} }
-    // Ciblage strict: uniquement les vraies modales cookies (pas un wrapper de page
-    // qui mentionne "cookies" dans le footer).
+    // Strict targeting: only real cookie modals (not a page wrapper
+    // that mentions "cookies" in the footer).
     const selectors = [
       '.cookies-announce', '.cookie-banner', '.cookies-modal', '.dialog-cookies',
       '[data-role="cookies-dialog"]', '[class*="CookieBanner"]', '[class*="cookies-dialog"]',
@@ -1105,9 +1105,9 @@ html, body { filter: none !important; }
     }
   }
 
-  // Relais telechargement: le bouton (monde page) demande un download; le MP4
-  // est sur un CDN cross-origin (attribut download ignore), on passe donc par
-  // l'API chrome.downloads via le service worker.
+  // Download relay: the button (page world) requests a download; the MP4 is on
+  // a cross-origin CDN (download attribute ignored), so we go through the
+  // chrome.downloads API via the service worker.
   document.addEventListener('agego-xv-download', (event) => {
     const detail = event.detail || {};
     if (!detail.url || !api?.runtime?.sendMessage) return;
@@ -1125,9 +1125,9 @@ html, body { filter: none !important; }
   }
 
   function cleanXvideos() {
-    // Cliquer le vrai bouton "Enter" AVANT de supprimer l'overlay: son handler
-    // (fonction interne du site) stoppe le setInterval scrollTo(0,0) qui
-    // remonte la page toutes les 2s, et pose le cookie d'age.
+    // Click the real "Enter" button BEFORE removing the overlay: its handler
+    // (an internal site function) stops the scrollTo(0,0) setInterval that
+    // scrolls back to top every 2s, and sets the age cookie.
     const enterBtn = document.querySelector('button.disclaimer-enter');
     if (enterBtn) { try { enterBtn.click(); } catch (_e) {} }
     document.getElementById('disclaimer_background')?.remove();
@@ -1169,10 +1169,10 @@ html, body { filter: none !important; }
   }
 
   function cleanXhamster() {
-    // xhamster 2026: le blocage reel est le module runtime window.xplayer.sfw
-    // (coupe temporelle) accessible uniquement dans le monde page -> on injecte
-    // xhamster-page.js. Les selecteurs CSS ci-dessous restent en filet de
-    // securite pour d'eventuelles anciennes pages / variantes regionales.
+    // xhamster 2026: the real block is the runtime module window.xplayer.sfw
+    // (temporal cutoff) only accessible in the page world -> we inject
+    // xhamster-page.js. The CSS selectors below remain as a safety net for
+    // any old pages / regional variants.
     injectXhamsterPageScript();
     document.dispatchEvent(new CustomEvent('agego-xh-unlock'));
     startXhamsterWatchdog();
@@ -1342,7 +1342,7 @@ html, body { filter: none !important; }
   }
 
   function neutralizeChaturbateAgeGate() {
-    /* CSS-only — ne pas toucher au DOM (évite reload loop Chaturbate) */
+    /* CSS-only — don't touch the DOM (avoids Chaturbate reload loop) */
   }
 
   function fixChaturbateThumbnails() {
@@ -1510,7 +1510,7 @@ html, body { filter: none !important; }
   }
 
   function fixLebonpornThumbs() {
-    // Defloutage miniatures mrx: restaurer data-src, retirer classes blur/nsfw.
+    // Deblur mrx thumbnails: restore data-src, remove blur/nsfw classes.
     document.querySelectorAll('img[data-type="nsfw"]').forEach((img) => {
       img.classList.remove('mrx-nsfw', 'mrx-blur');
       img.style.setProperty('filter', 'none', 'important');
@@ -1534,7 +1534,7 @@ html, body { filter: none !important; }
   }
 
   function dismissLebonpornDisclaimer() {
-    // Ne pas cliquer #adult-enter-btn (popunder pub): localStorage + masquage seulement.
+    // Don't click #adult-enter-btn (popunder ad): localStorage + hiding only.
     try {
       localStorage.setItem('adultDisclaimer', 'seen');
     } catch (_e) {}
@@ -2041,9 +2041,9 @@ html, body { filter: none !important; }
     });
   }
 
-  // ABN generique (AgeGo "age-by-nosotros", theme KolorTube): darknessporn.com etc.
-  // Le seul vrai deverrouillage client est le cookie abn_age_verified=1 (+ age-allow-<slug>),
-  // a poser au document_start. Ici: filet de securite (nettoyage DOM + deblur + pubs).
+  // Generic ABN (AgeGo "age-by-nosotros", KolorTube theme): darknessporn.com etc.
+  // The only real client-side unlock is the abn_age_verified=1 cookie (+ age-allow-<slug>),
+  // to set at document_start. Here: safety net (DOM cleanup + deblur + ads).
   function cleanAbn() {
     try {
       setAgeVerifiedCookies('');
@@ -2260,7 +2260,7 @@ html, body { filter: none !important; }
 
   function shouldActivate(forceDetect) {
     if (forceDetect) return true;
-    // Seuls les sites de la liste sont traites.
+    // Only sites from the list are handled.
     return isListedSite();
   }
 

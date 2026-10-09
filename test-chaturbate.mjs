@@ -1,7 +1,7 @@
 /**
- * Test E2E Chaturbate — age gate masque + navigation native + unlock room page.
+ * Chaturbate E2E test — hidden age gate + native navigation + unlock room page.
  * Usage: node test-chaturbate.mjs
- * Exit 0 = OK, 1 = echec
+ * Exit 0 = OK, 1 = failure
  */
 import { chromium } from 'playwright';
 import path from 'path';
@@ -76,10 +76,10 @@ async function main() {
 
   const page = await context.newPage();
 
-  console.log('1) Chargement initial...');
+  console.log('1) Initial load...');
   await page.goto(TEST_URL, { waitUntil: 'domcontentloaded', timeout: 90000 });
 
-  console.log('2) Reload pour activer extension...');
+  console.log('2) Reload to enable extension...');
   await page.waitForTimeout(2000);
   await page.reload({ waitUntil: 'domcontentloaded', timeout: 90000 });
   await page.waitForTimeout(4000);
@@ -92,7 +92,7 @@ async function main() {
   );
 
   let state = await page.evaluate(checkPage);
-  console.log('Etat gate:', JSON.stringify(state, null, 2));
+  console.log('Gate state:', JSON.stringify(state, null, 2));
 
   const gateOk = await waitFor(
     page,
@@ -134,13 +134,13 @@ async function main() {
   );
 
   if (!gateOk) {
-    console.error('ECHEC: fenetre age gate encore visible, overlay custom present, ou clics bloques');
+    console.error('FAIL: age gate window still visible, custom overlay present, or clicks blocked');
     state = await page.evaluate(checkPage);
     console.log(JSON.stringify(state, null, 2));
     await context.close();
     process.exit(1);
   }
-  console.log('OK: age gate masquee, pas de #agego-app, miniatures natives cliquables');
+  console.log('OK: age gate hidden, no #agego-app, native thumbnails clickable');
 
   const slug = await page.evaluate(async () => {
     const imgs = [...document.querySelectorAll('img.RoomCardThumbnail__image')];
@@ -167,12 +167,12 @@ async function main() {
   });
 
   if (!slug) {
-    console.error('ECHEC: aucune miniature');
+    console.error('FAIL: no thumbnail');
     await context.close();
     process.exit(1);
   }
 
-  console.log('3) Clic miniature native (navigation room):', slug);
+  console.log('3) Click native thumbnail (room navigation):', slug);
   const thumb = page.locator(`a.RoomCardThumbnail:has(img[alt="${slug}"])`).first();
   await thumb.scrollIntoViewIfNeeded();
 
@@ -185,10 +185,10 @@ async function main() {
   );
   await thumb.click({ timeout: 10000 });
   await navPromise;
-  console.log('OK: navigation native vers /' + slug + '/');
+  console.log('OK: native navigation to /' + slug + '/');
 
-  // Playwright utilise Chromium (sans codecs H.264/AAC proprietaires). Sur la page
-  // room, l'extension tente unlockStream via agego-unlock-stream apres navigation.
+  // Playwright uses Chromium (without proprietary H.264/AAC codecs). On the room
+  // page, the extension tries unlockStream via agego-unlock-stream after navigation.
   const liveOk = await waitFor(
     page,
     () => {
@@ -215,10 +215,10 @@ async function main() {
       hlsError: document.documentElement.dataset.agegoHlsError || null,
     };
   });
-  console.log('Etat live:', JSON.stringify(state, null, 2));
+  console.log('Live state:', JSON.stringify(state, null, 2));
 
   if (!liveOk) {
-    console.error('ECHEC: unlock room page non demarre (manifeste HLS non recupere)');
+    console.error('FAIL: room page unlock did not start (HLS manifest not fetched)');
     await page.waitForTimeout(3000);
     await context.close();
     process.exit(1);
@@ -226,9 +226,9 @@ async function main() {
 
   const mode =
     state.videoW >= 160
-      ? 'video decodee (' + state.videoW + 'px)'
-      : 'manifeste HLS recupere ; decodage indisponible sous Chromium (OK en vrai Chrome)';
-  console.log('SUCCES: gate masque + navigation native + unlock room page + ' + mode);
+      ? 'video decoded (' + state.videoW + 'px)'
+      : 'HLS manifest fetched; decoding unavailable under Chromium (OK in real Chrome)';
+  console.log('SUCCESS: hidden gate + native navigation + unlock room page + ' + mode);
   await page.waitForTimeout(5000);
   await context.close();
   process.exit(0);

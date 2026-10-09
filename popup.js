@@ -67,7 +67,7 @@ function setDot(el, state) {
 
 function formatTime(ts) {
   if (!ts) return '—';
-  return new Date(ts).toLocaleTimeString('fr-FR', {
+  return new Date(ts).toLocaleTimeString('en-GB', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
@@ -124,38 +124,38 @@ function updateUI(status) {
   const profiles = status.profiles || [];
   if (profiles.length) {
     setDot(els.dotProfiles, 'ok');
-    els.labelProfiles.textContent = 'Profils : ' + profiles.join(', ');
+    els.labelProfiles.textContent = 'Profiles: ' + profiles.join(', ');
   } else if (status.agegoDetected || status.xvideosDetected || status.xhamsterDetected || status.xhamsterLiveDetected || status.faphouseDetected || status.chaturbateDetected || status.lebonpornDetected || status.tukifDetected) {
     setDot(els.dotProfiles, 'warn');
-    els.labelProfiles.textContent = 'Profils : detecte (non actif)';
+    els.labelProfiles.textContent = 'Profiles: detected (inactive)';
   } else {
     setDot(els.dotProfiles, 'off');
-    els.labelProfiles.textContent = 'Profils : aucun';
+    els.labelProfiles.textContent = 'Profiles: none';
   }
 
   if (status.watchdogActive) {
     setDot(els.dotWatchdog, status.autoEnabled ? 'ok' : 'warn');
     els.labelWatchdog.textContent = status.autoEnabled
-      ? 'Watchdog : actif'
-      : 'Watchdog : actif (auto en pause)';
+      ? 'Watchdog: active'
+      : 'Watchdog: active (auto paused)';
   } else {
     setDot(els.dotWatchdog, 'off');
-    els.labelWatchdog.textContent = 'Watchdog : inactif';
+    els.labelWatchdog.textContent = 'Watchdog: inactive';
   }
 
   if (status.threatPresent) {
     setDot(els.dotThreat, 'danger');
-    els.labelThreat.textContent = 'Menace : overlay/blur present';
+    els.labelThreat.textContent = 'Threat: overlay/blur present';
   } else {
     setDot(els.dotThreat, 'ok');
-    els.labelThreat.textContent = 'Menace : aucune';
+    els.labelThreat.textContent = 'Threat: none';
   }
 
   if (status.videoSfw || status.videoBlurred) {
     setDot(els.dotVideo, 'danger');
     els.labelVideo.textContent = status.videoSfw
-      ? 'Video : flux SFW / blur actif'
-      : 'Video : blur CSS actif';
+      ? 'Video: SFW stream / blur active'
+      : 'Video: CSS blur active';
   } else if (
     status.xvideosDetected ||
     status.xhamsterDetected ||
@@ -173,14 +173,14 @@ function updateUI(status) {
     profiles.includes('tukif')
   ) {
     setDot(els.dotVideo, 'ok');
-    els.labelVideo.textContent = 'Video : nette';
+    els.labelVideo.textContent = 'Video: clean';
   } else {
     setDot(els.dotVideo, 'off');
-    els.labelVideo.textContent = 'Video : —';
+    els.labelVideo.textContent = 'Video: —';
   }
 
   els.toggleAuto.checked = status.autoEnabled !== false;
-  els.lastCleanup.textContent = 'Dernier nettoyage : ' + formatTime(status.lastCleanup);
+  els.lastCleanup.textContent = 'Last cleanup: ' + formatTime(status.lastCleanup);
 }
 
 async function getActiveTab() {
@@ -214,14 +214,14 @@ async function refreshStatus() {
       tab.url?.startsWith('about:') ||
       tab.url?.startsWith('moz-extension:')
     ) {
-      showFeedback("Ouvrez un site web pour utiliser l'extension.", true);
+      showFeedback("Open a website to use the extension.", true);
       return;
     }
 
     const status = await sendToTab(tab.id, { action: 'getStatus' });
     updateUI(status);
   } catch (_err) {
-    showFeedback("Rechargez la page apres installation de l'extension.", true);
+    showFeedback("Reload the page after installing the extension.", true);
   }
 }
 
@@ -238,11 +238,11 @@ async function init() {
       });
       updateUI(status);
       showFeedback(
-        els.toggleAuto.checked ? 'Suppression auto activee.' : 'Suppression auto desactivee.',
+        els.toggleAuto.checked ? 'Auto removal enabled.' : 'Auto removal disabled.',
         false
       );
     } catch (_err) {
-      showFeedback('Impossible de communiquer avec la page.', true);
+      showFeedback('Unable to communicate with the page.', true);
     }
   });
 
@@ -254,11 +254,11 @@ async function init() {
       const status = await sendToTab(tab.id, { action: 'getStatus' });
       updateUI(status);
       showFeedback(
-        status.threatPresent ? 'Nettoyage force — menace residuelle.' : 'Nettoyage force reussi.',
+        status.threatPresent ? 'Forced cleanup — residual threat.' : 'Forced cleanup succeeded.',
         !!status.threatPresent
       );
     } catch (_err) {
-      showFeedback('Rechargez la page puis reessayez.', true);
+      showFeedback('Reload the page and try again.', true);
     } finally {
       els.btnForce.disabled = false;
     }

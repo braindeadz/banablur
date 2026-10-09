@@ -1,4 +1,4 @@
-// Service worker MV3: telechargements only, lecture en IP utilisateur.
+// MV3 service worker: downloads only, playback from the user's IP.
 const api = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : null;
 
 if (api?.runtime?.onMessage) {

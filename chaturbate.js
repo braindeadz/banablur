@@ -175,7 +175,7 @@ body:has(.entrance_terms_overlay) {
 
     return waitForPageScript().then((ready) => {
       if (!ready) {
-        showToast('Script page non charge');
+        showToast('Page script not loaded');
         window.__agegoChaturbateStreamLoading = null;
         return false;
       }

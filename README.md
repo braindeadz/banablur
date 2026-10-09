@@ -6,33 +6,6 @@ Banablur is a browser extension for **Chromium** (Chrome, Edge, Brave) and **Fir
 
 The name is a playful mix of **banana** and **blur** — fun, but the purpose is clear.
 
-## Télécharger et installer (2 minutes)
-
-**Fichiers officiels :** [Dernière version sur GitHub](https://github.com/braindeadz/banablur/releases/latest) (page *Releases* → section *Assets*).
-
-### Firefox (recommandé)
-
-1. Sur la page des releases, téléchargez le fichier **`Banablur-*-FIREFOX-SIGNE.xpi`** (icône orange / Firefox). **Ne prenez jamais le `.zip`.**
-2. Ouvrez **Firefox**.
-3. Dans la barre d’adresse, tapez **`about:addons`** puis Entrée.
-4. Menu **engrenage** (⚙) → **Install Add-on From File…** / **Installer un module depuis un fichier…**
-5. Choisissez le fichier **`.xpi`** que vous venez de télécharger.
-
-> **Important :** ne **double-cliquez pas** le `.xpi`. Firefox peut refuser l’installation ; passez toujours par **about:addons → engrenage → Install Add-on From File**.
-
-### Chrome / Edge / Brave
-
-1. Même page : [releases/latest](https://github.com/braindeadz/banablur/releases/latest).
-2. Téléchargez **`Banablur-*-CHROME.zip`** (**pas** le `.xpi`).
-3. Clic droit sur le zip → **Extraire tout** / **Extract all**.
-4. Ouvrez **`chrome://extensions`** (Edge : **`edge://extensions`**, Brave : **`brave://extensions`**).
-5. Activez le **Mode développeur** / **Developer mode**.
-6. **Charger l’extension non empaquetée** / **Load unpacked** → sélectionnez le **dossier extrait** (pas le fichier zip).
-
-> **Important :** Chrome n’installe **pas** une extension en double-cliquant sur le `.zip`. Il faut extraire, puis **Load unpacked**.
-
----
-
 ## Install in 2 minutes
 
 **Official files:** [Latest release on GitHub](https://github.com/braindeadz/banablur/releases/latest).
@@ -92,7 +65,7 @@ Download **`Banablur-*-CHROME.zip`** → extract → **`chrome://extensions`** �
 | [tnaflix.com](https://www.tnaflix.com), [moviefap.com](https://www.moviefap.com), [pornone.com](https://www.pornone.com), [perfectgirls.xxx](https://www.perfectgirls.xxx) | AgeGO | Overlay + extra player deblur |
 | [txxx.com](https://txxx.com) family (HClips, Upornia, HDZog, …) | TXXX | Vue `.modal-age-verification` |
 | [teen21.com](https://teen21.com) | TXXX | Same Vue `.modal-age-verification` + AgeVerif |
-| [vr-porn.tube](https://vr-porn.tube) | TXXX | AgeVerif modal; player DeoVR (seek HTML5 non prouvable) |
+| [vr-porn.tube](https://vr-porn.tube) | TXXX | AgeVerif modal; DeoVR player (HTML5 seek not provable) |
 | [porndig.com](https://www.porndig.com), [sxyprn.com](https://sxyprn.com) | TKN | AgeVerif disclaimer without Tukif player inject |
 | [jacquieetmicheltv.net](https://www.jacquieetmicheltv.net), [jacquieetmichel.net](https://www.jacquieetmichel.net) | Jacquie | Custom 18+ disclaimer / my18pass blur |
 | [redtube.com](https://www.redtube.com) | Aylo | Overlay only |
@@ -110,7 +83,7 @@ Download **`Banablur-*-CHROME.zip`** → extract → **`chrome://extensions`** �
 
 ## Install (details)
 
-See **Télécharger et installer** at the top of this README for step-by-step downloads.
+See **Install in 2 minutes** at the top of this README for step-by-step downloads.
 
 **Maintainers:** the signed Firefox XPI must contain `META-INF/mozilla.rsa`. Temporary **`about:debugging`** → **Load Temporary Add-on** remains for local development only.
 
@@ -120,18 +93,18 @@ See **Télécharger et installer** at the top of this README for step-by-step do
 
 ## Usage
 
-Click the Banablur icon in the toolbar. The popup UI labels are in **French**; behavior is the same in all locales.
+Click the Banablur icon in the toolbar. The popup UI is in English; behavior is the same in all locales.
 
 | Control (UI label) | Function |
 |--------------------|----------|
-| **Suppression auto** | Toggle automatic overlay/blur removal (default: on) |
-| **Forcer detection + nettoyage** | Force profile detection and run cleanup immediately |
+| **Auto removal** | Toggle automatic overlay/blur removal (default: on) |
+| **Force detection + cleanup** | Force profile detection and run cleanup immediately |
 
-**Status indicators** (also French in the UI):
+**Status indicators:**
 
-- **Profils** — active site profiles (agego, xvideos, xhamster, …)
+- **Profiles** — active site profiles (agego, xvideos, xhamster, …)
 - **Watchdog** — whether the DOM watchdog is running
-- **Menace** — whether blocking overlays/blur are still detected
+- **Threat** — whether blocking overlays/blur are still detected
 - **Video** — player / stream state where applicable
 
 On supported video pages, a **download** button may appear when stream URLs are discoverable. Downloads use the browser's native download manager.

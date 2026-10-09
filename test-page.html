@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" class="agego-lock">
+<html lang="en" class="agego-lock">
 <head>
   <meta charset="UTF-8">
   <title>Test AgeGO Deblur</title>
@@ -23,8 +23,8 @@
 </head>
 <body class="agego-blur-content">
   <div class="content">
-    <h1>Contenu de test (doit etre net sans blur)</h1>
-    <p>Si l'extension fonctionne, ce texte et la video sont visibles sans overlay.</p>
+    <h1>Test content (should be sharp without blur)</h1>
+    <p>If the extension works, this text and the video are visible without an overlay.</p>
     <video controls autoplay muted loop>
       <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm" type="video/webm">
     </video>
@@ -39,16 +39,16 @@
   </div>
 
   <script>
-    // Simule AgeGO qui re-injecte l'overlay apres 3 secondes
+    // Simulate AgeGO re-injecting the overlay after 3 seconds
     setTimeout(() => {
       if (!document.getElementById('agego-overlay-container')) {
         document.body.classList.add('agego-blur-content');
         document.documentElement.classList.add('agego-lock');
         const ov = document.createElement('div');
         ov.id = 'agego-overlay-container';
-        ov.innerHTML = '<div id="agego-overlay-content-inner"><h2>Overlay re-injecte!</h2></div>';
+        ov.innerHTML = '<div id="agego-overlay-content-inner"><h2>Overlay re-injected!</h2></div>';
         document.body.appendChild(ov);
-        console.log('[test] AgeGO re-injecte overlay + blur');
+        console.log('[test] AgeGO re-injects overlay + blur');
       }
     }, 3000);
   </script>

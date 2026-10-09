@@ -6,18 +6,18 @@
   var loopTimer = null;
   var observer = null;
 
-  // IMPORTANT (documente pour l'utilisateur): en France, Pornhub impose un mode
-  // SFW COTE SERVEUR (window.isSfw === "1", body.sfw-page, countryCode "FR").
-  // Aucun levier client (cookie/param) ne restaure le catalogue hardcore: c'est
-  // une restriction serveur/geo, pas un flou. Ce script se limite donc a: lever
-  // la gate d'age FR et proposer le telechargement des videos accessibles.
+  // IMPORTANT (documented for the user): in France, Pornhub enforces an SFW mode
+  // SERVER-SIDE (window.isSfw === "1", body.sfw-page, countryCode "FR").
+  // No client-side lever (cookie/param) restores the hardcore catalog: this is
+  // a server/geo restriction, not a blur. This script is therefore limited to:
+  // lifting the FR age gate and offering download of accessible videos.
 
   function getFlashvars() {
     var key = Object.keys(window).find(function (k) { return /^flashvars_\d+/.test(k); });
     return key ? window[key] : null;
   }
 
-  // URLs de lecture: window.flashvars_{id}.mediaDefinitions (HLS signes).
+  // Playback URLs: window.flashvars_{id}.mediaDefinitions (signed HLS).
   function getUrls() {
     var out = { hls: null, levels: [], mp4: null };
     var fv = getFlashvars();
@@ -47,7 +47,7 @@
     return out;
   }
 
-  // ------- Telechargement (concat HLS -> .ts, comme xvideos/xhamster) -------
+  // ------- Download (HLS concat -> .ts, like xvideos/xhamster) -------
   function sanitizeFilename(name) {
     return (name || 'pornhub')
       .replace(/\s*-\s*Pornhub.*$/i, '')
@@ -59,7 +59,7 @@
 
   async function downloadHls(masterUrl, baseName, statusFn) {
     try {
-      statusFn && statusFn('HLS: lecture du manifeste...');
+      statusFn && statusFn('HLS: reading manifest...');
       var masterTxt = await (await fetch(masterUrl, { credentials: 'include' })).text();
       var base = masterUrl.replace(/[^/]*$/, '');
       var variants = [];
@@ -77,12 +77,12 @@
         variants.sort(function (a, b) { return (b.h - a.h) || (b.bw - a.bw); });
         mediaUrl = new URL(variants[0].uri, base).href;
       }
-      statusFn && statusFn('HLS: lecture des segments...');
+      statusFn && statusFn('HLS: reading segments...');
       var media = await (await fetch(mediaUrl, { credentials: 'include' })).text();
       var mBase = mediaUrl.replace(/[^/]*$/, '');
       var segs = media.split(/\r?\n/).filter(function (l) { return l && l[0] !== '#'; })
         .map(function (u) { return new URL(u, mBase).href; });
-      if (!segs.length) throw new Error('aucun segment');
+      if (!segs.length) throw new Error('no segment');
       var parts = [];
       for (var s = 0; s < segs.length; s++) {
         statusFn && statusFn('HLS: segment ' + (s + 1) + '/' + segs.length);
@@ -97,9 +97,9 @@
       a.click();
       a.remove();
       setTimeout(function () { URL.revokeObjectURL(objUrl); }, 60000);
-      statusFn && statusFn('HLS: telechargement lance');
+      statusFn && statusFn('HLS: download started');
     } catch (e) {
-      statusFn && statusFn('HLS: echec (' + (e && e.message) + ')');
+      statusFn && statusFn('HLS: failure (' + (e && e.message) + ')');
     }
   }
 
@@ -126,7 +126,7 @@
     var urls = getUrls();
     var baseName = sanitizeFilename(document.title);
     if (!urls.hls && !urls.levels.length) {
-      status.textContent = 'Aucune source trouvee (lance la lecture puis reessaie).';
+      status.textContent = 'No source found (start playback then retry).';
       return;
     }
     function addItem(text, onClick) {
@@ -140,12 +140,12 @@
     }
     if (urls.levels.length) {
       urls.levels.slice().sort(function (a, b) { return b.h - a.h; }).forEach(function (l) {
-        addItem('Telecharger ' + l.h + 'p (HLS)', function () {
+        addItem('Download ' + l.h + 'p (HLS)', function () {
           downloadHls(l.url, baseName + '_' + l.h + 'p', function (s) { status.textContent = s; });
         });
       });
     } else if (urls.hls) {
-      addItem('Telecharger qualite max (HLS)', function () {
+      addItem('Download max quality (HLS)', function () {
         downloadHls(urls.hls, baseName, function (s) { status.textContent = s; });
       });
     }
@@ -162,13 +162,13 @@
     var btn = document.createElement('button');
     btn.id = 'agego-dl-btn';
     btn.type = 'button';
-    btn.title = 'Telecharger cette video';
+    btn.title = 'Download this video';
     btn.innerHTML =
       '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" ' +
       'stroke="currentColor" stroke-width="2.4" stroke-linecap="round" ' +
       'stroke-linejoin="round" style="flex:0 0 auto;"><path d="M12 3v12"/>' +
       '<path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>' +
-      '<span>Telecharger</span>';
+      '<span>Download</span>';
     btn.style.cssText =
       'position:fixed;bottom:24px;right:24px;z-index:2147483647;' +
       'display:inline-flex;align-items:center;gap:10px;' +

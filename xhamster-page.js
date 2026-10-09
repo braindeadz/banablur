@@ -12,16 +12,16 @@
   var COOKIE_BTN = /accept all cookies|tout accepter|accepter tout|j'?accepte|^ok$/i;
 
   // ---------------------------------------------------------------------------
-  // Deverrouillage SFW (xhamster 2026): le blocage n'est plus un flou CSS mais
-  // le module runtime window.xplayer.sfw qui coupe la video apres
-  // moderationTimestamp (~151s) et affiche une verification. On neutralise ce
-  // module au lieu de tenter un swap /sfw/ (obsolete: le CDN renvoie 403).
+  // SFW unlocking (xhamster 2026): the block is no longer a CSS blur but the
+  // runtime module window.xplayer.sfw which cuts the video after
+  // moderationTimestamp (~151s) and shows a verification. We neutralize this
+  // module instead of attempting a /sfw/ swap (obsolete: the CDN returns 403).
   // ---------------------------------------------------------------------------
-  // IMPORTANT (audit live fra.xhamster): le handler SFW fait
+  // IMPORTANT (live audit fra.xhamster): the SFW handler does
   // `moderationTimestamp > currentTime ? hideVerification() : showVerification()`.
-  // Mettre 0 force donc l'overlay EN PERMANENCE (0 > t est toujours faux). Il faut
-  // au contraire une TRES GRANDE valeur pour que hideVerification() reste actif et
-  // que la video soit lisible en entier. On garde le noop des handlers en defense.
+  // Setting 0 therefore forces the overlay PERMANENTLY (0 > t is always false). We
+  // need on the contrary a VERY LARGE value so that hideVerification() stays active
+  // and the video is watchable in full. We keep the noop of the handlers as defense.
   var SFW_NO_LIMIT = 999999999;
   function disableSfw() {
     try {
@@ -102,7 +102,7 @@
     return m ? m[1] : location.pathname;
   }
 
-  // Masque l'overlay de verification d'age (reapparait au changement de video SPA).
+  // Hide the age verification overlay (reappears on SPA video change).
   function hideAgeOverlays() {
     document.querySelectorAll('.xp-sfw, .xp-sfw__background, .xp-sfw__content, [class*="xp-sfw"]').forEach(function (e) {
       e.style.setProperty('display', 'none', 'important');
@@ -125,7 +125,7 @@
     }
   }
 
-  // Deflou le lecteur video lui-meme (pas seulement les miniatures).
+  // Unblur the video player itself (not only the thumbnails).
   function fixPlayerBlur() {
     var v = getVideo();
     var scopes = ['#xplayer', '#xplayer__video', '.player-container', '.player-container__player', '.xplayer'];
@@ -219,17 +219,17 @@
     if (document.body) document.body.style.setProperty('overflow', 'auto', 'important');
   }
 
-  // Deflou des vignettes related (classe semantique, pas de filter mesure, mais
-  // on retire quand meme tout filter inline par securite).
+  // Unblur related thumbnails (semantic class, no measured filter, but we still
+  // remove any inline filter for safety).
   function fixThumbnails() {
-    // Conteneurs marques "blurred" (classe semantique).
+    // Containers marked "blurred" (semantic class).
     document.querySelectorAll(
       '.video-preview.blurred, .thumb-8dafc, .replacement-template.blurred, [class*="blurred"]'
     ).forEach(function (e) {
       e.classList.remove('blurred');
     });
-    // Couches de flou reelles (audit fra): filter blur(30px) + background-image,
-    // backdrop-filter sur les previews HLS animees, overlays helper.
+    // Real blur layers (fr audit): filter blur(30px) + background-image,
+    // backdrop-filter on animated HLS previews, helper overlays.
     document.querySelectorAll(
       '.xh-helper-blurred-background, .xh-helper-blurred-overlay, .mn-thumb__hls-wrapper'
     ).forEach(function (e) {
@@ -237,7 +237,7 @@
       e.style.setProperty('backdrop-filter', 'none', 'important');
       e.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
     });
-    // Zones player + miniatures uniquement (pas toute la page).
+    // Player + thumbnail areas only (not the whole page).
     var scopes = [
       '#xplayer', '.player-container', '.player-container__player', '.xplayer',
       '.thumb-list-container', '.related-videos', '.video-list', 'aside', '.mn-thumb__hls-wrapper',
@@ -258,7 +258,7 @@
     });
   }
 
-  // URLs de lecture: lues sur sourceController (tokens dechiffres par xplayer).
+  // Playback URLs: read from sourceController (tokens decrypted by xplayer).
   function getUrls() {
     var out = { hls: null, levels: [] };
     try {
@@ -276,7 +276,7 @@
       }
     } catch (_e) {}
     if (!out.hls) {
-      // Fallback: regex m3u8 dans le HTML.
+      // Fallback: m3u8 regex in the HTML.
       var m = document.documentElement.innerHTML.match(/https:\/\/[^"'\s]+\.h264\.mp4\.m3u8[^"'\s]*/);
       if (m) out.hls = m[0].replace(/\\\//g, '/');
     }
@@ -284,7 +284,7 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Bouton flottant de telechargement (concat HLS -> fichier .ts)
+  // Floating download button (HLS concat -> .ts file)
   // ---------------------------------------------------------------------------
   function sanitizeFilename(name) {
     return (name || 'xhamster')
@@ -297,7 +297,7 @@
 
   async function downloadHls(masterUrl, baseName, statusFn) {
     try {
-      statusFn && statusFn('HLS: lecture du manifeste...');
+      statusFn && statusFn('HLS: reading manifest...');
       var masterTxt = await (await fetch(masterUrl, { credentials: 'include' })).text();
       var base = masterUrl.replace(/[^/]*$/, '');
       var variants = [];
@@ -315,12 +315,12 @@
         variants.sort(function (a, b) { return (b.h - a.h) || (b.bw - a.bw); });
         mediaUrl = new URL(variants[0].uri, base).href;
       }
-      statusFn && statusFn('HLS: lecture des segments...');
+      statusFn && statusFn('HLS: reading segments...');
       var media = await (await fetch(mediaUrl, { credentials: 'include' })).text();
       var mBase = mediaUrl.replace(/[^/]*$/, '');
       var segs = media.split(/\r?\n/).filter(function (l) { return l && l[0] !== '#'; })
         .map(function (u) { return new URL(u, mBase).href; });
-      if (!segs.length) throw new Error('aucun segment');
+      if (!segs.length) throw new Error('no segment');
       var parts = [];
       for (var s = 0; s < segs.length; s++) {
         statusFn && statusFn('HLS: segment ' + (s + 1) + '/' + segs.length);
@@ -335,9 +335,9 @@
       a.click();
       a.remove();
       setTimeout(function () { URL.revokeObjectURL(objUrl); }, 60000);
-      statusFn && statusFn('HLS: telechargement lance');
+      statusFn && statusFn('HLS: download started');
     } catch (e) {
-      statusFn && statusFn('HLS: echec (' + (e && e.message) + ')');
+      statusFn && statusFn('HLS: failure (' + (e && e.message) + ')');
     }
   }
 
@@ -364,7 +364,7 @@
     var urls = getUrls();
     var baseName = sanitizeFilename(document.title);
     if (!urls.hls && !urls.levels.length) {
-      status.textContent = 'Aucune source trouvee (lance la lecture puis reessaie).';
+      status.textContent = 'No source found (start playback then retry).';
       return;
     }
     function addItem(text, onClick) {
@@ -378,12 +378,12 @@
     }
     if (urls.levels.length) {
       urls.levels.slice().sort(function (a, b) { return b.h - a.h; }).forEach(function (l) {
-        addItem('Telecharger ' + (l.h ? l.h + 'p' : '') + ' (HLS)', function () {
+        addItem('Download ' + (l.h ? l.h + 'p' : '') + ' (HLS)', function () {
           downloadHls(l.url, baseName + (l.h ? '_' + l.h + 'p' : ''), function (s) { status.textContent = s; });
         });
       });
     } else if (urls.hls) {
-      addItem('Telecharger qualite max (HLS)', function () {
+      addItem('Download max quality (HLS)', function () {
         downloadHls(urls.hls, baseName, function (s) { status.textContent = s; });
       });
     }
@@ -400,13 +400,13 @@
     var btn = document.createElement('button');
     btn.id = 'agego-dl-btn';
     btn.type = 'button';
-    btn.title = 'Telecharger cette video';
+    btn.title = 'Download this video';
     btn.innerHTML =
       '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" ' +
       'stroke="currentColor" stroke-width="2.4" stroke-linecap="round" ' +
       'stroke-linejoin="round" style="flex:0 0 auto;"><path d="M12 3v12"/>' +
       '<path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>' +
-      '<span>Telecharger</span>';
+      '<span>Download</span>';
     btn.style.cssText =
       'position:fixed;bottom:24px;right:24px;z-index:2147483647;' +
       'display:inline-flex;align-items:center;gap:10px;' +

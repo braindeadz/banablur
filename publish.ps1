@@ -16,8 +16,8 @@ $signedDir = Join-Path $parent "agego-deblur-signed"
 $desktop = [Environment]::GetFolderPath("Desktop")
 $addonId = $manifest.browser_specific_settings.gecko.id
 
-if (!(Test-Path $zip)) { throw "ZIP introuvable: $zip (lance build.ps1)" }
-if (!(Test-Path $xpi)) { throw "XPI introuvable: $xpi (lance build.ps1)" }
+if (!(Test-Path $zip)) { throw "ZIP not found: $zip (run build.ps1)" }
+if (!(Test-Path $xpi)) { throw "XPI not found: $xpi (run build.ps1)" }
 if (!(Test-Path $signedDir)) { New-Item -ItemType Directory -Path $signedDir -Force | Out-Null }
 $signedXpi = Join-Path $signedDir "banablur-$ver-firefox-signed.xpi"
 
@@ -38,7 +38,7 @@ function New-AmoJwt([string]$issuer, [string]$secret) {
   return "$h.$p.$(ConvertTo-Base64Url $sig)"
 }
 
-# --- Compte de service Google (auth JWT RS256, sans token qui expire) ---
+# --- Google service account (JWT RS256 auth, no expiring token) ---
 function Read-Der([byte[]]$b, [ref]$pos) {
   $tag = $b[$pos.Value]; $pos.Value++
   $lb = $b[$pos.Value]; $pos.Value++
@@ -93,7 +93,7 @@ function Get-RsaFromPkcs8([string]$pem) {
 
 function New-GoogleSaAccessToken([string]$saPath, [System.Net.Http.HttpClient]$client) {
   $sa = [IO.File]::ReadAllText($saPath) | ConvertFrom-Json
-  if (!$sa.client_email -or !$sa.private_key) { throw "cle de compte de service invalide: $saPath" }
+  if (!$sa.client_email -or !$sa.private_key) { throw "invalid service account key: $saPath" }
   $rsa = Get-RsaFromPkcs8 $sa.private_key
   $epoch = [int64]((Get-Date).ToUniversalTime() - [datetime]'1970-01-01').TotalSeconds
   $header = '{"alg":"RS256","typ":"JWT"}'
@@ -107,17 +107,17 @@ function New-GoogleSaAccessToken([string]$saPath, [System.Net.Http.HttpClient]$c
   $form = New-Object System.Net.Http.StringContent($formBody, [Text.Encoding]::UTF8, "application/x-www-form-urlencoded")
   $resp = $client.PostAsync("https://oauth2.googleapis.com/token", $form).GetAwaiter().GetResult()
   $tokBody = $resp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
-  if (!$resp.IsSuccessStatusCode) { throw "JWT bearer compte de service -> $([int]$resp.StatusCode): $tokBody" }
+  if (!$resp.IsSuccessStatusCode) { throw "JWT bearer service account -> $([int]$resp.StatusCode): $tokBody" }
   return ($tokBody | ConvertFrom-Json).access_token
 }
 
 function Get-CwsAccessToken([System.Net.Http.HttpClient]$client) {
   $saPath = Join-Path $codeRoot "CWS_SA.json"
   if (Test-Path $saPath) {
-    Write-Host "  auth: compte de service (CWS_SA.json)"
+    Write-Host "  auth: service account (CWS_SA.json)"
     return New-GoogleSaAccessToken $saPath $client
   }
-  if (!$cid -or !$csecret -or !$refresh) { throw "Ni CWS_SA.json ni refresh_token OAuth disponibles" }
+  if (!$cid -or !$csecret -or !$refresh) { throw "Neither CWS_SA.json nor an OAuth refresh_token is available" }
   Write-Host "  auth: refresh_token OAuth"
   $formBody = "client_id=$([uri]::EscapeDataString($cid))&client_secret=$([uri]::EscapeDataString($csecret))&refresh_token=$([uri]::EscapeDataString($refresh))&grant_type=refresh_token"
   $form = New-Object System.Net.Http.StringContent($formBody, [Text.Encoding]::UTF8, "application/x-www-form-urlencoded")
@@ -132,11 +132,11 @@ $http.Timeout = [TimeSpan]::FromMinutes(10)
 
 # ---------------- AMO / Firefox (unlisted signing) ----------------
 if (!$SkipAmo) {
-Write-Host "== AMO: signature unlisted v$ver =="
+Write-Host "== AMO: unlisted signing v$ver =="
 $jwtRaw = [IO.File]::ReadAllText((Join-Path $codeRoot "JWT_API.txt"))
 $issuer = ([regex]::Match($jwtRaw, 'issuer\s*[:=]\s*(\S+)')).Groups[1].Value
 $secret = ([regex]::Match($jwtRaw, 'secret\s*[:=]\s*(\S+)')).Groups[1].Value
-if (!$issuer -or !$secret) { throw "JWT_API.txt: issuer/secret introuvables" }
+if (!$issuer -or !$secret) { throw "JWT_API.txt: issuer/secret not found" }
 $jwt = New-AmoJwt $issuer $secret
 $auth = "JWT $jwt"
 
@@ -171,14 +171,14 @@ for ($i = 0; $i -lt 60; $i++) {
   Start-Sleep -Seconds 3
   $st = Invoke-AmoGet "https://addons.mozilla.org/api/v5/addons/upload/$uuid/"
   if ($st.processed) {
-    if (!$st.valid) { throw "AMO validation echouee: $($st.validation | ConvertTo-Json -Depth 6)" }
+    if (!$st.valid) { throw "AMO validation failed: $($st.validation | ConvertTo-Json -Depth 6)" }
     Write-Host "  validation OK"
     break
   }
 }
-if (!$st.processed) { throw "AMO: upload non traite (timeout)" }
+if (!$st.processed) { throw "AMO: upload not processed (timeout)" }
 
-# 3) create version (idempotent: si deja creee, on recupere l'existante)
+# 3) create version (idempotent: if already created, we fetch the existing one)
 $verUrl = "https://addons.mozilla.org/api/v5/addons/addon/$([uri]::EscapeDataString($addonId))/versions/"
 $verPayload = @{ upload = $uuid } | ConvertTo-Json
 $req = New-Object System.Net.Http.HttpRequestMessage([System.Net.Http.HttpMethod]::Post, $verUrl)
@@ -190,30 +190,30 @@ $vinfo = $null
 if ($resp.IsSuccessStatusCode) {
   $vinfo = $verBody | ConvertFrom-Json
 } elseif ($verBody -match 'already exists') {
-  Write-Host "  version $ver deja existante, recuperation"
+  Write-Host "  version $ver already exists, fetching"
 } else {
   throw "AMO create version -> $([int]$resp.StatusCode): $verBody"
 }
 
 $singleUrl = "https://addons.mozilla.org/api/v5/addons/addon/$([uri]::EscapeDataString($addonId))/versions/$ver/"
 if (!$vinfo) { $vinfo = Invoke-AmoGet $singleUrl }
-Write-Host "  version: $($vinfo.version) (status fichier: $($vinfo.file.status))"
+Write-Host "  version: $($vinfo.version) (file status: $($vinfo.file.status))"
 
-# 4) attendre la signature (asynchrone) puis telecharger
+# 4) wait for the (asynchronous) signing, then download
 $fileUrl = $null
 $st = $null
 for ($i = 0; $i -lt 60; $i++) {
   $v = Invoke-AmoGet $singleUrl
   $st = $v.file.status
   if ($st -eq 'public' -or $st -eq 'signed') { $fileUrl = $v.file.url; break }
-  if ($st -eq 'disabled' -or $st -eq 'rejected') { throw "AMO: status fichier $st" }
+  if ($st -eq 'disabled' -or $st -eq 'rejected') { throw "AMO: file status $st" }
   Start-Sleep -Seconds 5
 }
-if (!$fileUrl) { throw "AMO: signature non disponible (timeout), dernier status=$st" }
-Write-Host "  fichier signe pret (status: $st)"
+if (!$fileUrl) { throw "AMO: signed file not available (timeout), last status=$st" }
+Write-Host "  signed file ready (status: $st)"
 
 $signedXpi = Join-Path $signedDir "banablur-$ver-firefox-signed.xpi"
-Write-Host "  url signee: $fileUrl"
+Write-Host "  signed url: $fileUrl"
 $sb = $null
 $lastCode = 0
 for ($i = 0; $i -lt 20; $i++) {
@@ -229,18 +229,18 @@ for ($i = 0; $i -lt 20; $i++) {
 }
 if (!$sb) { throw "AMO download signed -> $lastCode ($fileUrl)" }
 [IO.File]::WriteAllBytes($signedXpi, $sb)
-Write-Host "  XPI signe: $signedXpi ($($sb.Length) octets)"
+Write-Host "  signed XPI: $signedXpi ($($sb.Length) bytes)"
 
 # 5) verify mozilla.rsa
 $za = [System.IO.Compression.ZipFile]::OpenRead($signedXpi)
 try {
   $hasRsa = ($za.Entries | Where-Object { $_.FullName -eq 'META-INF/mozilla.rsa' }).Count -gt 0
 } finally { $za.Dispose() }
-if (!$hasRsa) { throw "XPI signe sans META-INF/mozilla.rsa" }
+if (!$hasRsa) { throw "signed XPI without META-INF/mozilla.rsa" }
 Write-Host "  META-INF/mozilla.rsa present"
 } else {
-  if (!(Test-Path $signedXpi)) { throw "-SkipAmo mais XPI signe absent: $signedXpi" }
-  Write-Host "== AMO: ignore (-SkipAmo), XPI signe existant =="
+  if (!(Test-Path $signedXpi)) { throw "-SkipAmo but signed XPI missing: $signedXpi" }
+  Write-Host "== AMO: skipped (-SkipAmo), existing signed XPI =="
 }
 
 # ---------------- CWS / Chrome ----------------
@@ -251,10 +251,10 @@ $csecret = ([regex]::Match($cwsRaw, 'client_secret\s*[:=]\s*(\S+)')).Groups[1].V
 $refresh = ([regex]::Match($cwsRaw, 'refresh_token\s*[:=]\s*(\S+)')).Groups[1].Value
 $itemId = ([regex]::Match($cwsRaw, 'extension_id\s*[:=]?\s*([A-Za-z0-9]+)')).Groups[1].Value
 $publisherId = ([regex]::Match($cwsRaw, 'publisher_id\s*[:=]?\s*([A-Za-z0-9-]+)')).Groups[1].Value
-if (!$itemId -or !$publisherId) { throw "CWS_API.txt incomplet (extension_id / publisher_id)" }
+if (!$itemId -or !$publisherId) { throw "CWS_API.txt incomplete (extension_id / publisher_id)" }
 Write-Host "  item: $itemId (publisher: $publisherId)"
 
-# API v2 (documentee) avec repli v1.1 si v2 indisponible.
+# API v2 (documented) with v1.1 fallback if v2 is unavailable.
 function Invoke-CwsUpload([string]$token, [byte[]]$bytes) {
   $urls = @()
   if ($publisherId) { $urls += "https://chromewebstore.googleapis.com/upload/v2/publishers/$publisherId/items/$itemId`:upload" }
@@ -304,15 +304,15 @@ if (!$pub.ok) { throw "CWS publish -> $($pub.body)" }
 Write-Host "  publish ($($pub.url)): $($pub.body)"
 } catch {
   $tokenExpired = $_.Exception.Message -match 'invalid_grant'
-  Write-Host "  [ECHEC CWS] $($_.Exception.Message)"
+  Write-Host "  [CWS FAILED] $($_.Exception.Message)"
   if ($tokenExpired) {
-    Write-Host "  -> refresh_token Google expire/revoque: regenerer CWS_API.txt (OAuth Playground / Cloud Console)."
+    Write-Host "  -> Google refresh_token expired/revoked: regenerate CWS_API.txt (OAuth Playground / Cloud Console)."
   }
-  Write-Host "  -> Desktop sera quand meme mis a jour avec le zip Chrome."
+  Write-Host "  -> Desktop will still be updated with the Chrome zip."
 }
 
-# ---------------- Bureau ----------------
-Write-Host "== Copie sur le bureau =="
+# ---------------- Desktop ----------------
+Write-Host "== Copy to the desktop =="
 $deskXpi = Join-Path $desktop "Banablur-$ver-FIREFOX-SIGNE.xpi"
 $deskZip = Join-Path $desktop "Banablur-$ver-CHROME.zip"
 Copy-Item $signedXpi $deskXpi -Force
@@ -321,4 +321,4 @@ Write-Host "  $deskXpi"
 Write-Host "  $deskZip"
 
 Write-Host ""
-Write-Host "TERMINE v$ver"
+Write-Host "DONE v$ver"

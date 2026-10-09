@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $parent = Split-Path -Parent $root
 
-# Lit la version depuis manifest.json pour nommer les fichiers de sortie.
+# Read the version from manifest.json to name the output files.
 $manifest = Get-Content -Raw (Join-Path $root "manifest.json") | ConvertFrom-Json
 $version = $manifest.version
 
@@ -11,10 +11,10 @@ $zipPath = Join-Path $parent "banablur-$version.zip"
 $xpiPath = Join-Path $parent "banablur-$version.xpi"
 $unpacked = Join-Path $parent "banablur-$version"
 
-# --- Proprete: nettoyer TOUS les artefacts de builds precedents ---
-# Dossier source = ce repo (sans suffixe de version). Ne jamais le supprimer.
-# Sorties = banablur-<version>.zip/.xpi et dossier extrait banablur-<version>/.
-# Ne touche jamais aux dossiers de signature *-signed/.
+# --- Cleanup: remove ALL artifacts from previous builds ---
+# Source folder = this repo (without version suffix). Never delete it.
+# Outputs = banablur-<version>.zip/.xpi and extracted folder banablur-<version>/.
+# Never touch the *-signed/ signing folders.
 Get-ChildItem -Path $parent -Filter "banablur*.zip" -File -ErrorAction SilentlyContinue | Remove-Item -Force
 Get-ChildItem -Path $parent -Filter "banablur*.xpi" -File -ErrorAction SilentlyContinue | Remove-Item -Force
 Get-ChildItem -Path $parent -Filter "agego-deblur*.zip" -File -ErrorAction SilentlyContinue | Remove-Item -Force
@@ -58,8 +58,8 @@ foreach ($f in $files) {
   Copy-Item $src $dest
 }
 
-# Compress-Archive (Windows) ecrit des chemins avec "\" : Firefox juge le XPI
-# "corrompu". On force des slashs Unix + Deflate via .NET ZipFile.
+# Compress-Archive (Windows) writes paths with "\": Firefox flags the XPI
+# as "corrupt". We force Unix slashes + Deflate via .NET ZipFile.
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
@@ -92,7 +92,7 @@ function New-ExtensionZip {
 $manifestPath = Join-Path $dist "manifest.json"
 $originalManifest = [System.IO.File]::ReadAllText($manifestPath)
 
-# Chrome zip + dossier extrait: service_worker only (no background.scripts).
+# Chrome zip + extracted folder: service_worker only (no background.scripts).
 $chromeManifest = $originalManifest -replace ',\s*"scripts"\s*:\s*\[\s*"background\.js"\s*\]', ''
 [System.IO.File]::WriteAllText($manifestPath, $chromeManifest)
 New-ExtensionZip -SourceDir $dist -OutPath $zipPath
@@ -102,10 +102,10 @@ $firefoxManifest = $originalManifest -replace '"service_worker"\s*:\s*"backgroun
 [System.IO.File]::WriteAllText($manifestPath, $firefoxManifest)
 New-ExtensionZip -SourceDir $dist -OutPath $xpiPath
 
-# --- Extraction automatique du zip (evite de le decompresser a la main) ---
+# --- Automatic extraction of the zip (avoids unzipping it by hand) ---
 Expand-Archive -Path $zipPath -DestinationPath $unpacked -Force
 
-# Nettoyage du staging temporaire
+# Clean up the temporary staging
 Remove-Item $dist -Recurse -Force
 
 Write-Host "Build OK (version $version):"

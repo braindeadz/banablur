@@ -1,4 +1,4 @@
-# Chrome de bench EXTERNE + uBlock Origin Lite (les pubs ne doivent pas faire perdre un site).
+# EXTERNAL bench Chrome + uBlock Origin Lite (ads must not cost us a site).
 $ErrorActionPreference = "Stop"
 $chrome = "C:\Program Files\Google\Chrome\Application\chrome.exe"
 $tools = Join-Path (Split-Path -Parent $PSScriptRoot) "tools"
@@ -7,7 +7,7 @@ $profile = Join-Path $env:TEMP "banablur-strict-profile"
 $port = 9336
 
 if (!(Test-Path $ubol)) {
-  throw "uBOLite introuvable: $ubol — lancer d'abord download-ubol.ps1"
+  throw "uBOLite not found: $ubol — run download-ubol.ps1 first"
 }
 
 Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue |

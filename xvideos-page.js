@@ -25,8 +25,8 @@
   }
 
   function getToken() {
-    // Token encode de l'URL (ex: video.ooebhhp39c3): l'embedframe le prend en
-    // priorite; certains IDs numeriques renvoient 404 alors que le token marche.
+    // Encoded URL token (e.g. video.ooebhhp39c3): embedframe takes it in
+    // priority; some numeric IDs return 404 while the token works.
     const hp = window.html5player;
     if (hp && hp.encoded_id_video) return String(hp.encoded_id_video);
     const m = location.pathname.match(/\/video[.-](\w+)(\/|$)/);
@@ -50,14 +50,14 @@
   }
 
   async function fetchUrls(id) {
-    // Token d'abord (fiable), puis ID numerique en secours — IP utilisateur uniquement.
+    // Token first (reliable), then numeric ID as fallback — user IP only.
     const urls = (await fetchEmbedframe(getToken())) || (await fetchEmbedframe(id));
     if (urls) window.__agegoXvUrls = urls;
     return urls;
   }
 
   // ---------------------------------------------------------------------------
-  // Bouton flottant de telechargement (menu de qualites)
+  // Floating download button (quality menu)
   // ---------------------------------------------------------------------------
 
   function sanitizeFilename(name) {
@@ -69,29 +69,29 @@
       .slice(0, 120) || 'xvideos';
   }
 
-  // Recupere les URLs deja fetchees, sinon les resout a la demande au clic.
+  // Retrieve already-fetched URLs, otherwise resolve them on demand on click.
   async function resolveUrls() {
     if (window.__agegoXvUrls) return window.__agegoXvUrls;
     const id = getId();
     return await fetchUrls(id);
   }
 
-  // MP4: URL CDN cross-origin -> l'attribut download est ignore, on passe par
-  // l'API chrome.downloads via le content script (evenement -> service worker).
+  // MP4: cross-origin CDN URL -> the download attribute is ignored, we go through
+  // the chrome.downloads API via the content script (event -> service worker).
   function triggerBrowserDownload(url, filename) {
     document.dispatchEvent(
       new CustomEvent('agego-xv-download', { detail: { url: url, filename: filename } })
     );
   }
 
-  // HLS: on telecharge en concatenant les segments TS du variant le plus haut.
-  // Le blob est same-origin -> l'attribut download fonctionne (vrai fichier .ts).
+  // HLS: we download by concatenating the TS segments of the highest variant.
+  // The blob is same-origin -> the download attribute works (real .ts file).
   async function downloadHls(masterUrl, baseName, statusFn) {
     try {
-      statusFn && statusFn('HLS: lecture du manifeste...');
+      statusFn && statusFn('HLS: reading manifest...');
       const master = await (await fetch(masterUrl, { credentials: 'include' })).text();
       const base = masterUrl.replace(/[^/]*$/, '');
-      // Master playlist: choisir le variant a la plus haute resolution/bande passante.
+      // Master playlist: choose the variant with the highest resolution/bandwidth.
       const variants = [];
       const lines = master.split(/\r?\n/);
       for (let i = 0; i < lines.length; i++) {
@@ -107,12 +107,12 @@
         variants.sort(function (a, b) { return (b.h - a.h) || (b.bw - a.bw); });
         mediaUrl = new URL(variants[0].uri, base).href;
       }
-      statusFn && statusFn('HLS: lecture des segments...');
+      statusFn && statusFn('HLS: reading segments...');
       const media = await (await fetch(mediaUrl, { credentials: 'include' })).text();
       const mBase = mediaUrl.replace(/[^/]*$/, '');
       const segs = media.split(/\r?\n/).filter(function (l) { return l && l[0] !== '#'; })
         .map(function (u) { return new URL(u, mBase).href; });
-      if (!segs.length) throw new Error('aucun segment');
+      if (!segs.length) throw new Error('no segment');
       const parts = [];
       for (let i = 0; i < segs.length; i++) {
         statusFn && statusFn('HLS: segment ' + (i + 1) + '/' + segs.length);
@@ -128,9 +128,9 @@
       a.click();
       a.remove();
       setTimeout(function () { URL.revokeObjectURL(objUrl); }, 60000);
-      statusFn && statusFn('HLS: telechargement lance');
+      statusFn && statusFn('HLS: download started');
     } catch (e) {
-      statusFn && statusFn('HLS: echec (' + (e && e.message) + ')');
+      statusFn && statusFn('HLS: failure (' + (e && e.message) + ')');
     }
   }
 
@@ -154,7 +154,7 @@
       'font:13px/1.4 system-ui,Arial,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.5);';
     const status = document.createElement('div');
     status.style.cssText = 'padding:6px 8px;color:#bbb;min-height:16px;';
-    status.textContent = 'Resolution des sources...';
+    status.textContent = 'Resolving sources...';
     const list = document.createElement('div');
     menu.appendChild(list);
     menu.appendChild(status);
@@ -164,7 +164,7 @@
     const baseName = sanitizeFilename(document.title);
     list.innerHTML = '';
     if (!urls || (!urls.high && !urls.low && !urls.hls)) {
-      status.textContent = 'Aucune source trouvee.';
+      status.textContent = 'No source found.';
       return;
     }
     status.textContent = '';
@@ -181,19 +181,19 @@
     }
 
     if (urls.high) {
-      addItem('Telecharger ' + labelForMp4(urls.high, 'Haute qualite (MP4)'), function () {
+      addItem('Download ' + labelForMp4(urls.high, 'High quality (MP4)'), function () {
         triggerBrowserDownload(urls.high, baseName + '.mp4');
-        status.textContent = 'Telechargement MP4 lance';
+        status.textContent = 'MP4 download started';
       });
     }
     if (urls.low && urls.low !== urls.high) {
-      addItem('Telecharger ' + labelForMp4(urls.low, 'Basse qualite (MP4)'), function () {
+      addItem('Download ' + labelForMp4(urls.low, 'Low quality (MP4)'), function () {
         triggerBrowserDownload(urls.low, baseName + '_low.mp4');
-        status.textContent = 'Telechargement MP4 lance';
+        status.textContent = 'MP4 download started';
       });
     }
     if (urls.hls) {
-      addItem('Telecharger qualite max (HLS, plus long)', function () {
+      addItem('Download max quality (HLS, slower)', function () {
         downloadHls(urls.hls, baseName, function (s) { status.textContent = s; });
       });
     }
@@ -206,13 +206,13 @@
     const btn = document.createElement('button');
     btn.id = 'agego-dl-btn';
     btn.type = 'button';
-    btn.title = 'Telecharger cette video';
+    btn.title = 'Download this video';
     btn.innerHTML =
       '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" ' +
       'stroke="currentColor" stroke-width="2.4" stroke-linecap="round" ' +
       'stroke-linejoin="round" style="flex:0 0 auto;"><path d="M12 3v12"/>' +
       '<path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>' +
-      '<span>Telecharger</span>';
+      '<span>Download</span>';
     btn.style.cssText =
       'position:fixed;bottom:24px;right:24px;z-index:2147483647;' +
       'display:inline-flex;align-items:center;gap:10px;' +
@@ -236,7 +236,7 @@
 
   function getVideo() {
     const vids = [].slice.call(document.querySelectorAll('#hlsplayer video, #html5video video'));
-    // Prefere le <video> qui joue reellement (vraie source + image decodee).
+    // Prefer the <video> that is actually playing (real source + decoded frame).
     const playing = vids.find(function (v) {
       const s = v.currentSrc || v.src || '';
       return s && s.indexOf('video_sfw') === -1 && v.videoWidth > 0;
@@ -245,8 +245,8 @@
   }
 
   function clearBlockers() {
-    // Non destructif: on MASQUE au lieu de supprimer, pour ne jamais changer la
-    // hauteur de la page (les .remove() en boucle provoquaient la remontee du scroll).
+    // Non-destructive: we HIDE instead of removing, so as to never change the
+    // page height (repeated .remove() calls caused the scroll to jump back up).
     document.querySelectorAll('.sfw-blur, .sfw-click-area, .sfw-click').forEach(function (e) {
       e.style.setProperty('display', 'none', 'important');
     });
@@ -254,7 +254,7 @@
       e.classList.remove('sfw-playlocked', 'sfw-click');
       e.style.removeProperty('filter');
     });
-    // Poster floute UNIQUEMENT dans le lecteur: masque (pas de remove).
+    // Blurred poster ONLY inside the player: hide (not remove).
     document.querySelectorAll('#hlsplayer .video-pic, #html5video .video-pic').forEach(function (e) {
       const img = e.querySelector('img');
       if (img && ((img.getAttribute('style') || '').indexOf('blur') !== -1 || getComputedStyle(img).filter.indexOf('blur') !== -1)) {
@@ -267,13 +267,13 @@
   }
 
   function dismissDisclaimer() {
-    // Le disclaimer d'age du site epingle la page en haut via un scrollTo(0,0)
-    // en boucle tant qu'il se croit affiche. On le ferme proprement via son API,
-    // ce qui stoppe cette boucle et retire les classes de flou globales.
+    // The site's age disclaimer pins the page to the top via a scrollTo(0,0)
+    // loop as long as it thinks it is displayed. We close it cleanly via its API,
+    // which stops that loop and removes the global blur classes.
     if (window.__agegoDisclaimerClosed) return;
     try {
-      // Priorite au vrai bouton "Enter": son handler stoppe le setInterval
-      // scrollTo(0,0) du site (fonction fermee, inaccessible autrement).
+      // Priority to the real "Enter" button: its handler stops the site's
+      // scrollTo(0,0) setInterval (closed-over function, otherwise unreachable).
       const btn = document.querySelector('button.disclaimer-enter');
       if (btn) { btn.click(); window.__agegoDisclaimerClosed = true; return; }
       const d = window.xv && window.xv.disclaimer;
@@ -315,7 +315,7 @@
     casting.forEach(function (e) { e.style.setProperty('display', 'none', 'important'); });
   }
 
-  // Force le vrai <video> a etre visible et retire toute couche noire posee dessus.
+  // Force the real <video> to be visible and remove any black layer placed over it.
   function forceVideoVisible() {
     const v = getVideo();
     if (!v) return;
@@ -323,10 +323,10 @@
     v.style.setProperty('visibility', 'visible', 'important');
     v.style.setProperty('display', 'block', 'important');
     v.classList.remove('sfw-playlocked', 'sfw-click', 'fake');
-    // Le vrai lecteur (MP4 natif) est parfois dans un conteneur #hlsplayer mis en
-    // display:none, tandis qu'un <video> vide/en pause reste visible par-dessus:
-    // c'est la cause de l'ecran noir avec son. On de-cache les ancetres du vrai
-    // <video> et on masque les doublons vides.
+    // The real player (native MP4) is sometimes inside a #hlsplayer container set to
+    // display:none, while an empty/paused <video> stays visible on top:
+    // this is the cause of the black screen with sound. We un-hide the ancestors of
+    // the real <video> and hide the empty duplicates.
     let anc = v.parentElement;
     let guardAnc = 0;
     while (anc && anc !== document.body && guardAnc < 8) {
@@ -348,8 +348,8 @@
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     if (cx < 0 || cy < 0 || cx > window.innerWidth || cy > window.innerHeight) return;
-    // Masque les couches interposees entre le point central et le <video>
-    // (poster, overlay noir...), sans toucher aux controles du lecteur.
+    // Hide the layers interposed between the center point and the <video>
+    // (poster, black overlay...), without touching the player controls.
     let guard = 0;
     let el = document.elementFromPoint(cx, cy);
     while (el && el !== v && guard < 6) {
@@ -376,13 +376,13 @@
 
   function hasControls() {
     const v = getVideo();
-    // La barre unique fiable = controles natifs du navigateur (v.controls). La barre
-    // custom du site (.progress-bar-bg) n'est qu'un fond non fonctionnel qu'on neutralise.
+    // The only reliable bar = native browser controls (v.controls). The site's
+    // custom bar (.progress-bar-bg) is just a non-functional background we neutralize.
     if (v && v.controls) return true;
     return !!document.querySelector('.progress-bar-bg, .progress-bar, [class*="progress-bar"]');
   }
 
-  // Force le niveau HLS le plus haut (1080p si dispo) au lieu de laisser l'auto ou le MP4 360p.
+  // Force the highest HLS level (1080p if available) instead of leaving auto or the 360p MP4.
   function forceMaxQuality() {
     const hp = window.html5player;
     if (!hp) return;
@@ -399,19 +399,19 @@
     try { h.loadLevel = maxI; } catch (_e) {}
   }
 
-  // Une seule barre: on garde les controles natifs et on neutralise la barre custom
-  // residuelle du site qui se superposait et interceptait les clics.
+  // A single bar: we keep the native controls and neutralize the site's residual
+  // custom bar that was overlapping and intercepting clicks.
   var SKIN_SELECTORS = ['.progress-bar-bg', '.video-bar', '.buttons-bar', '.pgbar-cursor-detect',
     'p.video-title', 'button.clip-subscribe', '.video-subscribe', '.subscribe',
     '.slowseek-info', '.seek-cursor', '.seek-thumb', '.seek-text',
     '.video-ended-desktop', '.top-top', '.big-buttons', '.video-loader',
-    // Pilule translucide centrale: conteneur des controles de cast (ses
-    // enfants etaient deja masques, mais pas la boite au fond noir 65%).
+    // Central translucent pill: container of the cast controls (its
+    // children were already hidden, but not the box with the 65% black background).
     '.cast-ctrls', '.centered-box'];
 
-  // Feuille de style permanente: le site remet regulierement le display inline
-  // de sa skin (ex: .big-buttons au play/pause); une regle !important en CSS
-  // gagne sur un style inline non-important et tient dans la duree.
+  // Permanent stylesheet: the site regularly resets the inline display of its
+  // skin (e.g. .big-buttons on play/pause); an !important CSS rule wins over a
+  // non-important inline style and lasts over time.
   function injectSkinCss() {
     if (document.getElementById('agego-skin-css')) return;
     const sel = ['#hlsplayer', '#html5video'].map(function (s) {
@@ -430,10 +430,10 @@
     if (v && !v.controls) {
       try { v.controls = true; } catch (_e) {}
     }
-    // Toute la skin custom du site (barre de progression, barre de boutons
-    // play/pause/volume/subscribe, titre superpose, gros bouton central,
-    // overlay fin de video, slowseek, loader): on garde UNIQUEMENT les
-    // controles natifs.
+    // The site's entire custom skin (progress bar, button bar for
+    // play/pause/volume/subscribe, overlaid title, big central button,
+    // end-of-video overlay, slowseek, loader): we keep ONLY the
+    // native controls.
     const SKIN = SKIN_SELECTORS;
     const scopes = ['#hlsplayer', '#html5video'];
     const sel = scopes.map(function (s) {
@@ -443,8 +443,8 @@
       e.style.setProperty('pointer-events', 'none', 'important');
       e.style.setProperty('display', 'none', 'important');
     });
-    // Le site pose cursor:none sur le lecteur (sa skin gere le curseur):
-    // on retablit le curseur puisque seuls les controles natifs restent.
+    // The site sets cursor:none on the player (its skin handles the cursor):
+    // we restore the cursor since only the native controls remain.
     scopes.forEach(function (s) {
       const c = document.querySelector(s);
       if (c && getComputedStyle(c).cursor === 'none') {
@@ -453,9 +453,9 @@
     });
   }
 
-  // Desactive le mode "SFW limite" du lecteur: sans ca, le site boucle les
-  // ~44 premieres secondes (iSfwIntroDur) avec video.loop=true -> impression
-  // que seule la preview safe se lit en boucle.
+  // Disable the player's "limited SFW" mode: without this, the site loops the
+  // first ~44 seconds (iSfwIntroDur) with video.loop=true -> impression that
+  // only the safe preview plays on loop.
   function disableSfwLimit() {
     const hp = window.html5player;
     if (hp) {
@@ -468,7 +468,7 @@
     });
   }
 
-  // Arrete et masque le lecteur SFW/preview (content-safe) qui se superpose a la vraie video.
+  // Stop and hide the SFW/preview (content-safe) player that overlays the real video.
   function stopSfwVideos() {
     const real = getVideo();
     document.querySelectorAll('#hlsplayer video, #html5video video').forEach(function (o) {
@@ -485,13 +485,13 @@
   function markDone() {
     if (window.__agegoXvDone) return;
     window.__agegoXvDone = true;
-    // Signale au content script (monde isole) qu'il peut cesser les dispatchs.
+    // Signal to the content script (isolated world) that it can stop dispatching.
     try { document.documentElement.dataset.agegoXvDone = '1'; } catch (_e) {}
     if (loopTimer) { clearInterval(loopTimer); loopTimer = null; }
     startObserver();
   }
 
-  // Surveille le retour des blockers SFW / boutons cast sans reconstruire le lecteur.
+  // Watch for the return of SFW blockers / cast buttons without rebuilding the player.
   function startObserver() {
     if (observer) return;
     var pending = false;
@@ -514,7 +514,7 @@
     observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
   }
 
-  // Confirme que la video joue vraiment (currentTime qui avance) avant de figer l'etat.
+  // Confirm the video is really playing (currentTime advancing) before freezing the state.
   function watchPlayback() {
     const v = getVideo();
     if (!v) return;
@@ -539,8 +539,8 @@
     if (urls.high) hp.setVideoUrlHigh(urls.high);
     if (urls.low) hp.setVideoUrlLow(urls.low);
     if (urls.hls) hp.setVideoHLS(urls.hls);
-    // Pipeline HLS (et NON le MP4 natif force): seul le HLS expose le 1080p; il produit
-    // aussi un unique <video> propre (evite le doublon/ecran noir du mode natif).
+    // HLS pipeline (and NOT the forced native MP4): only HLS exposes 1080p; it also
+    // produces a single clean <video> (avoids the duplicate/black screen of native mode).
     hp.use_hlsjs = true;
     disableSfwLimit();
     ['initPlayer', 'showPlayer', 'draw', 'setupEvents'].forEach(function (fn) {
@@ -555,7 +555,7 @@
     forceMaxQuality();
     neutralizeSiteBar();
     forceVideoVisible();
-    // Si le HLS n'a pas donne de video jouable, on tentera le MP4 en fallback dans unlock().
+    // If HLS did not yield a playable video, we will try the MP4 fallback in unlock().
     return isPlayable() || hasControls();
   }
 
@@ -580,7 +580,7 @@
     }
 
     if (initAttempts >= MAX_INIT_ATTEMPTS) {
-      // Ne plus reconstruire le lecteur en boucle: on se contente d'observer.
+      // Stop rebuilding the player in a loop: we just observe.
       forceVideoVisible();
       disableCast();
       startObserver();

@@ -142,7 +142,7 @@
     }, 200);
   }
 
-  // --- Page tube (lebon.porn) ---
+  // --- Tube page (lebon.porn) ---
 
   function applyAgeverifStub(obj) {
     if (!obj || typeof obj !== 'object') {
@@ -328,7 +328,7 @@
     }
   }
 
-  // --- Demarrage ---
+  // --- Startup ---
 
   if (isPlayer) {
     startPlayerMode();

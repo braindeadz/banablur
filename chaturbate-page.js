@@ -164,7 +164,7 @@
     const close = document.createElement('button');
     close.type = 'button';
     close.textContent = '×';
-    close.title = 'Fermer';
+    close.title = 'Close';
     close.style.cssText =
       'position:absolute;top:8px;right:8px;z-index:3;width:36px;height:36px;border:none;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;font:24px/1 sans-serif;cursor:pointer';
     close.addEventListener('click', destroyOverlay);
@@ -189,9 +189,9 @@
     return video;
   }
 
-  // Chaturbate annonce une variante HEVC (hvc1) non decodable par MSE dans
-  // Chromium, ce qui fait echouer tout le manifeste. On reecrit le manifeste
-  // maitre pour ne garder que les variantes H.264 (avc1) + l'audio AAC.
+  // Chaturbate advertises an HEVC variant (hvc1) that cannot be decoded by MSE
+  // in Chromium, which fails the whole manifest. We rewrite the master manifest
+  // to keep only the H.264 variants (avc1) + the AAC audio.
   async function buildCompatibleManifest(masterUrl) {
     const resp = await fetch(masterUrl, { credentials: 'omit' });
     if (!resp.ok) return null;
@@ -216,7 +216,7 @@
         const isHevc = /hvc1|hev1/i.test(codecs);
         const uriLine = lines[i + 1] || '';
         if (isHevc) {
-          i++; // saute aussi la ligne URI de la variante HEVC
+          i++; // also skip the URI line of the HEVC variant
           continue;
         }
         out.push(line);
@@ -229,7 +229,7 @@
       }
 
       if (line && !line.startsWith('#')) {
-        // ligne URI orpheline (deja geree ci-dessus) -> ignorer
+        // orphan URI line (already handled above) -> ignore
         continue;
       }
 
@@ -254,7 +254,7 @@
         url = compat;
       }
     } catch (_e) {
-      /* on garde l'URL d'origine */
+      /* keep the original URL */
     }
 
     if (await ensureHls()) {
@@ -352,7 +352,7 @@
 
     const video = createOverlay(slug);
 
-    // Certains edges/tokens renvoient 403 : on reessaie avec une URL fraiche.
+    // Some edges/tokens return 403: we retry with a fresh URL.
     let lastW = 0;
     for (let attempt = 0; attempt < 4; attempt++) {
       let url = first.url;

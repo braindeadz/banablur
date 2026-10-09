@@ -1,16 +1,16 @@
 /**
- * Banc séquentiel ULTRA-STRICT Banablur — zéro dépendance (CDP + WebSocket Node).
+ * Banablur ULTRA-STRICT sequential bench — zero dependencies (CDP + Node WebSocket).
  *
- * ANY fail = FAIL. Doubt = FAIL. Aucun critère assoupli (pas de readyState
- * comme preuve de lecture, pas d'excuse autoplay, pas d'aveugle au
- * `.container { filter: blur() }` type SunPorno).
+ * ANY fail = FAIL. Doubt = FAIL. No relaxed criterion (no readyState
+ * as proof of playback, no autoplay excuse, no blindness to
+ * `.container { filter: blur() }` like SunPorno).
  *
  *   node bench-strict.mjs --port=9336
  *   node bench-strict.mjs --port=9336 --only=teen21.com
  *   node bench-strict.mjs --port=9336 --candidates-only
  *
- * Candidats extra: %TEMP%\banablur-strict-candidates.json
- * Sortie:         %TEMP%\banablur-strict-results.json
+ * Extra candidates: %TEMP%\banablur-strict-candidates.json
+ * Output:          %TEMP%\banablur-strict-results.json
  */
 import fs from 'fs';
 import os from 'os';
@@ -56,7 +56,7 @@ function loadExtraCandidates() {
         url: String(x.url),
       }));
   } catch (_e) {
-    console.log('WARN candidates JSON illisible', CANDIDATES);
+    console.log('WARN candidates JSON unreadable', CANDIDATES);
     return [];
   }
 }
@@ -183,7 +183,7 @@ async function injectContent(cdp) {
   if (!already) await cdp.eval(CONTENT + ';true');
 }
 
-/** Inspecte la page dans le monde principal — source envoyée via CDP. */
+/** Inspect the page in the main world — source sent via CDP. */
 function inspectPage() {
   const vw = window.innerWidth || document.documentElement.clientWidth || 0;
   const vh = window.innerHeight || document.documentElement.clientHeight || 0;
@@ -684,7 +684,7 @@ function seekDeep() {
       target: 0,
     };
   }
-  // Coupe SFW typique ~44-46s : aller AU-DELA de 55s. Interdit de "reussir" sur une pub 30s.
+  // Typical SFW cut ~44-46s: go BEYOND 55s. Forbidden to "pass" on a 30s ad.
   const target = Math.min(Math.max(55, v.duration * 0.45), v.duration - 2);
   try {
     v.currentTime = target;
@@ -737,7 +737,7 @@ function verdictOf(row) {
   if (row.ageOnly) fails.push('age_verification_only');
   if (row.overlayAfter) fails.push('popup_or_overlay');
   if (row.generalBlur) fails.push('general_blur');
-  // Un pouce home non cliquable ne vire pas un site si seek 1+2 ont prouve la lecture.
+  // A non-clickable home thumb does not delist a site if seek 1+2 proved playback.
   if (row.scrollOrClickLock && !(row.playOk && row.seekOk && row.navOk)) fails.push('scroll_or_click_lock');
   if (!row.thumbsOk) fails.push('blurred_or_empty_thumbs');
   if (!row.playOk) fails.push('no_playback');

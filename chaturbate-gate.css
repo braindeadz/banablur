@@ -1,4 +1,4 @@
-/* Age gate : rester dans le DOM (pas display:none), masquer visuellement */
+/* Age gate: stay in the DOM (not display:none), hide visually */
 #age_gate_overlay,
 #age_gate_home,
 #age_gate_overlay *,
