@@ -1,6 +1,6 @@
 # Banablur
 
-**v1.10.15** · *Peel the blur.*
+**v1.10.16** · *Peel the blur.*
 
 Banablur is a browser extension for **Chromium** (Chrome, Edge, Brave) and **Firefox** that removes age-verification overlays, neutralizes CSS and player blur, and unlocks safe-mode / SFW video players where the site allows it.
 
@@ -126,11 +126,11 @@ Outputs in the **parent** directory:
 
 | Artifact | Purpose |
 |----------|---------|
-| `Banablur-1.10.15-CHROME.zip` | **GitHub release name** for Chromium — extract, then **Load unpacked** |
-| `Banablur-1.10.15-FIREFOX-SIGNE.xpi` | **GitHub release name** for Firefox Release (Mozilla-signed) |
-| `banablur-1.10.15.zip` | Same unsigned pack produced locally by `build.ps1` (Chromium after extract) |
-| `banablur-1.10.15.xpi` | Same unsigned bytes from `build.ps1` — **not** for Firefox Release |
-| `banablur-1.10.15/` | Folder auto-extracted by `build.ps1` for **Load unpacked** |
+| `Banablur-1.10.16-CHROME.zip` | **GitHub release name** for Chromium — extract, then **Load unpacked** |
+| `Banablur-1.10.16-FIREFOX-SIGNE.xpi` | **GitHub release name** for Firefox Release (Mozilla-signed) |
+| `banablur-1.10.16.zip` | Same unsigned pack produced locally by `build.ps1` (Chromium after extract) |
+| `banablur-1.10.16.xpi` | Same unsigned bytes from `build.ps1` — **not** for Firefox Release |
+| `banablur-1.10.16/` | Folder auto-extracted by `build.ps1` for **Load unpacked** |
 
 The build script reads the version from `manifest.json` and cleans previous build artifacts before generating new ones.
 
