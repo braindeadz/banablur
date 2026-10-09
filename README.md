@@ -1,6 +1,6 @@
 # Banablur
 
-**v1.10.9** · *Peel the blur.*
+**v1.10.14** · *Peel the blur.*
 
 Banablur is a browser extension for **Chromium** (Chrome, Edge, Brave) and **Firefox** that removes age-verification overlays, neutralizes CSS and player blur, and unlocks safe-mode / SFW video players where the site allows it.
 
@@ -67,10 +67,10 @@ Download **`Banablur-*-CHROME.zip`** → extract → **`chrome://extensions`** �
 | Feature | Description |
 |---------|-------------|
 | Age & consent overlays | Hides AgeGO, cookie walls, age banners, and modal gates |
-| AgeVerif.com popups | Blocks AgeVerif.com verification popups on **any** site while the add-on is enabled (including redirect flows) |
+| AgeVerif.com popups | Blocks AgeVerif.com verification popups on **listed sites** while the add-on is enabled (including redirect flows) |
 | CSS / player blur | Removes `filter: blur`, backdrop blur, SFW overlays, and related classes |
 | Safe-mode unlock | Switches SFW streams to full video where possible (e.g. XVIDEOS, LebonPorn / Tukif Shaka safe mode) |
-| Auto-detection | Built-in profiles per domain; learns similar domains over time |
+| Auto-detection | Built-in profiles per domain; **only domains in the list are touched** |
 | Watchdog | Re-applies fixes when sites mutate the DOM |
 | Video download | Optional floating button on XVIDEOS and xHamster (MP4 / HLS) |
 | Local IP | All requests go through your browser with your real IP — no proxy |
@@ -85,9 +85,7 @@ Download **`Banablur-*-CHROME.zip`** → extract → **`chrome://extensions`** �
 | [deviants.com](https://deviants.com) | AgeGO | Overlay + CSS blur |
 | [xvideos.com](https://xvideos.com) | XVIDEOS + AgeGO (FR) | Cookies, inline blur, SFW stream swap |
 | [xnxx.com](https://xnxx.com) | XVIDEOS + AgeGO (FR) | Same as XVIDEOS: disclaimer, SFW unlock, HLS; URL style `/video-TOKEN` |
-| [xhamster.com](https://xhamster.com) | xHamster | SFW overlay, age banner, blur helpers |
 | [xhamsterlive.com](https://xhamsterlive.com) | xHamster Live | Non-nude shutter / AVP blur |
-| [faphouse.com](https://faphouse.com) | FapHouse | Cookie wall + age modal |
 | [chaturbate.com](https://chaturbate.com) | Chaturbate | Age gate + canvas blur (dedicated script) |
 | [lebon.porn](https://lebon.porn) / videos.lebon.porn | LebonPorn | AgeVerif popup, mrx blur, Shaka safe mode |
 | [tukif.porn](https://tukif.porn) / videos.tukif.porn | Tukif | TKN AgeVerif / disclaimer, CSS deblur, Shaka safe-mode unlock (same stack as LebonPorn) |
@@ -104,8 +102,9 @@ Download **`Banablur-*-CHROME.zip`** → extract → **`chrome://extensions`** �
 | [cam4.com](https://cam4.com) | CAM4 | Age consent gender disclaimer |
 | [xxxbunker.com](https://xxxbunker.com) | XxxBunker | `#overlay` only when `data-ageconfirmed="false"` (avoids LiveJasmin clash) |
 | [spankbang.com](https://spankbang.com), [youjizz.com](https://www.youjizz.com), [hqporner.com](https://hqporner.com), [motherless.com](https://www.motherless.com), [beeg.com](https://beeg.com), [thisvid.com](https://thisvid.com), [alohatube.com](https://www.alohatube.com), [hellporno.com](https://www.hellporno.com), [drtuber.com](https://www.drtuber.com), [nuvid.com](https://www.nuvid.com), [analdin.com](https://www.analdin.com), [streamate.com](https://www.streamate.com), [rule34.xxx](https://rule34.xxx), [hdtube.porn](https://www.hdtube.porn) | Gate18 | Generic 18+ / cookie overlays |
-| xvideos.es, xnxx.es, xvideos.red, xhamster.desi | Same engines | TLD clones of existing profiles |
-| Similar domains | Auto-detected | Remembered after first visit |
+| [darknessporn.com](https://darknessporn.com) | ABN (AgeGo age-by-nosotros) | KolorTube player: gate/blur off, preroll ads skipped, ExoClick natives hidden |
+| xvideos.es, xnxx.es, xvideos.red | Same engines | TLD clones of existing profiles |
+| Other domains | Not touched | The add-on only acts on the domains listed above |
 
 ---
 
@@ -154,11 +153,11 @@ Outputs in the **parent** directory:
 
 | Artifact | Purpose |
 |----------|---------|
-| `Banablur-1.10.9-CHROME.zip` | **GitHub release name** for Chromium — extract, then **Load unpacked** |
-| `Banablur-1.10.9-FIREFOX-SIGNE.xpi` | **GitHub release name** for Firefox Release (Mozilla-signed) |
-| `banablur-1.10.9.zip` | Same unsigned pack produced locally by `build.ps1` (Chromium after extract) |
-| `banablur-1.10.9.xpi` | Same unsigned bytes from `build.ps1` — **not** for Firefox Release |
-| `banablur-1.10.9/` | Folder auto-extracted by `build.ps1` for **Load unpacked** |
+| `Banablur-1.10.14-CHROME.zip` | **GitHub release name** for Chromium — extract, then **Load unpacked** |
+| `Banablur-1.10.14-FIREFOX-SIGNE.xpi` | **GitHub release name** for Firefox Release (Mozilla-signed) |
+| `banablur-1.10.14.zip` | Same unsigned pack produced locally by `build.ps1` (Chromium after extract) |
+| `banablur-1.10.14.xpi` | Same unsigned bytes from `build.ps1` — **not** for Firefox Release |
+| `banablur-1.10.14/` | Folder auto-extracted by `build.ps1` for **Load unpacked** |
 
 The build script reads the version from `manifest.json` and cleans previous build artifacts before generating new ones.
 
@@ -216,7 +215,7 @@ npm run test:sites
 | `downloads` | Cross-origin video download via the downloads API |
 | `host_permissions`: xvideos/xnxx TLDs | Direct embedframe fetch for stream discovery (local IP) |
 
-Content scripts run on `<all_urls>` with site-specific logic gated by hostname detection.
+Content scripts are declared on `<all_urls>` but **inert everywhere except the domains listed above**: the guard `isListedSite()` blocks any DOM/CSS/cookie change on unlisted hosts.
 
 ---
 

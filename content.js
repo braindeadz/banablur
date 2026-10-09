@@ -1,6 +1,45 @@
 (function () {
   'use strict';
 
+  // Avant tout script du site : PunishWorld et AgeGo "age-by-nosotros" (ABN) ne lisent
+  // les cookies qu'au chargement. Pour les pays AgeGo (FR/GB), age.js BLOQUE le lecteur
+  // tant que abn_age_verified=1 est absent (blur + clic joueur intercepte). Il faut donc
+  // poser les cookies attendus AU document_start ; sinon l'extension masque le bouton
+  // "Commencer" sans jamais debloquer la lecture (lecteur fige).
+  function abnSlugFromHost(host) {
+    return String(host || '').replace(/^www\./i, '').replace(/\./g, '-');
+  }
+  const ABN_HOST_RE = /(^|\.)darknessporn\.com$/i;
+  function setAgeVerifiedCookies(domain) {
+    const d = '; path=/; max-age=31536000; SameSite=Lax';
+    const dom = domain ? '; domain=' + domain : '';
+    document.cookie = 'abn_age_verified=1' + d + dom;
+    const key = 'age-allow-' + abnSlugFromHost(location.hostname);
+    document.cookie = key + '=1' + d + dom;
+    try {
+      localStorage.setItem(key, '1');
+    } catch (_e) {}
+    try {
+      sessionStorage.setItem(key, '1');
+    } catch (_e) {}
+  }
+  function isAbnHost() {
+    return ABN_HOST_RE.test(location.hostname || '');
+  }
+  try {
+    const host = location.hostname || '';
+    if (/(^|\.)punishworld\.com$/i.test(host)) {
+      const key = 'age-allow-punishworld-com';
+      const base = '; path=/; max-age=31536000; domain=.punishworld.com; SameSite=Lax';
+      document.cookie = key + '=1' + base;
+      document.cookie = 'abn_age_verified=1' + base;
+      localStorage.setItem(key, '1');
+      sessionStorage.setItem(key, '1');
+    } else if (isAbnHost()) {
+      setAgeVerifiedCookies('');
+    }
+  } catch (_e) {}
+
   const CSS_ID = 'banablur-override';
   const DEBOUNCE_MS = 50;
   const FALLBACK_INTERVAL_MS = 500;
@@ -19,18 +58,8 @@
     'www.xnxx.es': ['xvideos', 'agego'],
     'xvideos.red': ['xvideos'],
     'www.xvideos.red': ['xvideos'],
-    'xhamster.com': ['xhamster'],
-    'www.xhamster.com': ['xhamster'],
-    'fra.xhamster.com': ['xhamster'],
-    'ge.xhamster.com': ['xhamster'],
-    'ita.xhamster.com': ['xhamster'],
-    'nl.xhamster.com': ['xhamster'],
-    'xhamster.desi': ['xhamster'],
-    'www.xhamster.desi': ['xhamster'],
     'xhamsterlive.com': ['xhamsterlive'],
     'www.xhamsterlive.com': ['xhamsterlive'],
-    'faphouse.com': ['faphouse'],
-    'www.faphouse.com': ['faphouse'],
     'chaturbate.com': ['chaturbate'],
     'www.chaturbate.com': ['chaturbate'],
     'tnaflix.com': ['agego'],
@@ -105,6 +134,10 @@
     'www.hdtube.porn': ['gate18'],
     'analdin.com': ['gate18'],
     'www.analdin.com': ['gate18'],
+    'punishworld.com': ['punishworld'],
+    'www.punishworld.com': ['punishworld'],
+    'darknessporn.com': ['abn'],
+    'www.darknessporn.com': ['abn'],
   };
 
   const OVERRIDE_CSS = `
@@ -196,6 +229,27 @@ html, body, #wrapper, .wrapper, main, .container { filter: none !important; back
 html, body, #page, .layout, [class*="layout"], main, .main-content { overflow: auto !important; height: auto !important; position: static !important; overscroll-behavior: auto !important; pointer-events: auto !important; }
 [class*="thumb"] img, [class*="thumb"] video, [class*="thumb"] canvas, [class*="Thumb"] img, [class*="Thumb"] video, [class*="Thumb"] canvas, [class*="preview"] img, [class*="preview"] video, [class*="preview"] canvas, [class*="Preview"] img, [class*="Preview"] video, [class*="Preview"] canvas, [class*="modelTile"] img, [class*="ModelTile"] img, [class*="modelTile"] video, [class*="ModelTile"] video { filter: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
+/* PUNISHWORLD — blur AgeGO injecté en !important sur le lecteur kolortube */
+html body video.xp-Player-video,
+html body .xp-Player-video,
+html body .xp-Player-videoPreview,
+html body .xp-Player-poster,
+html body .video-img,
+html body .img-actor-vid,
+html body .playlist-thumbnail,
+html body .xp-Video--related {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+.abn-age-banner,
+.abn-age-overlay,
+[class*="abn-age-banner"],
+[class*="abn-age-overlay"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 /* GATE18 générique (hosts listés seulement via profil, CSS chargé si page activée) */
 #age_verification, #age-verification, #ageVerification, #age_gate, #age-gate, #ageGate,
 #age-check, #age_check, #ageDisclaimer, #age-disclaimer, #age_disclaimer,
@@ -211,7 +265,22 @@ iframe[src*="satencedge"], iframe[src*="sacfedge"], iframe[src*="sacdnssedge"],
 iframe[src*="under_faphouse"], iframe[src*="adsterra"], iframe[src*="trafficjunky"],
 iframe[src*="juicyads"], iframe[src*="clickadu"], iframe[src*="ad-maven"],
 iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
+iframe[src*="magsrv.com"], iframe[src*="trustberrie.com"], iframe[src*="tsyndicate"],
+iframe[src*="onclickalgo"], iframe[src*="zsr"], iframe[src*="propeller"],
+iframe[src*="vidoomy"], iframe[src*="vimmy"], iframe[src*="magsrv"],
+#exoscript, .exo-native-widget, [class*="exo-native"], [id*="msg-native"],
+[class*="exo-native-widget"], .abn-age-banner--ad,
+[id^="native-boxes"], [id*="native-boxes"], ins.adsbyexoclick,
 .video-underplayer, .video-underplayer__buttons { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+
+/* AGE-BY-NOSOTROS (ABN) — gate AgeGo FR/GB: ne jamais laisser le blur ni le gate joueur */
+.abn-age-banner, .abn-age-overlay, .abn-age-badge, .abn-age-badge-tags, .abn-age-player-gate,
+[class*="abn-age-banner"], [class*="abn-age-overlay"] { display: none !important; pointer-events: none !important; visibility: hidden !important; }
+html, body { filter: none !important; }
+.xp-Player-video, .xp-Player-videoWrapper, .xp-Player-poster, .video-img, .xp-Video--related,
+.xp-Player-videoPreview, .video-preview, .playlist-thumbnail, .img-actor-vid, .mobile-cat-img {
+  filter: none !important; -webkit-filter: none !important; backdrop-filter: none !important;
+}
 `.trim();
 
   const api = typeof chrome !== 'undefined' ? chrome : typeof browser !== 'undefined' ? browser : null;
@@ -293,6 +362,10 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
     return /(^|\.)sunporno\.com$/i.test(getHostname());
   }
 
+  function isPunishworldHost() {
+    return /(^|\.)punishworld\.com$/i.test(getHostname());
+  }
+
   function isJacquieHost() {
     return /(^|\.)jacquieetmichel\.net$/i.test(getHostname());
   }
@@ -317,6 +390,12 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
 
   function getConfiguredProfiles() {
     return SITE_PROFILES[getHostname()] || [];
+  }
+
+  // Garde-fou: l'addon ne modifie QUE les sites explicitement listes dans SITE_PROFILES.
+  // Aucune modification DOM/CSS/cookies n'est appliquee ailleurs (pas de casse de sites tiers).
+  function isListedSite() {
+    return getConfiguredProfiles().length > 0;
   }
 
   function detectAgeGO() {
@@ -425,6 +504,21 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
     return !!document.getElementById('age-verification-overlay');
   }
 
+  function detectPunishworld() {
+    // PunishWorld est un site ABN: le profil 'abn' (generique) gere les autres.
+    return isPunishworldHost();
+  }
+
+  function detectAbn() {
+    if (isAbnHost()) return true;
+    if (isPunishworldHost()) return false;
+    return !!(
+      document.querySelector('script[src*="age-by-nosotros"]') ||
+      document.querySelector('.abn-age-banner') ||
+      document.querySelector('[class*="abn-age"]')
+    );
+  }
+
   function detectJacquie() {
     if (isJacquieHost()) return true;
     return !!(
@@ -490,6 +584,8 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
     if (detectTkn()) profiles.add('tkn');
     if (detectTxxx()) profiles.add('txxx');
     if (detectSunporno()) profiles.add('sunporno');
+    if (detectPunishworld()) profiles.add('punishworld');
+    if (detectAbn()) profiles.add('abn');
     if (detectJacquie()) profiles.add('jacquie');
     if (detectStripchat()) profiles.add('stripchat');
     if (detectLivejasmin()) profiles.add('livejasmin');
@@ -519,8 +615,9 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
     });
   }
 
-  const AD_HIDE_SELECTORS = '.vast_player, .vast_player_content, .vast_player_resume, .vast_player_click_link, .jw-plugin-vast, [id$="_vast"], iframe[src*="poloptrex.com"], iframe[src*="mrdmca.com"], iframe[src*="exoclick.com"], iframe[src*="tsvideo.sacdnssedge.com"], iframe[src*="satencedge"], iframe[src*="sacfedge"], iframe[src*="under_faphouse"], iframe[src*="yengo.com"], .video-underplayer';
-  const AD_VIDEO_SRC_RE = /tsvideo|sacdnssedge|satencedge|sacfedge|exoclick|poloptrex|mrdmca|yengo|imasdk|doubleclick|googlesyndication|trafficjunky|juicyads|adsterra|clickadu|exosrv|realsrv/i;
+  const AD_HIDE_SELECTORS = '.vast_player, .vast_player_content, .vast_player_resume, .vast_player_click_link, .jw-plugin-vast, [id$="_vast"], iframe[src*="poloptrex.com"], iframe[src*="mrdmca.com"], iframe[src*="exoclick.com"], iframe[src*="tsvideo.sacdnssedge.com"], iframe[src*="satencedge"], iframe[src*="sacfedge"], iframe[src*="under_faphouse"], iframe[src*="yengo.com"], iframe[src*="magsrv.com"], iframe[src*="trustberrie.com"], iframe[src*="tsyndicate"], iframe[src*="onclickalgo"], iframe[src*="propeller"], iframe[src*="vidoomy"], #exoscript, .exo-native-widget, [class*="exo-native"], [id*="msg-native"], [id^="native-boxes"], [id*="native-boxes"], ins.adsbyexoclick, .abn-age-banner--ad, .video-underplayer';
+  const AD_VIDEO_SRC_RE = /tsvideo|sacdnssedge|satencedge|sacfedge|exoclick|poloptrex|mrdmca|yengo|imasdk|doubleclick|googlesyndication|trafficjunky|juicyads|adsterra|clickadu|exosrv|realsrv|magsrv|trustberrie|tsyndicate|onclickalgo|vidoomy|vimmy/i;
+  const AD_IFRAME_SRC_RE = /magsrv|trustberrie|exoclick|exosrv|realsrv|tsyndicate|onclickalgo|propeller|vidoomy|vimmy|juicyads|trafficjunky|adsterra|clickadu|ad-maven|popads|doubleclick|googlesyndication/i;
   function isInsidePlayer(el) {
     return !!el.closest('#kt_player, #player, #player-1, #html5video, .jwplayer, .videoplayer, .player-container, .player, [id*="player"]');
   }
@@ -537,6 +634,30 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
       v.style.setProperty('display', 'none', 'important');
     });
   }
+  // Kolortube/ExoClick: les iframes pub (magsrv/trustberrie/...) recoivent leur src en JS
+  // apres le chargement -> un selecteur CSS ne suffit pas, on les retire au fil de l'eau.
+  function killAdIframes() {
+    document.querySelectorAll('iframe').forEach((f) => {
+      const s = `${f.src || ''} ${f.getAttribute('data-src') || ''}`;
+      if (!AD_IFRAME_SRC_RE.test(s)) return;
+      f.style.setProperty('display', 'none', 'important');
+      f.style.setProperty('pointer-events', 'none', 'important');
+      try { f.src = 'about:blank'; } catch (_e) {}
+      f.remove();
+    });
+    document.querySelectorAll('[id^="msg-native"], [id*="exo-native"], .exo-native-widget').forEach((el) => el.remove());
+  }
+  // KolorTube joue le preroll DANS le <video> principal (ExoClick "330x250.mp4",
+  // puis "c.adplsr.com/..._fix.mp4") avant la vraie video. On ne peut pas retirer
+  // l'element (c'est le lecteur), donc on saute l'ad en la poussant a sa fin.
+  const AD_PLAYER_SRC_RE = /adplsr\.com|330x250|\/vast\/|exoclick|magsrv|jerkmate|cash4porn/i;
+  function skipPlayerAd() {
+    const v = document.querySelector('.xp-Player video, video.xp-Player-video, .xp-Player-videoWrapper video');
+    if (!v || !v.duration || !isFinite(v.duration)) return;
+    const src = (v.currentSrc || v.src || '').toLowerCase();
+    if (!AD_PLAYER_SRC_RE.test(src)) return;
+    try { v.currentTime = Math.max(0, v.duration - 0.05); } catch (_e) {}
+  }
   function skipJwPreroll() {
     try {
       const jw = typeof window.jwplayer === 'function' ? window.jwplayer() : null;
@@ -546,11 +667,13 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
   function dismissPrerollAds() {
     document.querySelectorAll('.vast_player_close, .vast_player_close--do, .jw-skip, .jw-icon-skip, [class*="skip-ad"], .vast_skip, [class*="SkipAd"]').forEach((el) => { try { el.click(); } catch (_e) {} });
     skipJwPreroll();
+    skipPlayerAd();
     killAdVideos();
   }
   function cleanAds() {
     dismissPrerollAds();
     hideMatches(AD_HIDE_SELECTORS);
+    killAdIframes();
   }
 
   function hasAgeGOThreat() {
@@ -725,6 +848,38 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
     );
   }
 
+  function hasPunishworldThreat() {
+    if (!isPunishworldHost() && !document.querySelector('.abn-age-banner, script[src*="age-by-nosotros"]')) {
+      return false;
+    }
+    const video = document.querySelector('video.xp-Player-video, .xp-Player-video, .video-img');
+    const videoBlurred = video && getComputedStyle(video).filter.includes('blur');
+    const player = document.querySelector('.xp-Player');    return !!(
+      videoBlurred ||
+      document.getElementById('abn-cz-visual-rules') ||
+      isOverlayVisible('.abn-age-banner') ||
+      isOverlayVisible('.abn-age-player-gate') ||
+      document.querySelector('.abn-age-badge, .abn-age-badge-tags') ||
+      (player && player.dataset.abnPlayerGateBound === '1')
+    );
+  }
+
+  function hasAbnThreat() {
+    if (isPunishworldHost()) return false;
+    if (!isAbnHost() && !document.querySelector('script[src*="age-by-nosotros"]')) return false;
+    const video = document.querySelector('video.xp-Player-video, .xp-Player-video, .video-img');
+    const videoBlurred = video && getComputedStyle(video).filter.includes('blur');
+    const player = document.querySelector('.xp-Player');
+    return !!(
+      videoBlurred ||
+      document.getElementById('abn-cz-visual-rules') ||
+      isOverlayVisible('.abn-age-banner') ||
+      isOverlayVisible('.abn-age-player-gate') ||
+      document.querySelector('.abn-age-badge, .abn-age-badge-tags, .abn-age-banner') ||
+      (player && player.dataset.abnPlayerGateBound === '1')
+    );
+  }
+
   function hasSunpornoThreat() {
     const htmlCs = getComputedStyle(document.documentElement);
     const bodyCs = document.body ? getComputedStyle(document.body) : null;
@@ -797,6 +952,8 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
       hasTknThreat() ||
       hasTxxxThreat() ||
       hasSunpornoThreat() ||
+      hasPunishworldThreat() ||
+      hasAbnThreat() ||
       hasJacquieThreat() ||
       hasStripchatThreat() ||
       hasLivejasminThreat() ||
@@ -1799,6 +1956,7 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
   }
 
   function startGlobalAgeverifWatch() {
+    if (!isListedSite()) return;
     hookAgeverifNavigation();
     if (!ageverifWatchTimer) {
       ageverifWatchTimer = setInterval(() => {
@@ -1859,6 +2017,50 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
       el.style.setProperty('overflow', 'auto', 'important');
       el.style.setProperty('pointer-events', 'auto', 'important');
     });
+  }
+
+  function cleanPunishworld() {
+    try {
+      const key = 'age-allow-punishworld-com';
+      const base = '; path=/; max-age=31536000; domain=.punishworld.com; SameSite=Lax';
+      document.cookie = key + '=1' + base;
+      document.cookie = 'abn_age_verified=1' + base;
+      localStorage.setItem(key, '1');
+      sessionStorage.setItem(key, '1');
+    } catch (_e) {}
+    injectCSS();
+    document.getElementById('abn-cz-visual-rules')?.remove();
+    document.querySelectorAll(
+      '.abn-age-badge, .abn-age-badge-tags, .abn-age-player-gate, .abn-age-banner, .abn-age-overlay, [class*="abn-age-banner"], [class*="abn-age-overlay"]'
+    ).forEach((el) => el.remove());
+    document.querySelectorAll(
+      'video.xp-Player-video, .xp-Player-video, .xp-Player-videoPreview, .xp-Player-poster, .video-img, .img-actor-vid, .playlist-thumbnail, .xp-Video--related, .video-preview, .mobile-cat-img'
+    ).forEach((el) => {
+      el.style.setProperty('filter', 'none', 'important');
+      el.style.setProperty('-webkit-filter', 'none', 'important');
+    });
+  }
+
+  // ABN generique (AgeGo "age-by-nosotros", theme KolorTube): darknessporn.com etc.
+  // Le seul vrai deverrouillage client est le cookie abn_age_verified=1 (+ age-allow-<slug>),
+  // a poser au document_start. Ici: filet de securite (nettoyage DOM + deblur + pubs).
+  function cleanAbn() {
+    try {
+      setAgeVerifiedCookies('');
+    } catch (_e) {}
+    injectCSS();
+    document.getElementById('abn-cz-visual-rules')?.remove();
+    document.querySelectorAll(
+      '.abn-age-badge, .abn-age-badge-tags, .abn-age-player-gate, .abn-age-banner, .abn-age-overlay, [class*="abn-age-banner"], [class*="abn-age-overlay"]'
+    ).forEach((el) => el.remove());
+    document.querySelectorAll(
+      'video.xp-Player-video, .xp-Player-video, .xp-Player-videoWrapper, .xp-Player-poster, .xp-Player-videoPreview, .video-img, .img-actor-vid, .playlist-thumbnail, .xp-Video--related, .video-preview, .mobile-cat-img'
+    ).forEach((el) => {
+      el.style.setProperty('filter', 'none', 'important');
+      el.style.setProperty('-webkit-filter', 'none', 'important');
+      el.style.setProperty('backdrop-filter', 'none', 'important');
+    });
+    cleanAds();
   }
 
   function cleanSunporno() {
@@ -1979,6 +2181,8 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
     if (activeProfiles.includes('tkn')) cleanTkn();
     if (activeProfiles.includes('txxx')) cleanTxxx();
     if (activeProfiles.includes('sunporno')) cleanSunporno();
+    if (activeProfiles.includes('punishworld')) cleanPunishworld();
+    if (activeProfiles.includes('abn')) cleanAbn();
     if (activeProfiles.includes('jacquie')) cleanJacquie();
     if (activeProfiles.includes('stripchat')) cleanStripchat();
     if (activeProfiles.includes('livejasmin')) cleanLivejasmin();
@@ -2056,8 +2260,8 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
 
   function shouldActivate(forceDetect) {
     if (forceDetect) return true;
-    if (getConfiguredProfiles().length) return true;
-    return detectProfiles().length > 0;
+    // Seuls les sites de la liste sont traites.
+    return isListedSite();
   }
 
   function activateWatchdog(forceDetect) {
@@ -2176,10 +2380,8 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
 
   function onStorageReady(data) {
     autoEnabled = data.autoEnabled !== false;
-    const known = data.knownProtectedSites || data.knownAgeGOSites || [];
-    const hostname = getHostname();
 
-    if (getConfiguredProfiles().length || known.includes(hostname)) {
+    if (isListedSite()) {
       activateWatchdog(true);
     }
   }
@@ -2201,6 +2403,7 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
         autoEnabled = changes.autoEnabled.newValue !== false;
 
         if (autoEnabled) {
+          if (!isListedSite()) return;
           if (!watchdogActive) activateWatchdog(true);
           runCleanup();
           injectCSS();
@@ -2251,6 +2454,7 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
         if (isStripchatHost() && autoEnabled) cleanStripchat();
         if (isLivejasminHost() && autoEnabled) cleanLivejasmin();
         if (isGate18Host() && autoEnabled) cleanGate18();
+        if (isAbnHost() && autoEnabled) cleanAbn();
         if (autoEnabled && detectAgeverif()) cleanAgeverif();
       }
     });
@@ -2270,8 +2474,10 @@ iframe[src*="yengo.com"], iframe[src*="exosrv.com"], iframe[src*="realsrv.com"],
         if (api.storage?.local) api.storage.local.set({ autoEnabled });
 
         if (autoEnabled) {
-          activateWatchdog(true);
-          if (!isChaturbateHost()) runCleanup();
+          if (isListedSite()) {
+            activateWatchdog(true);
+            if (!isChaturbateHost()) runCleanup();
+          }
         } else {
           deactivateAutoMode();
         }

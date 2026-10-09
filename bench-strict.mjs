@@ -148,6 +148,10 @@ async function openTab(url) {
   await cdp.ready();
   await cdp.send('Runtime.enable');
   await cdp.send('Page.enable');
+  await cdp.send('Page.addScriptToEvaluateOnNewDocument', {
+    source: 'window.__banablurStrict=1;\n' + CONTENT,
+  });
+  await cdp.send('Page.bringToFront');
   await cdp.send('Page.navigate', { url });
   await waitReady(cdp, 12000);
   await sleep(1500);
@@ -175,7 +179,8 @@ async function closeTab(id, cdp) {
 }
 
 async function injectContent(cdp) {
-  await cdp.eval(CONTENT + ';true');
+  const already = await cdp.eval('!!window.__banablurStrict');
+  if (!already) await cdp.eval(CONTENT + ';true');
 }
 
 /** Inspecte la page dans le monde principal — source envoyée via CDP. */
@@ -936,6 +941,44 @@ async function runSite(site) {
   }
   return row;
 }
+
+async function ensureUbol() {
+  const listed = async () => {
+    const tabs = await (await fetch(CDP + '/json')).json();
+    return tabs.some((t) => /kaklockdmepnifomjelfcnnobgagoefm|uBOLite/i.test(t.url || ''));
+  };
+  if (await listed()) return true;
+  const ver = await (await fetch(CDP + '/json/version')).json();
+  const ws = new WebSocket(ver.webSocketDebuggerUrl);
+  await new Promise((res, rej) => {
+    ws.addEventListener('open', res, { once: true });
+    ws.addEventListener('error', rej, { once: true });
+  });
+  await new Promise((res, rej) => {
+    const t = setTimeout(() => rej(new Error('ubol-load-timeout')), 15000);
+    ws.addEventListener('message', (ev) => {
+      const msg = JSON.parse(ev.data);
+      if (msg.id !== 1) return;
+      clearTimeout(t);
+      if (msg.error) rej(new Error(msg.error.message || 'ubol-load'));
+      else res(msg.result || {});
+    });
+    ws.send(JSON.stringify({
+      id: 1,
+      method: 'Extensions.loadUnpacked',
+      params: { path: 'C:\\0-Projets_CODE\\tests\\tools\\uBOLite' },
+    }));
+  });
+  ws.close();
+  await sleep(800);
+  return listed();
+}
+
+if (!(await ensureUbol())) {
+  console.log('FAIL ublock-origin-lite absent');
+  process.exit(1);
+}
+console.log('UBOL ok');
 
 const sites = filterOnly(mergeSites(parseSupportedSites(), loadExtraCandidates()));
 const results = [];

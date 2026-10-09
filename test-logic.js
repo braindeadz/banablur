@@ -20,18 +20,8 @@ const SITE_PROFILES = {
     'www.xnxx.es': ['xvideos', 'agego'],
     'xvideos.red': ['xvideos'],
     'www.xvideos.red': ['xvideos'],
-    'xhamster.com': ['xhamster'],
-    'www.xhamster.com': ['xhamster'],
-    'fra.xhamster.com': ['xhamster'],
-    'ge.xhamster.com': ['xhamster'],
-    'ita.xhamster.com': ['xhamster'],
-    'nl.xhamster.com': ['xhamster'],
-    'xhamster.desi': ['xhamster'],
-    'www.xhamster.desi': ['xhamster'],
     'xhamsterlive.com': ['xhamsterlive'],
     'www.xhamsterlive.com': ['xhamsterlive'],
-    'faphouse.com': ['faphouse'],
-    'www.faphouse.com': ['faphouse'],
     'chaturbate.com': ['chaturbate'],
     'www.chaturbate.com': ['chaturbate'],
     'tnaflix.com': ['agego'],
@@ -185,10 +175,11 @@ assert(SITE_PROFILES['deviants.com'].includes('agego'), 'deviants -> agego');
 
 assert(SITE_PROFILES['www.xvideos.com'].includes('xvideos'), 'xvideos -> xvideos');
 
-assert(SITE_PROFILES['www.xhamster.com'].includes('xhamster'), 'xhamster -> xhamster');
+assert(!SITE_PROFILES['www.xhamster.com'], 'xhamster.com retire');
+assert(SITE_PROFILES['xhamsterlive.com'].includes('xhamsterlive'), 'xhamsterlive reste');
 assert(SITE_PROFILES['xvideos.es'].includes('xvideos'), 'xvideos.es -> xvideos');
 assert(SITE_PROFILES['xnxx.es'].includes('xvideos'), 'xnxx.es -> xvideos');
-assert(SITE_PROFILES['xhamster.desi'].includes('xhamster'), 'xhamster.desi -> xhamster');
+assert(!SITE_PROFILES['xhamster.desi'] && !SITE_PROFILES['faphouse.com'], 'xhamster.desi et faphouse retires');
 assert(SITE_PROFILES['tnaflix.com'].includes('agego'), 'tnaflix -> agego');
 assert(SITE_PROFILES['porndig.com'].includes('tkn'), 'porndig -> tkn');
 assert(SITE_PROFILES['txxx.com'].includes('txxx'), 'txxx -> txxx');
@@ -241,7 +232,7 @@ console.log('Test 4: manifest v1.5');
 
   const m = require('./manifest.json');
 
-  assert(m.version === '1.10.9', 'version 1.10.9');
+  assert(m.version === '1.10.14', 'version 1.10.14');
   assert(!!m.web_accessible_resources?.length, 'web_accessible_resources');
   const war = m.web_accessible_resources?.[0]?.resources || [];
   assert(war.includes('hls.min.js'), 'hls.min.js accessible');
@@ -425,7 +416,7 @@ console.log('Test 5: content.js contient profils xvideos + xhamster');
   assert(warXh, 'manifest: xhamster-page.js accessible');
 
   // fra.xhamster / SFW complet / deblur renforce / bouton SVG
-  assert(SITE_PROFILES['fra.xhamster.com'].includes('xhamster'), 'profil fra.xhamster.com');
+  assert(!SITE_PROFILES['fra.xhamster.com'], 'profil fra.xhamster.com retire');
   assert(xhPage.includes('SFW_NO_LIMIT') && xhPage.includes('999999999'), 'xhamster page: SFW no-limit (grande valeur, pas 0)');
   assert(!/moderationTimestamp = 0\b/.test(xhPage), 'xhamster page: ne remet plus moderationTimestamp a 0');
   assert(xhPage.includes('xh-helper-blurred-background'), 'xhamster page: deblur xh-helper-blurred-background');
@@ -652,7 +643,6 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
   const hostMap = [
     ['xvideos.es', 'xvideos'],
     ['xnxx.es', 'xvideos'],
-    ['xhamster.desi', 'xhamster'],
     ['tnaflix.com', 'agego'],
     ['porndig.com', 'tkn'],
     ['txxx.com', 'txxx'],
@@ -663,6 +653,8 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
     ['livejasmin.com', 'livejasmin'],
     ['sxyprn.com', 'tkn'],
     ['sunporno.com', 'sunporno'],
+    ['punishworld.com', 'punishworld'],
+    ['darknessporn.com', 'abn'],
     ['thisvid.com', 'gate18'],
     ['analdin.com', 'gate18'],
   ];

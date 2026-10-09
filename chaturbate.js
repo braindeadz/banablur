@@ -4,7 +4,6 @@
   const CSS_ID = 'banablur-override';
   const THUMB_INTERVAL_MS = 2500;
   const THUMB_DEBOUNCE_MS = 200;
-  const RELOAD_COOLDOWN_MS = 4000;
 
   const RESERVED_SLUGS = new Set([
     'b', 'female', 'male', 'couple', 'trans', 'tags', 'accounts', 'auth', 'chat',
@@ -19,14 +18,6 @@
     '.entrance_terms_overlay',
   ];
 
-  const GATE_HIDE_SELECTORS = [
-    '#age_gate_overlay',
-    '#age_gate_home',
-    '#age-gate-visitor-text',
-    '#av-choices',
-    ...ENTRANCE_TERMS_SELECTORS,
-  ];
-
   const GATE_CSS = `
 #age_gate_overlay, #age_gate_home, #age_gate_overlay *,
 #entrance_terms_overlay, #entrance_terms, .entrance_terms_overlay, #entrance_terms_overlay *,
@@ -35,7 +26,6 @@
 #age-key-div, #age-key-option, #av-choices, #av-choice-submit, .age-gate-tooltip, .multi-av {
   pointer-events: none !important;
   opacity: 0 !important;
-  visibility: hidden !important;
   clip-path: inset(100%) !important;
   overflow: hidden !important;
   color: transparent !important;
@@ -83,27 +73,6 @@ body:has(.entrance_terms_overlay) {
     style.id = CSS_ID;
     style.textContent = GATE_CSS;
     (document.head || document.documentElement).appendChild(style);
-  }
-
-  function injectPageReloadGuard() {
-    if (window.__agegoReloadGuardInjected) return;
-    window.__agegoReloadGuardInjected = true;
-
-    const script = document.createElement('script');
-    script.textContent = `(function(){
-      if(window.__agegoCbGuard) return;
-      window.__agegoCbGuard=true;
-      var last=0, n=0;
-      var orig=location.reload.bind(location);
-      location.reload=function(){
-        var now=Date.now();
-        if(now-last<${RELOAD_COOLDOWN_MS}){ n++; if(n<5) return; }
-        last=now; n=0;
-        return orig.apply(location, arguments);
-      };
-    })();`;
-    (document.documentElement || document.head).appendChild(script);
-    script.remove();
   }
 
   function showToast(text) {
@@ -168,71 +137,33 @@ body:has(.entrance_terms_overlay) {
     return ENTRANCE_TERMS_SELECTORS.some((sel) => document.querySelector(sel));
   }
 
-  function clickEntranceTermsAgree() {
-    const root =
-      document.getElementById('entrance_terms_overlay') ||
-      document.querySelector('.entrance_terms_overlay');
-    if (!root) return false;
-
-    const agreePattern = /\b(I\s+Agree|I\s+am\s+over\s+18|J['']accepte|J['']ai\s+plus\s+de\s+18)\b/i;
-    const candidates = root.querySelectorAll(
-      'button, a, input[type="button"], input[type="submit"], [role="button"]'
-    );
-
-    for (const el of candidates) {
-      const text = (el.textContent || el.value || '').trim();
-      if (!agreePattern.test(text)) continue;
-      try {
-        el.click();
-        return true;
-      } catch (_e) {
-        /* next */
-      }
-    }
-    return false;
-  }
-
   function ensureGateHidden() {
     injectCSS();
-    clickEntranceTermsAgree();
-
-    GATE_HIDE_SELECTORS.forEach((sel) => {
-      const el = document.querySelector(sel);
-      if (!el) return;
-      el.style.setProperty('pointer-events', 'none', 'important');
-      el.style.setProperty('opacity', '0', 'important');
-      el.style.setProperty('visibility', 'hidden', 'important');
-      el.style.setProperty('max-height', '0', 'important');
-      el.style.setProperty('overflow', 'hidden', 'important');
-    });
-
-    if (document.body.classList.contains('age-gate--shown')) {
-      document.body.classList.remove('age-gate--shown');
-    }
-
-    if (hasEntranceTermsOverlay()) {
-      document.body.style.setProperty('overflow', 'auto', 'important');
-      document.documentElement.style.setProperty('overflow', 'auto', 'important');
-    } else {
-      document.body.style.removeProperty('overflow');
-      document.documentElement.style.removeProperty('overflow');
-    }
   }
 
   function startGateObserver() {
     if (window.__agegoGateObserver) return;
     window.__agegoGateObserver = true;
 
+    let queued = false;
     const observer = new MutationObserver(() => {
+      if (queued) return;
       if (
-        document.getElementById('age_gate_overlay') ||
-        document.getElementById('age-gate-visitor-text') ||
-        hasEntranceTermsOverlay()
+        !document.getElementById('age_gate_overlay') &&
+        !document.getElementById('age-gate-visitor-text') &&
+        !hasEntranceTermsOverlay()
       ) {
-        ensureGateHidden();
+        return;
       }
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        observer.disconnect();
+        ensureGateHidden();
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+      });
     });
-    observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
     ensureGateHidden();
   }
 
@@ -336,11 +267,43 @@ body:has(.entrance_terms_overlay) {
     }
   }
 
+  function slugFromAnchor(anchor) {
+    if (!anchor) return null;
+    const dataRoom = anchor.getAttribute('data-room');
+    if (dataRoom && !RESERVED_SLUGS.has(dataRoom)) return dataRoom;
+    try {
+      const parts = new URL(anchor.href, location.href).pathname.split('/').filter(Boolean);
+      if (parts.length === 1 && !RESERVED_SLUGS.has(parts[0])) return parts[0];
+    } catch (_error) {
+      return null;
+    }
+    return null;
+  }
+
+  function bindRoomClicks() {
+    if (window.__agegoCbRoomClicks) return;
+    window.__agegoCbRoomClicks = true;
+    document.addEventListener(
+      'click',
+      (event) => {
+        if (!autoEnabled || event.button !== 0) return;
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        const anchor = event.target?.closest?.('a[href], a[data-room]');
+        const slug = slugFromAnchor(anchor);
+        if (!slug) return;
+        event.preventDefault();
+        event.stopPropagation();
+        unlockChaturbateStream(slug);
+      },
+      true
+    );
+  }
+
   function initGate() {
     injectCSS();
-    injectPageReloadGuard();
     injectPageUnlock();
     startGateObserver();
+    bindRoomClicks();
   }
 
   function initAll() {

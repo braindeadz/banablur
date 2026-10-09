@@ -21,7 +21,6 @@
 .multi-av {
   pointer-events: none !important;
   opacity: 0 !important;
-  visibility: hidden !important;
   clip-path: inset(100%) !important;
   overflow: hidden !important;
   color: transparent !important;
