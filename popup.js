@@ -9,6 +9,7 @@ const SUPPORTED_SITES = [
   { name: 'Chaturbate', url: 'https://chaturbate.com' },
   { name: 'LebonPorn', url: 'https://lebon.porn' },
   { name: 'Tukif', url: 'https://tukif.porn' },
+  { name: 'DarknessPorn', url: 'https://darknessporn.com' },
   { name: 'Deviants', url: 'https://deviants.com' },
   { name: 'AnalDin', url: 'https://www.analdin.com' },
   { name: 'Empflix', url: 'https://www.empflix.com' },

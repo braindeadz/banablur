@@ -607,6 +607,7 @@ console.log('Test 7: popup sites list');
   assert(popupJs.includes('stripchat.com'), 'popup.js: stripchat.com');
   assert(popupJs.includes('xtube.com'), 'popup.js: xtube.com');
   assert(popupJs.includes('jacquieetmichel.net'), 'popup.js: jacquieetmichel.net');
+  assert(popupJs.includes('darknessporn.com'), 'popup.js: darknessporn.com');
   assert(!popupJs.includes('spankbang.com'), 'popup.js: no spankbang.com (off KEEP bench)');
   assert(!popupJs.includes('cam4.com'), 'popup.js: no cam4.com (off KEEP bench)');
   assert(!popupJs.includes('xxxbunker.com'), 'popup.js: no xxxbunker.com (off KEEP bench)');
