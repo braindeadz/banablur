@@ -1,4 +1,4 @@
-param([switch]$SkipAmo)
+param([switch]$SkipAmo, [switch]$CancelPending)
 $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Net.Http | Out-Null
 Add-Type -AssemblyName System.IO.Compression | Out-Null
@@ -296,12 +296,30 @@ function Invoke-CwsPublish([string]$token) {
   return @{ ok = $false; body = $last }
 }
 
+function Invoke-CwsCancel([string]$token) {
+  if (!$publisherId) { return @{ ok = $false; body = "publisher id missing (v2 required)" } }
+  $u = "https://chromewebstore.googleapis.com/v2/publishers/$publisherId/items/$itemId`:cancelSubmission"
+  $req = New-Object System.Net.Http.HttpRequestMessage([System.Net.Http.HttpMethod]::Post, $u)
+  $req.Headers.Add("Authorization", "Bearer $token")
+  $resp = $http.SendAsync($req).GetAwaiter().GetResult()
+  $body = $resp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+  return @{ ok = $resp.IsSuccessStatusCode; body = "$([int]$resp.StatusCode) $(($body -replace '\s+', ' ').Trim())" }
+}
+
 $tokenExpired = $false
 try {
 $at = Get-CwsAccessToken $http
 
 $zipBytes = [IO.File]::ReadAllBytes($zip)
 $up = Invoke-CwsUpload $at $zipBytes
+# A submission still in review blocks every upload (ITEM_NOT_UPDATABLE). -CancelPending drops that
+# submission first, so the new build can be queued instead of waiting for a review we supersede.
+if (!$up.ok -and $CancelPending -and $up.body -match 'ITEM_NOT_UPDATABLE') {
+  Write-Host "  [CancelPending] a submission is in review -> cancelling it"
+  $cc = Invoke-CwsCancel $at
+  Write-Host "  cancelSubmission: $($cc.body)"
+  if ($cc.ok) { Start-Sleep -Seconds 5; $up = Invoke-CwsUpload $at $zipBytes }
+}
 if (!$up.ok) { throw "CWS upload -> $($up.body)" }
 Write-Host "  upload ($($up.url)): $($up.body)"
 
