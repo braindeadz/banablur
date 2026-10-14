@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    html, body { margin: 0; width: 1280px; height: 800px; overflow: hidden; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(1200px 700px at 20% 20%, #2a2438 0%, #121018 55%, #0b0a0e 100%);
+      color: #f4f1ea;
+    }
+    .wrap {
+      box-sizing: border-box;
+      height: 800px;
+      padding: 88px 96px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .kicker {
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 13px;
+      color: #e6c15a;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-size: 72px;
+      line-height: 1.05;
+      margin: 0 0 14px;
+      font-weight: 750;
+    }
+    h1 span { color: #f0d36a; }
+    .sub {
+      font-size: 24px;
+      line-height: 1.4;
+      color: #c9c3b8;
+      max-width: 740px;
+      margin: 0 0 40px;
+    }
+    .pills { display: flex; gap: 12px; flex-wrap: wrap; }
+    .pill {
+      border: 1px solid rgba(240, 211, 106, 0.35);
+      background: rgba(240, 211, 106, 0.08);
+      color: #f4e7b5;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 15px;
+    }
+    .foot {
+      margin-top: 56px;
+      color: #8c867c;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="kicker">Browser extension</div>
+    <h1>Banablur. <span>Peel the blur.</span></h1>
+    <p class="sub">Removes age-gate overlays and video blur on supported sites. Playback stays on your connection.</p>
+    <div class="pills">
+      <div class="pill">Local only</div>
+      <div class="pill">Your IP</div>
+      <div class="pill">No proxy</div>
+      <div class="pill">No telemetry</div>
+    </div>
+    <div class="foot">Chrome · Edge · Firefox</div>
+  </div>
+</body>
+</html>

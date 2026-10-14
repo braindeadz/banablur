@@ -574,7 +574,8 @@ html, body { filter: none !important; }
     const profiles = new Set(getConfiguredProfiles());
     if (detectAgeGO()) profiles.add('agego');
     if (detectXvideos()) profiles.add('xvideos');
-    if (detectXhamster()) profiles.add('xhamster');
+    // xHamster tube: dropped on purpose (never listed again, see CONTEXT-HANDOFF). The player is
+    // gated server-side, the addon cannot make it play, and half-applying it only breaks the site.
     if (detectXhamsterLive()) profiles.add('xhamsterlive');
     if (detectFaphouse()) profiles.add('faphouse');
     if (detectChaturbate()) profiles.add('chaturbate');
@@ -2098,7 +2099,7 @@ html, body { filter: none !important; }
 
     if (activeProfiles.includes('agego')) debloatAgeGO();
     if (activeProfiles.includes('xvideos')) cleanXvideos();
-    if (activeProfiles.includes('xhamster')) cleanXhamster();
+    // 'xhamster' is never added to activeProfiles anymore: the tube is not supported.
     if (activeProfiles.includes('xhamsterlive')) cleanXhamsterLive();
     if (activeProfiles.includes('faphouse')) cleanFaphouse();
     if (activeProfiles.includes('chaturbate')) cleanChaturbate();
@@ -2211,10 +2212,6 @@ html, body { filter: none !important; }
 
     if (isXvideosHost()) {
       startXvideosWatchdog();
-    }
-
-    if (isXhamsterHost()) {
-      startXhamsterWatchdog();
     }
 
     if (isLebonpornHost()) {
@@ -2356,12 +2353,6 @@ html, body { filter: none !important; }
           injectXvideosPageScript();
           startXvideosWatchdog();
           fixXvideosThumbnails();
-        }
-        if (isXhamsterHost() && autoEnabled) {
-          injectXhamsterPageScript();
-          startXhamsterWatchdog();
-          document.dispatchEvent(new CustomEvent('agego-xh-unlock'));
-          hideXhamsterCookieModal();
         }
         if (isLebonpornHost() && autoEnabled) {
           cleanLebonporn();

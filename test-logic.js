@@ -229,7 +229,7 @@ console.log('Test 4: manifest v1.5');
 
   const m = require('./manifest.json');
 
-  assert(m.version === '1.10.17', 'version 1.10.17');
+  assert(m.version === '1.10.18', 'version 1.10.18');
   assert(!!m.web_accessible_resources?.length, 'web_accessible_resources');
   const war = m.web_accessible_resources?.[0]?.resources || [];
   assert(war.includes('hls.min.js'), 'hls.min.js accessible');
@@ -413,6 +413,15 @@ console.log('Test 5: content.js contains xvideos + xhamster profiles');
   assert(xhPage.includes('agego-dl-btn'), 'xhamster page: floating button');
   assert(src.includes('injectXhamsterPageScript'), 'content injects xhamster-page.js');
   assert(src.includes('agego-xh-unlock'), 'content dispatches agego-xh-unlock');
+
+  // xHamster tube is NOT supported: the helpers above still exist (kept for a possible revival) but
+  // no code path may reach them, otherwise the addon half-applies on a site it cannot fix.
+  assert(!SITE_PROFILES['xhamster.com'] && !SITE_PROFILES['www.xhamster.com'] && !SITE_PROFILES['fra.xhamster.com'],
+    'xhamster tube: absent from SITE_PROFILES (all hosts)');
+  assert(!src.includes("profiles.add('xhamster')"), 'content: xhamster never added to activeProfiles');
+  assert(!src.includes("activeProfiles.includes('xhamster')"), 'content: no xhamster branch in runCleanup');
+  assert(!/if \(isXhamsterHost\(\)[^)]*\)\s*\{/.test(src), 'content: no host-based xhamster activation block');
+  assert(!/cleanXhamster\(\)\s*;/.test(src), 'content: cleanXhamster() is never called (unreachable)');
   const mf = require('./manifest.json');
   const warXh = (mf.web_accessible_resources || []).some((r) => (r.resources || []).includes('xhamster-page.js'));
   assert(warXh, 'manifest: xhamster-page.js accessible');
