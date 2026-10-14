@@ -430,12 +430,13 @@ console.log('Test 5: content.js contains xvideos + xhamster profiles');
   assert(xhPage.includes('backdrop-filter'), 'xhamster page: neutralizes backdrop-filter');
   assert(xhPage.includes('function hideTextLayer'), 'xhamster page: shared text-layer hider');
   assert(xhPage.includes('hideTextLayer(AGE_TEXT'), 'xhamster page: ARCOM banner hidden through the shared hider');
+  assert(/v\[ée\]rifi\(ez\|er/.test(xhPage), 'xhamster page: age pattern accepts the "Verifiez" wording');
   assert(/nous utilisons les cookies/.test(xhPage), 'xhamster page: FR consent notice matched');
   assert(xhPage.includes('hideTextLayer(COOKIE_TEXT'), 'xhamster page: consent layer hidden through the shared hider');
-  assert(xhPage.includes('function boxText') && /e\.innerText/.test(xhPage),
-    'xhamster page: rendered-text fallback for carousel banners');
-  assert(!/textContent\)\.trim\(\);\s*\n\s*if \(t\.length > 400/.test(xhPage),
-    'xhamster page: no bare textContent seed guard left');
+  assert(/e\.innerText/.test(xhPage), 'xhamster page: matches on rendered text, not textContent');
+  assert(/children\.length > 6/.test(xhPage), 'xhamster page: skips big containers before reading innerText');
+  assert(/if \(!target\) target = e;/.test(xhPage),
+    'xhamster page: box-less (display:contents) text holder is hidden as a fallback');
   assert(xhPage.includes('<svg') && xhPage.includes('Download'), 'xhamster page: button with SVG icon');
   assert(xvPage.includes('<svg'), 'xvideos page: button with SVG icon');
   assert(src.includes('mn-thumb__hls-wrapper') || src.includes('xh-helper-blurred-overlay'), 'content CSS: reinforced xhamster deblur');

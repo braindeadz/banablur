@@ -8,7 +8,10 @@
   var lastPath = '';
   var lastVideoId = '';
   var seekBoundVideo = null;
-  var AGE_TEXT = /v[ée]rifier votre [âa]ge|verify your age|30 secondes|continue watching/i;
+  // Measured on fra.xhamster.com: the banner reads "Verifiez votre age ..." (imperative,
+  // ending in z) while the overlay reads "Verify your age to continue watching". The
+  // pattern used to spell the infinitive only, so the ARCOM banner never matched.
+  var AGE_TEXT = /v[ée]rifi(ez|er|e|cation)|verify your age|30 secondes|continue watching/i;
   var COOKIE_BTN = /accept all cookies|tout accepter|accepter tout|j'?accepte|^ok$/i;
   var COOKIE_TEXT = /nous utilisons les cookies|we use cookies|utilizamos cookies|utilizziamo i cookie|cookies pour vous offrir/i;
 
@@ -103,42 +106,44 @@
     return m ? m[1] : location.pathname;
   }
 
-  // The banner text to test on. A carousel keeps every (hidden) variant in the
-  // DOM, so textContent of the visible box overflows the seed cap: for boxes in
-  // between, fall back to the rendered text (innerText), which only counts what
-  // is on screen. Bigger boxes are page containers, never the banner.
-  function boxText(e, seedMax, upMax) {
-    var tc = (e.textContent || '').trim();
-    if (tc.length <= seedMax) return tc;
-    if (tc.length > upMax) return '';
-    return (e.innerText || '').trim();
-  }
-
-  // Hide the banner that carries a matching text: the ARCOM / consent layers use
-  // hashed CSS-module classes and their wrapper often holds several rotating
-  // messages, so climb to the outermost ancestor that still only carries that
-  // text before hiding it.
-  function hideTextLayer(seedRe, seedMax, upMax, minW, minH) {
-    var nodes = document.querySelectorAll('div, section, aside, form, footer, button, a, p, span');
+  // Hide a banner by its text. xHamster serves hashed CSS-module classes that
+  // change on every build, and the ARCOM / consent layers are portaled into
+  // display:contents wrappers that paint no box of their own (measured: wrapper
+  // 0x0, textContent 125, parent = the 2444px tall page wrapper). So: match the
+  // rendered text, then hide the nearest ancestor that paints a banner-sized box,
+  // and fall back to the text holder itself (hiding a contents node hides its
+  // whole subtree, buttons included) when no such box exists.
+  function hideTextLayer(seedRe, maxText, minW, minH, maxH) {
+    var body = document.body;
+    if (!body) return;
+    // One rendered-text call per tick: nothing to do when the phrase is not shown.
+    if (!seedRe.test(body.innerText || '')) return;
+    var nodes = document.querySelectorAll('div, section, aside, header, footer, form, p, span, h1, h2, h3, h4, h5, h6, button, a');
     for (var i = 0; i < nodes.length; i++) {
       var e = nodes[i];
       if (e.id === 'agego-dl-btn' || e.id === 'agego-dl-menu') continue;
-      var t = boxText(e, seedMax, upMax);
-      if (t.length < 20 || t.length > seedMax) continue;
+      if (e.children.length > 6) continue;
+      var t = (e.innerText || '').trim();
+      if (t.length < 15 || t.length > maxText) continue;
       if (!seedRe.test(t)) continue;
-      var r = e.getBoundingClientRect();
-      if (r.width < minW || r.height < minH) continue;
-      var top = e;
-      var guard = 0;
-      while (top.parentElement && top.parentElement !== document.body && guard < 6) {
-        guard++;
-        var ptxt = (top.parentElement.textContent || '').trim();
-        if (ptxt.length > upMax || !seedRe.test(ptxt)) break;
-        top = top.parentElement;
+      var target = null;
+      var own = e.getBoundingClientRect();
+      if (own.width >= minW && own.height >= minH && own.height <= maxH) {
+        target = e;
+      } else {
+        var top = e.parentElement;
+        var guard = 0;
+        while (top && top !== body && guard < 8) {
+          var pr = top.getBoundingClientRect();
+          if (pr.width >= minW && pr.height >= minH && pr.height <= maxH) { target = top; break; }
+          top = top.parentElement;
+          guard++;
+        }
       }
-      top.style.setProperty('display', 'none', 'important');
-      top.style.setProperty('visibility', 'hidden', 'important');
-      top.style.setProperty('pointer-events', 'none', 'important');
+      if (!target) target = e;
+      target.style.setProperty('display', 'none', 'important');
+      target.style.setProperty('visibility', 'hidden', 'important');
+      target.style.setProperty('pointer-events', 'none', 'important');
     }
   }
 
@@ -149,7 +154,7 @@
       e.style.setProperty('visibility', 'hidden', 'important');
       e.style.setProperty('pointer-events', 'none', 'important');
     });
-    hideTextLayer(AGE_TEXT, 400, 1500, 80, 40);
+    hideTextLayer(AGE_TEXT, 400, 250, 30, 220);
     var xp = window.xplayer;
     if (xp && xp.sfw) {
       try { if (typeof xp.sfw.hideVerification === 'function') xp.sfw.hideVerification(); } catch (_e) {}
@@ -222,7 +227,7 @@
   // selectors above never match it, so hide it by its text instead.
   function hideCookieBanner() {
     injectCookieHideCss();
-    hideTextLayer(COOKIE_TEXT, 1500, 1500, 200, 80);
+    hideTextLayer(COOKIE_TEXT, 1500, 200, 80, 900);
     var btn = [].slice.call(document.querySelectorAll('button, a[role="button"], [role="button"]')).find(function (b) {
       return COOKIE_BTN.test((b.textContent || '').trim());
     });
