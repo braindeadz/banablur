@@ -20,6 +20,9 @@ const SITE_PROFILES = {
     'www.xnxx.es': ['xvideos', 'agego'],
     'xvideos.red': ['xvideos'],
     'www.xvideos.red': ['xvideos'],
+    'xhamster.com': ['xhamster'],
+    'www.xhamster.com': ['xhamster'],
+    'fra.xhamster.com': ['xhamster'],
     'xhamsterlive.com': ['xhamsterlive'],
     'www.xhamsterlive.com': ['xhamsterlive'],
     'chaturbate.com': ['chaturbate'],
@@ -173,7 +176,8 @@ assert(SITE_PROFILES['deviants.com'].includes('agego'), 'deviants -> agego');
 
 assert(SITE_PROFILES['www.xvideos.com'].includes('xvideos'), 'xvideos -> xvideos');
 
-assert(!SITE_PROFILES['www.xhamster.com'], 'xhamster.com removed');
+assert(SITE_PROFILES['www.xhamster.com'].includes('xhamster'), 'www.xhamster.com -> xhamster');
+assert(SITE_PROFILES['fra.xhamster.com'].includes('xhamster'), 'fra.xhamster.com -> xhamster');
 assert(SITE_PROFILES['xhamsterlive.com'].includes('xhamsterlive'), 'xhamsterlive stays');
 assert(SITE_PROFILES['xvideos.es'].includes('xvideos'), 'xvideos.es -> xvideos');
 assert(SITE_PROFILES['xnxx.es'].includes('xvideos'), 'xnxx.es -> xvideos');
@@ -418,12 +422,20 @@ console.log('Test 5: content.js contains xvideos + xhamster profiles');
   assert(warXh, 'manifest: xhamster-page.js accessible');
 
   // fra.xhamster / full SFW / reinforced deblur / SVG button
-  assert(!SITE_PROFILES['fra.xhamster.com'], 'fra.xhamster.com profile removed');
+  assert(SITE_PROFILES['fra.xhamster.com'] && SITE_PROFILES['fra.xhamster.com'].includes('xhamster'), 'fra.xhamster.com -> xhamster');
   assert(xhPage.includes('SFW_NO_LIMIT') && xhPage.includes('999999999'), 'xhamster page: SFW no-limit (large value, not 0)');
   assert(!/moderationTimestamp = 0\b/.test(xhPage), 'xhamster page: no longer resets moderationTimestamp to 0');
   assert(xhPage.includes('xh-helper-blurred-background'), 'xhamster page: deblur xh-helper-blurred-background');
   assert(xhPage.includes('mn-thumb__hls-wrapper'), 'xhamster page: deblur HLS preview backdrop');
   assert(xhPage.includes('backdrop-filter'), 'xhamster page: neutralizes backdrop-filter');
+  assert(xhPage.includes('function hideTextLayer'), 'xhamster page: shared text-layer hider');
+  assert(xhPage.includes('hideTextLayer(AGE_TEXT'), 'xhamster page: ARCOM banner hidden through the shared hider');
+  assert(/nous utilisons les cookies/.test(xhPage), 'xhamster page: FR consent notice matched');
+  assert(xhPage.includes('hideTextLayer(COOKIE_TEXT'), 'xhamster page: consent layer hidden through the shared hider');
+  assert(xhPage.includes('function boxText') && /e\.innerText/.test(xhPage),
+    'xhamster page: rendered-text fallback for carousel banners');
+  assert(!/textContent\)\.trim\(\);\s*\n\s*if \(t\.length > 400/.test(xhPage),
+    'xhamster page: no bare textContent seed guard left');
   assert(xhPage.includes('<svg') && xhPage.includes('Download'), 'xhamster page: button with SVG icon');
   assert(xvPage.includes('<svg'), 'xvideos page: button with SVG icon');
   assert(src.includes('mn-thumb__hls-wrapper') || src.includes('xh-helper-blurred-overlay'), 'content CSS: reinforced xhamster deblur');
@@ -610,6 +622,7 @@ console.log('Test 7: popup sites list');
   assert(popupJs.includes('xtube.com'), 'popup.js: xtube.com');
   assert(popupJs.includes('jacquieetmichel.net'), 'popup.js: jacquieetmichel.net');
   assert(popupJs.includes('darknessporn.com'), 'popup.js: darknessporn.com');
+  assert(popupJs.includes('fra.xhamster.com'), 'popup.js: fra.xhamster.com');
   assert(!popupJs.includes('spankbang.com'), 'popup.js: no spankbang.com (off KEEP bench)');
   assert(!popupJs.includes('cam4.com'), 'popup.js: no cam4.com (off KEEP bench)');
   assert(!popupJs.includes('xxxbunker.com'), 'popup.js: no xxxbunker.com (off KEEP bench)');
@@ -646,6 +659,9 @@ console.log('Test 8: content.js hosts 1.10 + detect helpers (fs)');
   const hostMap = [
     ['xvideos.es', 'xvideos'],
     ['xnxx.es', 'xvideos'],
+    ['xhamster.com', 'xhamster'],
+    ['www.xhamster.com', 'xhamster'],
+    ['fra.xhamster.com', 'xhamster'],
     ['tnaflix.com', 'agego'],
     ['porndig.com', 'tkn'],
     ['txxx.com', 'txxx'],

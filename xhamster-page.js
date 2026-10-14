@@ -10,6 +10,7 @@
   var seekBoundVideo = null;
   var AGE_TEXT = /v[ée]rifier votre [âa]ge|verify your age|30 secondes|continue watching/i;
   var COOKIE_BTN = /accept all cookies|tout accepter|accepter tout|j'?accepte|^ok$/i;
+  var COOKIE_TEXT = /nous utilisons les cookies|we use cookies|utilizamos cookies|utilizziamo i cookie|cookies pour vous offrir/i;
 
   // ---------------------------------------------------------------------------
   // SFW unlocking (xhamster 2026): the block is no longer a CSS blur but the
@@ -102,6 +103,45 @@
     return m ? m[1] : location.pathname;
   }
 
+  // The banner text to test on. A carousel keeps every (hidden) variant in the
+  // DOM, so textContent of the visible box overflows the seed cap: for boxes in
+  // between, fall back to the rendered text (innerText), which only counts what
+  // is on screen. Bigger boxes are page containers, never the banner.
+  function boxText(e, seedMax, upMax) {
+    var tc = (e.textContent || '').trim();
+    if (tc.length <= seedMax) return tc;
+    if (tc.length > upMax) return '';
+    return (e.innerText || '').trim();
+  }
+
+  // Hide the banner that carries a matching text: the ARCOM / consent layers use
+  // hashed CSS-module classes and their wrapper often holds several rotating
+  // messages, so climb to the outermost ancestor that still only carries that
+  // text before hiding it.
+  function hideTextLayer(seedRe, seedMax, upMax, minW, minH) {
+    var nodes = document.querySelectorAll('div, section, aside, form, footer, button, a, p, span');
+    for (var i = 0; i < nodes.length; i++) {
+      var e = nodes[i];
+      if (e.id === 'agego-dl-btn' || e.id === 'agego-dl-menu') continue;
+      var t = boxText(e, seedMax, upMax);
+      if (t.length < 20 || t.length > seedMax) continue;
+      if (!seedRe.test(t)) continue;
+      var r = e.getBoundingClientRect();
+      if (r.width < minW || r.height < minH) continue;
+      var top = e;
+      var guard = 0;
+      while (top.parentElement && top.parentElement !== document.body && guard < 6) {
+        guard++;
+        var ptxt = (top.parentElement.textContent || '').trim();
+        if (ptxt.length > upMax || !seedRe.test(ptxt)) break;
+        top = top.parentElement;
+      }
+      top.style.setProperty('display', 'none', 'important');
+      top.style.setProperty('visibility', 'hidden', 'important');
+      top.style.setProperty('pointer-events', 'none', 'important');
+    }
+  }
+
   // Hide the age verification overlay (reappears on SPA video change).
   function hideAgeOverlays() {
     document.querySelectorAll('.xp-sfw, .xp-sfw__background, .xp-sfw__content, [class*="xp-sfw"]').forEach(function (e) {
@@ -109,15 +149,7 @@
       e.style.setProperty('visibility', 'hidden', 'important');
       e.style.setProperty('pointer-events', 'none', 'important');
     });
-    document.querySelectorAll('div, section, aside, button, a, p, span').forEach(function (e) {
-      if (e.id === 'agego-dl-btn' || e.id === 'agego-dl-menu') return;
-      var t = (e.textContent || '').trim();
-      if (t.length > 400 || t.length < 20) return;
-      if (!AGE_TEXT.test(t)) return;
-      if (e.offsetWidth < 80 || e.offsetHeight < 40) return;
-      e.style.setProperty('display', 'none', 'important');
-      e.style.setProperty('pointer-events', 'none', 'important');
-    });
+    hideTextLayer(AGE_TEXT, 400, 1500, 80, 40);
     var xp = window.xplayer;
     if (xp && xp.sfw) {
       try { if (typeof xp.sfw.hideVerification === 'function') xp.sfw.hideVerification(); } catch (_e) {}
@@ -185,8 +217,12 @@
     (document.head || document.documentElement).appendChild(st);
   }
 
+  // xhamster's consent module uses hashed CSS-module classes
+  // (wrapper-5822e / experimentalModalContainer-5822e / overAv-5822e): the stable
+  // selectors above never match it, so hide it by its text instead.
   function hideCookieBanner() {
     injectCookieHideCss();
+    hideTextLayer(COOKIE_TEXT, 1500, 1500, 200, 80);
     var btn = [].slice.call(document.querySelectorAll('button, a[role="button"], [role="button"]')).find(function (b) {
       return COOKIE_BTN.test((b.textContent || '').trim());
     });

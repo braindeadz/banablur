@@ -5,6 +5,7 @@ const SUPPORTED_SITES = [
   { name: 'VR Porn Tube', url: 'https://vr-porn.tube' },
   { name: 'XVIDEOS', url: 'https://www.xvideos.com' },
   { name: 'XNXX', url: 'https://www.xnxx.com' },
+  { name: 'xHamster', url: 'https://fra.xhamster.com' },
   { name: 'xHamster Live', url: 'https://fr.xhamsterlive.com' },
   { name: 'Chaturbate', url: 'https://chaturbate.com' },
   { name: 'LebonPorn', url: 'https://lebon.porn' },
