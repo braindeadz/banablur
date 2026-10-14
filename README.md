@@ -58,7 +58,6 @@ Download **`Banablur-*-CHROME.zip`** → extract → **`chrome://extensions`** �
 | [deviants.com](https://deviants.com) | AgeGO | Overlay + CSS blur |
 | [xvideos.com](https://xvideos.com) | XVIDEOS + AgeGO (FR) | Cookies, inline blur, SFW stream swap |
 | [xnxx.com](https://xnxx.com) | XVIDEOS + AgeGO (FR) | Same as XVIDEOS: disclaimer, SFW unlock, HLS; URL style `/video-TOKEN` |
-| [xhamster.com](https://xhamster.com) (incl. [fra.xhamster.com](https://fra.xhamster.com)) | xHamster | ARCOM age banner, SFW runtime limit (watchable in full), cookie modal, thumbnail/player deblur |
 | [xhamsterlive.com](https://xhamsterlive.com) | xHamster Live | Non-nude shutter / AVP blur |
 | [chaturbate.com](https://chaturbate.com) | Chaturbate | Age gate + canvas blur (dedicated script) |
 | [lebon.porn](https://lebon.porn) / videos.lebon.porn | LebonPorn | AgeVerif popup, mrx blur, Shaka safe mode |

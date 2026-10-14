@@ -8,12 +8,8 @@
   var lastPath = '';
   var lastVideoId = '';
   var seekBoundVideo = null;
-  // Measured on fra.xhamster.com: the banner reads "Verifiez votre age ..." (imperative,
-  // ending in z) while the overlay reads "Verify your age to continue watching". The
-  // pattern used to spell the infinitive only, so the ARCOM banner never matched.
-  var AGE_TEXT = /v[ée]rifi(ez|er|e|cation)|verify your age|30 secondes|continue watching/i;
+  var AGE_TEXT = /v[ée]rifier votre [âa]ge|verify your age|30 secondes|continue watching/i;
   var COOKIE_BTN = /accept all cookies|tout accepter|accepter tout|j'?accepte|^ok$/i;
-  var COOKIE_TEXT = /nous utilisons les cookies|we use cookies|utilizamos cookies|utilizziamo i cookie|cookies pour vous offrir/i;
 
   // ---------------------------------------------------------------------------
   // SFW unlocking (xhamster 2026): the block is no longer a CSS blur but the
@@ -106,47 +102,6 @@
     return m ? m[1] : location.pathname;
   }
 
-  // Hide a banner by its text. xHamster serves hashed CSS-module classes that
-  // change on every build, and the ARCOM / consent layers are portaled into
-  // display:contents wrappers that paint no box of their own (measured: wrapper
-  // 0x0, textContent 125, parent = the 2444px tall page wrapper). So: match the
-  // rendered text, then hide the nearest ancestor that paints a banner-sized box,
-  // and fall back to the text holder itself (hiding a contents node hides its
-  // whole subtree, buttons included) when no such box exists.
-  function hideTextLayer(seedRe, maxText, minW, minH, maxH) {
-    var body = document.body;
-    if (!body) return;
-    // One rendered-text call per tick: nothing to do when the phrase is not shown.
-    if (!seedRe.test(body.innerText || '')) return;
-    var nodes = document.querySelectorAll('div, section, aside, header, footer, form, p, span, h1, h2, h3, h4, h5, h6, button, a');
-    for (var i = 0; i < nodes.length; i++) {
-      var e = nodes[i];
-      if (e.id === 'agego-dl-btn' || e.id === 'agego-dl-menu') continue;
-      if (e.children.length > 6) continue;
-      var t = (e.innerText || '').trim();
-      if (t.length < 15 || t.length > maxText) continue;
-      if (!seedRe.test(t)) continue;
-      var target = null;
-      var own = e.getBoundingClientRect();
-      if (own.width >= minW && own.height >= minH && own.height <= maxH) {
-        target = e;
-      } else {
-        var top = e.parentElement;
-        var guard = 0;
-        while (top && top !== body && guard < 8) {
-          var pr = top.getBoundingClientRect();
-          if (pr.width >= minW && pr.height >= minH && pr.height <= maxH) { target = top; break; }
-          top = top.parentElement;
-          guard++;
-        }
-      }
-      if (!target) target = e;
-      target.style.setProperty('display', 'none', 'important');
-      target.style.setProperty('visibility', 'hidden', 'important');
-      target.style.setProperty('pointer-events', 'none', 'important');
-    }
-  }
-
   // Hide the age verification overlay (reappears on SPA video change).
   function hideAgeOverlays() {
     document.querySelectorAll('.xp-sfw, .xp-sfw__background, .xp-sfw__content, [class*="xp-sfw"]').forEach(function (e) {
@@ -154,7 +109,15 @@
       e.style.setProperty('visibility', 'hidden', 'important');
       e.style.setProperty('pointer-events', 'none', 'important');
     });
-    hideTextLayer(AGE_TEXT, 400, 250, 30, 220);
+    document.querySelectorAll('div, section, aside, button, a, p, span').forEach(function (e) {
+      if (e.id === 'agego-dl-btn' || e.id === 'agego-dl-menu') return;
+      var t = (e.textContent || '').trim();
+      if (t.length > 400 || t.length < 20) return;
+      if (!AGE_TEXT.test(t)) return;
+      if (e.offsetWidth < 80 || e.offsetHeight < 40) return;
+      e.style.setProperty('display', 'none', 'important');
+      e.style.setProperty('pointer-events', 'none', 'important');
+    });
     var xp = window.xplayer;
     if (xp && xp.sfw) {
       try { if (typeof xp.sfw.hideVerification === 'function') xp.sfw.hideVerification(); } catch (_e) {}
@@ -222,12 +185,8 @@
     (document.head || document.documentElement).appendChild(st);
   }
 
-  // xhamster's consent module uses hashed CSS-module classes
-  // (wrapper-5822e / experimentalModalContainer-5822e / overAv-5822e): the stable
-  // selectors above never match it, so hide it by its text instead.
   function hideCookieBanner() {
     injectCookieHideCss();
-    hideTextLayer(COOKIE_TEXT, 1500, 200, 80, 900);
     var btn = [].slice.call(document.querySelectorAll('button, a[role="button"], [role="button"]')).find(function (b) {
       return COOKIE_BTN.test((b.textContent || '').trim());
     });
