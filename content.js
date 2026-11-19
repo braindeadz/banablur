@@ -323,6 +323,8 @@ iframe[src*="/ai/s/"], iframe[src*="clips4sale"], iframe[src*="gasipedibexide"] 
   let lebonpornTickTimer = null;
   let ageverifWatchTimer = null;
   let ageverifObserver = null;
+  let ageverifGateTimer = null;
+  let ageverifGateObserver = null;
   let ageverifHistoryHooked = false;
   let ageverifCallbacksCalled = false;
   let tukifTickTimer = null;
@@ -558,6 +560,11 @@ iframe[src*="/ai/s/"], iframe[src*="clips4sale"], iframe[src*="gasipedibexide"] 
   }
 
   function detectAgeverif() {
+    // checker 2.8.0 (fapcat): the gate is an <ageverif-checker> host appended to <html> and the API
+    // lives on window.ageverif, so a page that loads the script through an inline loader has neither
+    // the script tag nor the legacy globals.
+    if (document.querySelector('ageverif-checker')) return true;
+    if (typeof window.ageverif === 'object' && window.ageverif) return true;
     if (
       document.querySelector('script[src*="ageverif.com"]') ||
       document.querySelector('script[src*="static.ageverif.com"]') ||
@@ -1860,6 +1867,19 @@ iframe[src*="/ai/s/"], iframe[src*="clips4sale"], iframe[src*="gasipedibexide"] 
   const AGEVERIF_HIDE_SELECTORS =
     'iframe[src*="ageverif"], [src*="static.ageverif.com"], [class*="ageverif"], [id*="ageverif"], .modal-age-verification, [class*="modal-age"], age-verification';
 
+  // AgeVerif checker 2.8.0 (ageverif.com, used by fapcat): the gate is an <ageverif-checker> host
+  // appended to <html> with an INLINE "all: initial !important" and a CLOSED shadow root holding a
+  // full-screen overlay whose backdrop-filter is the blur seen on screen. The checker also watches
+  // that host: removing it, or changing its style, makes it blur the page and render a red "Checker
+  // closed unexpectedly / DOM_TAMPERING" panel, so the host is left strictly alone. ageverif-guard.js
+  // (MAIN world, document_start) redirects attachShadow() for that tag so the overlay is attached to
+  // a detached element and never painted; here we only undo the page lock the checker applies.
+  function neutralizeAgeverifGate() {
+    if (document.documentElement.style.filter) document.documentElement.style.filter = '';
+    if (document.body && document.body.style.overflow === 'hidden') document.body.style.overflow = '';
+    if (document.body && document.body.style.filter) document.body.style.filter = '';
+  }
+
   function injectAgeverifPageScript() {
     if (document.documentElement.dataset.agegoAvInjected === '1') return;
     if (!api?.runtime?.getURL) return;
@@ -1919,6 +1939,7 @@ iframe[src*="/ai/s/"], iframe[src*="clips4sale"], iframe[src*="gasipedibexide"] 
 
   function cleanAgeverif() {
     injectCSS();
+    neutralizeAgeverifGate();
     injectAgeverifPageScript();
     setTxxxAgeFlags();
     invokeAgeverifCallbacks();
@@ -1977,6 +1998,25 @@ iframe[src*="/ai/s/"], iframe[src*="clips4sale"], iframe[src*="gasipedibexide"] 
         attributeFilter: ['class', 'style', 'src'],
       });
     }
+  }
+
+  // Persistent gate guard. The checker renders its gate whenever the page asks for a verification
+  // (autostart, click, navigation, timer) and does not need any of the markers detectAgeverif() looks
+  // at, so the guard cannot depend on a profile or on that detection. It stays cheap: the shadow guard
+  // comes from ageverif-guard.js (MAIN world), and this only undoes the scroll lock / page blur.
+  function startAgeverifGateWatch() {
+    if (!isListedSite() || ageverifGateTimer) return;
+    const kill = () => {
+      if (!autoEnabled) return;
+      if (!document.querySelector('ageverif-checker')) return;
+      neutralizeAgeverifGate();
+      if (!watchdogActive) activateWatchdog(true);
+    };
+    ageverifGateTimer = setInterval(kill, 300);
+    ageverifGateObserver = new MutationObserver(kill);
+    [document.documentElement, document.body].forEach((root) => {
+      if (root) ageverifGateObserver.observe(root, { childList: true });
+    });
   }
 
   const SUNPORNO_HIDE_SELECTORS =
@@ -2069,6 +2109,7 @@ iframe[src*="/ai/s/"], iframe[src*="clips4sale"], iframe[src*="gasipedibexide"] 
     '.spot-list, .moneyshot, .alert-ad, [id^="inp_"][id*="preload_pause"], [id*="FPCA-NTV"], iframe[src*="/ai/s/"]';
   function cleanFapcat() {
     injectCSS();
+    neutralizeAgeverifGate();
     hideMatches(FAPCAT_AD_SELECTORS);
     document.querySelectorAll('.embed_block, #custom_embed_block_embed_block').forEach((el) => {
       if (el.querySelector('a[href*="/videos/"]')) return; // keep any block that carries content
@@ -2405,6 +2446,7 @@ iframe[src*="/ai/s/"], iframe[src*="clips4sale"], iframe[src*="gasipedibexide"] 
     });
 
     startGlobalAgeverifWatch();
+    startAgeverifGateWatch();
   }
 
   if (api?.runtime?.onMessage) {

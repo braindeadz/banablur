@@ -1,4 +1,4 @@
-param([switch]$SkipAmo, [switch]$CancelPending, [switch]$ResumeAmo)
+param([switch]$SkipAmo, [switch]$CancelPending, [switch]$ResumeAmo, [switch]$SkipCws)
 $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Net.Http | Out-Null
 Add-Type -AssemblyName System.IO.Compression | Out-Null
@@ -315,6 +315,9 @@ function Invoke-CwsCancel([string]$token) {
   return @{ ok = $resp.IsSuccessStatusCode; body = "$([int]$resp.StatusCode) $(($body -replace '\s+', ' ').Trim())" }
 }
 
+if ($SkipCws) {
+  Write-Host "== Chrome Web Store: skipped (-SkipCws, local validation first) =="
+} else {
 $tokenExpired = $false
 try {
 $at = Get-CwsAccessToken $http
@@ -342,6 +345,7 @@ Write-Host "  publish ($($pub.url)): $($pub.body)"
     Write-Host "  -> Google refresh_token expired/revoked: regenerate CWS_API.txt (OAuth Playground / Cloud Console)."
   }
   Write-Host "  -> Desktop will still be updated with the Chrome zip."
+}
 }
 
 # ---------------- Desktop ----------------

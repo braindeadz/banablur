@@ -37,6 +37,7 @@ $files = @(
   "xhamster-page.js",
   "lebonporn-page.js",
   "ageverif-page.js",
+  "ageverif-guard.js",
   "lebonporn-inject.js",
   "hls.min.js",
   "popup.html",

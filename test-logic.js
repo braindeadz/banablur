@@ -234,7 +234,7 @@ console.log('Test 4: manifest v1.5');
 
   const m = require('./manifest.json');
 
-  assert(m.version === '1.10.19', 'version 1.10.19');
+  assert(m.version === '1.10.20', 'version 1.10.20');
   assert(!!m.web_accessible_resources?.length, 'web_accessible_resources');
   const war = m.web_accessible_resources?.[0]?.resources || [];
   assert(war.includes('hls.min.js'), 'hls.min.js accessible');
@@ -298,6 +298,16 @@ console.log('Test 5: content.js contains xvideos + xhamster profiles');
     'content: ad iframe killer knows clips4sale + gasipedibexide');
   assert(src.includes('rmp-ad-container-skip'), 'content: Radiant preroll skip is clicked');
   assert(src.includes('a[href*="/videos/"]'), 'content: fapcat embed blocks kept when they carry content');
+  // AgeVerif 2.8.0 gate: the host's removal or restyle is reported as DOM_TAMPERING, so the host is
+  // never touched; ageverif-page.js redirects attachShadow() for that tag instead.
+  assert(src.includes('neutralizeAgeverifGate'), 'content: AgeVerif gate neutralizer');
+  assert(!/ageverif-checker'\)\.forEach\(\(el\) => el\.remove\(\)/.test(src),
+    'content: never removes the ageverif-checker host');
+  assert(/function cleanAgeverif\(\)[^}]*neutralizeAgeverifGate\(\)/s.test(src), 'content: cleanAgeverif neutralizes the gate');
+  assert(/function cleanFapcat\(\)[^}]*neutralizeAgeverifGate\(\)/s.test(src), 'content: cleanFapcat neutralizes the gate');
+  // The checker renders on demand, so the guard must not depend on profile/detection.
+  assert(src.includes('startAgeverifGateWatch'), 'content: persistent AgeVerif gate guard');
+  assert(/detectAgeverif\(\)[^}]*querySelector\('ageverif-checker'\)/s.test(src), 'content: detectAgeverif sees the host');
   assert(src.includes('cleanFaphouse'), 'cleanFaphouse function');
   assert(src.includes('cleanChaturbate'), 'cleanChaturbate function');
   assert(src.includes('neutralizeChaturbateAgeGate'), 'neutralizeChaturbateAgeGate function');
@@ -876,6 +886,15 @@ console.log('Test 13: global AgeVerif pipeline');
     'ageverif-page: applyStub or stub .start'
   );
   assert(avPage.includes('_agvface'), 'ageverif-page: _agvface');
+  const avGuard = fs.readFileSync(path.join(root, 'ageverif-guard.js'), 'utf8');
+  assert(avGuard.includes('__banablurShadowGuard'), 'ageverif-guard: idempotent');
+  assert(/tagName === 'AGEVERIF-CHECKER'/.test(avGuard), 'ageverif-guard: attachShadow redirected for the checker host');
+  assert(avGuard.includes('data-banablur-guard'), 'ageverif-guard: leaves a signal for content.js');
+  const guardEntry = (mf.content_scripts || []).find((cs) => (cs.js || []).includes('ageverif-guard.js'));
+  assert(!!guardEntry, 'manifest: ageverif-guard.js content script');
+  assert(guardEntry?.world === 'MAIN', 'manifest: ageverif-guard.js runs in the page world');
+  assert(guardEntry?.run_at === 'document_start', 'manifest: ageverif-guard.js runs at document_start');
+  assert((guardEntry?.matches || []).every((p) => p.includes('fapcat.com')), 'manifest: ageverif-guard.js stays on listed sites');
 
   const warAv = (mf.web_accessible_resources || []).find((r) =>
     (r.resources || []).includes('ageverif-page.js')
