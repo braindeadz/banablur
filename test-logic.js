@@ -22,6 +22,9 @@ const SITE_PROFILES = {
     'www.xvideos.red': ['xvideos'],
     'xhamsterlive.com': ['xhamsterlive'],
     'www.xhamsterlive.com': ['xhamsterlive'],
+    'fapcat.com': ['fapcat'],
+    'www.fapcat.com': ['fapcat'],
+    'fr.fapcat.com': ['fapcat'],
     'chaturbate.com': ['chaturbate'],
     'www.chaturbate.com': ['chaturbate'],
     'tnaflix.com': ['agego'],
@@ -179,6 +182,8 @@ assert(SITE_PROFILES['xvideos.es'].includes('xvideos'), 'xvideos.es -> xvideos')
 assert(SITE_PROFILES['xnxx.es'].includes('xvideos'), 'xnxx.es -> xvideos');
 assert(!SITE_PROFILES['xhamster.desi'] && !SITE_PROFILES['faphouse.com'], 'xhamster.desi and faphouse removed');
 assert(SITE_PROFILES['tnaflix.com'].includes('agego'), 'tnaflix -> agego');
+assert(SITE_PROFILES['fapcat.com'].includes('fapcat') && SITE_PROFILES['fr.fapcat.com'].includes('fapcat')
+  && SITE_PROFILES['www.fapcat.com'].includes('fapcat'), 'fapcat: all 3 hosts -> fapcat');
 assert(SITE_PROFILES['porndig.com'].includes('tkn'), 'porndig -> tkn');
 assert(SITE_PROFILES['txxx.com'].includes('txxx'), 'txxx -> txxx');
 assert(SITE_PROFILES['teen21.com'].includes('txxx'), 'teen21 -> txxx');
@@ -229,7 +234,7 @@ console.log('Test 4: manifest v1.5');
 
   const m = require('./manifest.json');
 
-  assert(m.version === '1.10.18', 'version 1.10.18');
+  assert(m.version === '1.10.19', 'version 1.10.19');
   assert(!!m.web_accessible_resources?.length, 'web_accessible_resources');
   const war = m.web_accessible_resources?.[0]?.resources || [];
   assert(war.includes('hls.min.js'), 'hls.min.js accessible');
@@ -285,6 +290,14 @@ console.log('Test 5: content.js contains xvideos + xhamster profiles');
   assert(src.includes('video[.-]'), 'content: video token path xnxx/xvideos');
 
   assert(src.includes('cleanXhamster'), 'cleanXhamster function');
+  // FapCat: ad-only cleanup, wired to the profile, and the ad networks it uses are in the killer.
+  assert(src.includes('cleanFapcat'), 'content: cleanFapcat function');
+  assert(src.includes("activeProfiles.includes('fapcat')"), 'content: fapcat profile handled in runCleanup');
+  assert(src.includes('FAPCAT_AD_SELECTORS'), 'content: fapcat ad selectors');
+  assert(/AD_IFRAME_SRC_RE = .*clips4sale/.test(src) && /AD_IFRAME_SRC_RE = .*gasipedibexide/.test(src),
+    'content: ad iframe killer knows clips4sale + gasipedibexide');
+  assert(src.includes('rmp-ad-container-skip'), 'content: Radiant preroll skip is clicked');
+  assert(src.includes('a[href*="/videos/"]'), 'content: fapcat embed blocks kept when they carry content');
   assert(src.includes('cleanFaphouse'), 'cleanFaphouse function');
   assert(src.includes('cleanChaturbate'), 'cleanChaturbate function');
   assert(src.includes('neutralizeChaturbateAgeGate'), 'neutralizeChaturbateAgeGate function');
@@ -604,6 +617,7 @@ console.log('Test 7: popup sites list');
   const mf = require('./manifest.json');
 
   assert(popupJs.includes('SUPPORTED_SITES'), 'popup.js: SUPPORTED_SITES');
+assert(popupJs.includes('fapcat.com') && popupJs.includes("name: 'FapCat'"), 'popup.js: FapCat listed');
   assert(popupJs.includes('tukif.porn'), 'popup.js: tukif.porn');
   assert(popupJs.includes('xvideos.com'), 'popup.js: xvideos.com');
   assert(popupJs.includes('tnaflix.com'), 'popup.js: tnaflix.com');

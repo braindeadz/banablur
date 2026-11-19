@@ -146,6 +146,9 @@
     'www.punishworld.com': ['punishworld'],
     'darknessporn.com': ['abn'],
     'www.darknessporn.com': ['abn'],
+    'fapcat.com': ['fapcat'],
+    'www.fapcat.com': ['fapcat'],
+    'fr.fapcat.com': ['fapcat'],
   };
 
   const OVERRIDE_CSS = `
@@ -288,6 +291,18 @@ html, body { filter: none !important; }
 .xp-Player-video, .xp-Player-videoWrapper, .xp-Player-poster, .video-img, .xp-Video--related,
 .xp-Player-videoPreview, .video-preview, .playlist-thumbnail, .img-actor-vid, .mobile-cat-img {
   filter: none !important; -webkit-filter: none !important; backdrop-filter: none !important;
+}
+
+/* FAPCAT — no age gate, no blur: this site only needs its ad slots to go away.
+   Measured on /videos/<id>/: .spot-list and .embed_block carry no /videos/ link (ads only),
+   in-player slots are span[id*="preload_pause"] + /ai/s/s/su.php, banners are .moneyshot. */
+.spot-list, .moneyshot, .alert-ad, [id^="inp_"][id*="preload_pause"], [id*="FPCA-NTV"],
+#custom_embed_block_embed_block, .embed_block:not(:has(a[href*="/videos/"])),
+iframe[src*="/ai/s/"], iframe[src*="clips4sale"], iframe[src*="gasipedibexide"] {
+  display: none !important; pointer-events: none !important; visibility: hidden !important;
+}
+.rmp-ad-container, .rmp-ad-container-skip, .rmp-ad-vast-video-player, .rmp-ad-container-ad-link-all {
+  display: none !important; pointer-events: none !important; visibility: hidden !important;
 }
 `.trim();
 
@@ -616,7 +631,7 @@ html, body { filter: none !important; }
 
   const AD_HIDE_SELECTORS = '.vast_player, .vast_player_content, .vast_player_resume, .vast_player_click_link, .jw-plugin-vast, [id$="_vast"], iframe[src*="poloptrex.com"], iframe[src*="mrdmca.com"], iframe[src*="exoclick.com"], iframe[src*="tsvideo.sacdnssedge.com"], iframe[src*="satencedge"], iframe[src*="sacfedge"], iframe[src*="under_faphouse"], iframe[src*="yengo.com"], iframe[src*="magsrv.com"], iframe[src*="trustberrie.com"], iframe[src*="tsyndicate"], iframe[src*="onclickalgo"], iframe[src*="propeller"], iframe[src*="vidoomy"], #exoscript, .exo-native-widget, [class*="exo-native"], [id*="msg-native"], [id^="native-boxes"], [id*="native-boxes"], ins.adsbyexoclick, .abn-age-banner--ad, .video-underplayer';
   const AD_VIDEO_SRC_RE = /tsvideo|sacdnssedge|satencedge|sacfedge|exoclick|poloptrex|mrdmca|yengo|imasdk|doubleclick|googlesyndication|trafficjunky|juicyads|adsterra|clickadu|exosrv|realsrv|magsrv|trustberrie|tsyndicate|onclickalgo|vidoomy|vimmy/i;
-  const AD_IFRAME_SRC_RE = /magsrv|trustberrie|exoclick|exosrv|realsrv|tsyndicate|onclickalgo|propeller|vidoomy|vimmy|juicyads|trafficjunky|adsterra|clickadu|ad-maven|popads|doubleclick|googlesyndication/i;
+  const AD_IFRAME_SRC_RE = /magsrv|trustberrie|exoclick|exosrv|realsrv|tsyndicate|onclickalgo|propeller|vidoomy|vimmy|juicyads|trafficjunky|adsterra|clickadu|ad-maven|popads|doubleclick|googlesyndication|clips4sale|gasipedibexide|\/ai\/s\/su\.php/i;
   function isInsidePlayer(el) {
     return !!el.closest('#kt_player, #player, #player-1, #html5video, .jwplayer, .videoplayer, .player-container, .player, [id*="player"]');
   }
@@ -667,7 +682,7 @@ html, body { filter: none !important; }
     // TNAFlix (Flix platform) shows a preroll whose only exit is #prerollAdSkip ("Skip Ad in
     // N" then "Skip Ad >>>"). While that preroll is on screen the real video stays source-less
     // and paused, so playback never starts until the skip control is used.
-    document.querySelectorAll('.vast_player_close, .vast_player_close--do, .jw-skip, .jw-icon-skip, [class*="skip-ad"], .vast_skip, [class*="SkipAd"], #prerollAdSkip, [id*="prerollAdSkip"]').forEach((el) => { try { el.click(); } catch (_e) {} });
+    document.querySelectorAll('.vast_player_close, .vast_player_close--do, .jw-skip, .jw-icon-skip, [class*="skip-ad"], .vast_skip, [class*="SkipAd"], #prerollAdSkip, [id*="prerollAdSkip"], .rmp-ad-container-skip, .rmp-ad-container-skip-waiting').forEach((el) => { try { el.click(); } catch (_e) {} });
     skipJwPreroll();
     skipPlayerAd();
     killAdVideos();
@@ -2047,6 +2062,23 @@ html, body { filter: none !important; }
     cleanAds();
   }
 
+  // FAPCAT: no age gate and nothing blurred, so the only job is the ad surface. Everything hidden
+  // here was measured to hold no /videos/ link (ad slots only), and the Radiant preroll is skipped
+  // because while it plays the content video stays source-less (readyState 0).
+  const FAPCAT_AD_SELECTORS =
+    '.spot-list, .moneyshot, .alert-ad, [id^="inp_"][id*="preload_pause"], [id*="FPCA-NTV"], iframe[src*="/ai/s/"]';
+  function cleanFapcat() {
+    injectCSS();
+    hideMatches(FAPCAT_AD_SELECTORS);
+    document.querySelectorAll('.embed_block, #custom_embed_block_embed_block').forEach((el) => {
+      if (el.querySelector('a[href*="/videos/"]')) return; // keep any block that carries content
+      el.style.setProperty('display', 'none', 'important');
+      el.style.setProperty('visibility', 'hidden', 'important');
+      el.style.setProperty('pointer-events', 'none', 'important');
+    });
+    dismissPrerollAds();
+  }
+
   function cleanSunporno() {
     injectCSS();
     hideMatches(SUNPORNO_HIDE_SELECTORS);
@@ -2104,6 +2136,7 @@ html, body { filter: none !important; }
     if (activeProfiles.includes('faphouse')) cleanFaphouse();
     if (activeProfiles.includes('chaturbate')) cleanChaturbate();
     if (activeProfiles.includes('lebonporn')) cleanLebonporn();
+    if (activeProfiles.includes('fapcat')) cleanFapcat();
     if (activeProfiles.includes('tukif')) cleanTukif();
     if (activeProfiles.includes('tkn')) cleanTkn();
     if (activeProfiles.includes('txxx')) cleanTxxx();

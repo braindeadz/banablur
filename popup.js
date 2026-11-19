@@ -10,6 +10,7 @@ const SUPPORTED_SITES = [
   { name: 'LebonPorn', url: 'https://lebon.porn' },
   { name: 'Tukif', url: 'https://tukif.porn' },
   { name: 'DarknessPorn', url: 'https://darknessporn.com' },
+  { name: 'FapCat', url: 'https://fr.fapcat.com' },
   { name: 'Deviants', url: 'https://deviants.com' },
   { name: 'AnalDin', url: 'https://www.analdin.com' },
   { name: 'Empflix', url: 'https://www.empflix.com' },
