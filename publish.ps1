@@ -1,4 +1,4 @@
-param([switch]$SkipAmo, [switch]$CancelPending)
+param([switch]$SkipAmo, [switch]$CancelPending, [switch]$ResumeAmo)
 $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Net.Http | Out-Null
 Add-Type -AssemblyName System.IO.Compression | Out-Null
@@ -150,6 +150,14 @@ function Invoke-AmoGet([string]$url) {
   return $body | ConvertFrom-Json
 }
 
+$singleUrl = "https://addons.mozilla.org/api/v5/addons/addon/$([uri]::EscapeDataString($addonId))/versions/$ver/"
+if ($ResumeAmo) {
+  # AMO signed too late (or the download timed out) but the version already exists: only wait for it.
+  Write-Host "  [ResumeAmo] reuse the v$ver version already on AMO"
+  $vinfo = Invoke-AmoGet $singleUrl
+  Write-Host "  version: $($vinfo.version) (file status: $($vinfo.file.status))"
+} else {
+
 # 1) upload
 $mp = New-Object System.Net.Http.MultipartFormDataContent
 $bytes = [IO.File]::ReadAllBytes($xpi)
@@ -196,18 +204,19 @@ if ($resp.IsSuccessStatusCode) {
   throw "AMO create version -> $([int]$resp.StatusCode): $verBody"
 }
 
-$singleUrl = "https://addons.mozilla.org/api/v5/addons/addon/$([uri]::EscapeDataString($addonId))/versions/$ver/"
 if (!$vinfo) { $vinfo = Invoke-AmoGet $singleUrl }
 Write-Host "  version: $($vinfo.version) (file status: $($vinfo.file.status))"
+}   # end if ($ResumeAmo) / else
 
 # 4) wait for the (asynchronous) signing, then download
 $fileUrl = $null
 $st = $null
-for ($i = 0; $i -lt 60; $i++) {
+for ($i = 0; $i -lt 180; $i++) {
   $v = Invoke-AmoGet $singleUrl
   $st = $v.file.status
   if ($st -eq 'public' -or $st -eq 'signed') { $fileUrl = $v.file.url; break }
   if ($st -eq 'disabled' -or $st -eq 'rejected') { throw "AMO: file status $st" }
+  if ($i -gt 0 -and $i % 12 -eq 0) { Write-Host "  waiting for the signature ($([int]($i * 5))s, status=$st)" }
   Start-Sleep -Seconds 5
 }
 if (!$fileUrl) { throw "AMO: signed file not available (timeout), last status=$st" }
